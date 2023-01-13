@@ -20,16 +20,16 @@ Friend Class MainFrameObjects
         PauseButtons = New DownloadObjects.AutoDownloaderPauseButtons(DownloadObjects.AutoDownloaderPauseButtons.ButtonsPlace.MainFrame)
     End Sub
 #Region "Users"
-    Friend Sub FocusUser(ByVal Key As String, Optional ByVal ActivateForm As Boolean = False)
+    Friend Sub FocusUser(Key As String, Optional ActivateForm As Boolean = False)
         MF.FocusUser(Key, ActivateForm)
     End Sub
 #End Region
 #Region "Image handlers"
-    Friend Sub ImageHandler(ByVal User As IUserData)
+    Friend Sub ImageHandler(User As IUserData)
         ImageHandler(User, False)
         ImageHandler(User, True)
     End Sub
-    Friend Sub ImageHandler(ByVal User As IUserData, ByVal Add As Boolean)
+    Friend Sub ImageHandler(User As IUserData, Add As Boolean)
         Try
             If Add Then
                 AddHandler User.UserUpdated, AddressOf MF.User_OnUserUpdated
@@ -39,7 +39,7 @@ Friend Class MainFrameObjects
         Catch
         End Try
     End Sub
-    Friend Sub CollectionHandler(ByVal [Collection] As UserDataBind)
+    Friend Sub CollectionHandler([Collection] As UserDataBind)
         Try
             AddHandler Collection.OnCollectionSelfRemoved, AddressOf MF.CollectionRemoved
             AddHandler Collection.OnUserRemoved, AddressOf MF.UserRemovedFromCollection
@@ -48,7 +48,7 @@ Friend Class MainFrameObjects
     End Sub
 #End Region
 #Region "Form functions"
-    Friend Sub Focus(Optional ByVal Show As Boolean = False)
+    Friend Sub Focus(Optional Show As Boolean = False)
         ControlInvokeFast(MF, Sub()
                                   If Not MF.Visible And Show Then MF.Show()
                                   If MF.Visible Then MF.BringToFront() : MF.Activate()
@@ -64,7 +64,7 @@ Friend Class MainFrameObjects
 #End Region
 #Region "Notifications"
     Private Const NotificationInternalKey As String = "NotificationInternalKey"
-    Friend Sub ShowNotification(ByVal Sender As NotifyObj, ByVal Message As String)
+    Friend Sub ShowNotification(Sender As NotifyObj, Message As String)
         If Settings.ProcessNotification(Sender) Then
             Using n As New Notification(Message) With {.Key = $"{NotificationInternalKey}_{Sender}"} : n.Show() : End Using
         End If
@@ -72,7 +72,7 @@ Friend Class MainFrameObjects
     Friend Sub ClearNotifications()
         Notificator.Clear()
     End Sub
-    Private Sub Notificator_OnClicked(ByVal Key As String) Handles Notificator.OnClicked
+    Private Sub Notificator_OnClicked(Key As String) Handles Notificator.OnClicked
         If Not Key.IsEmptyString Then
             Dim found As Boolean = False
             Dim activateForm As Boolean = False

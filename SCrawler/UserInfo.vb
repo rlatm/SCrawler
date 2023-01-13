@@ -60,13 +60,13 @@ Partial Friend Module MainMod
         End Property
 #End Region
 #Region "Initializers"
-        Friend Sub New(ByVal _Name As String, ByVal Host As SettingsHost)
+        Friend Sub New(_Name As String, Host As SettingsHost)
             Name = _Name
             Site = Host.Name
             Plugin = Host.Key
             UpdateUserFile()
         End Sub
-        Private Sub New(ByVal x As EContainer)
+        Private Sub New(x As EContainer)
             Name = x.Value
             Site = x.Attribute(Name_Site).Value
             Plugin = x.Attribute(Name_Plugin).Value
@@ -78,25 +78,25 @@ Partial Friend Module MainMod
             SpecialCollectionPath = SFile.GetPath(x.Attribute(Name_SpecialCollectionPath).Value)
             IsChannel = x.Attribute(Name_IsChannel).Value.FromXML(Of Boolean)(False)
         End Sub
-        Friend Sub New(ByVal c As Reddit.Channel)
+        Friend Sub New(c As Reddit.Channel)
             Name = c.Name
             Site = Reddit.RedditSite
             Plugin = Reddit.RedditSiteKey
             File = c.File
             IsChannel = True
         End Sub
-        Public Shared Widening Operator CType(ByVal x As EContainer) As UserInfo
+        Public Shared Widening Operator CType(x As EContainer) As UserInfo
             Return New UserInfo(x)
         End Operator
-        Public Shared Widening Operator CType(ByVal u As UserInfo) As String
+        Public Shared Widening Operator CType(u As UserInfo) As String
             Return u.Name
         End Operator
 #End Region
 #Region "Operators"
-        Public Shared Operator =(ByVal x As UserInfo, ByVal y As UserInfo)
+        Public Shared Operator =(x As UserInfo, y As UserInfo)
             Return x.Equals(y)
         End Operator
-        Public Shared Operator <>(ByVal x As UserInfo, ByVal y As UserInfo)
+        Public Shared Operator <>(x As UserInfo, y As UserInfo)
             Return Not x.Equals(y)
         End Operator
 #End Region
@@ -125,7 +125,7 @@ Partial Friend Module MainMod
             Else
                 If IncludedInCollection And Not IsVirtual Then
                     Return $"{ColPath}\{Site}_{Name}\{SettingsFolderName}"
-                ElseIf Not Settings(Plugin) Is Nothing Then
+                ElseIf Settings(Plugin) IsNot Nothing Then
                     Return $"{Settings(Plugin).Path.PathNoSeparator}\{Name}\{SettingsFolderName}"
                 Else
                     Dim s$ = Site.ToLower
@@ -136,7 +136,7 @@ Partial Friend Module MainMod
         End Function
 #End Region
 #Region "ToEContainer Support"
-        Friend Function ToEContainer(Optional ByVal e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
+        Friend Function ToEContainer(Optional e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
             Return New EContainer(Name_UserNode, Name, {New EAttribute(Name_Site, Site),
                                                         New EAttribute(Name_Plugin, Plugin),
                                                         New EAttribute(Name_Collection, CollectionName),
@@ -149,7 +149,7 @@ Partial Friend Module MainMod
         End Function
 #End Region
 #Region "IComparable Support"
-        Friend Function CompareTo(ByVal Other As UserInfo) As Integer Implements IComparable(Of UserInfo).CompareTo
+        Friend Function CompareTo(Other As UserInfo) As Integer Implements IComparable(Of UserInfo).CompareTo
             If Site = Other.Site Then
                 Return Name.CompareTo(Other.Name)
             Else
@@ -158,10 +158,10 @@ Partial Friend Module MainMod
         End Function
 #End Region
 #Region "IEquatable Support"
-        Friend Overloads Function Equals(ByVal Other As UserInfo) As Boolean Implements IEquatable(Of UserInfo).Equals
+        Friend Overloads Function Equals(Other As UserInfo) As Boolean Implements IEquatable(Of UserInfo).Equals
             Return Site.StringToLower = Other.Site.StringToLower And Name.StringToLower = Other.Name.StringToLower
         End Function
-        Public Overloads Overrides Function Equals(ByVal Obj As Object) As Boolean
+        Public Overloads Overrides Function Equals(Obj As Object) As Boolean
             Return Equals(DirectCast(Obj, UserInfo))
         End Function
 #End Region

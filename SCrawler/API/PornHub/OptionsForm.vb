@@ -25,7 +25,7 @@ Namespace API.PornHub
                 .EndLoaderOperations()
             End With
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             MyExchangeOptions.DownloadGifs = CH_DOWN_GIFS.Checked
             MyExchangeOptions.DownloadPhotoOnlyFromModelHub = CH_DOWN_PHOTO_MODELHUB.Checked
             MyDefs.CloseForm()

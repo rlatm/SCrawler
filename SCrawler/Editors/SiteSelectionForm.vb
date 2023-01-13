@@ -12,7 +12,7 @@ Namespace Editors
     Friend Class SiteSelectionForm
         Private WithEvents MyDefs As DefaultFormOptions
         Friend ReadOnly Property SelectedSites As List(Of String)
-        Friend Sub New(ByVal s As List(Of String))
+        Friend Sub New(s As List(Of String))
             InitializeComponent()
             SelectedSites.ListAddList(s)
             If SelectedSites Is Nothing Then SelectedSites = New List(Of String)
@@ -42,7 +42,7 @@ Namespace Editors
         Private Sub SiteSelectionForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
             SelectedSites.Clear()
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             Try
                 SelectedSites.ListAddList(CMB_SITES.Items.CheckedItems.Select(Function(i) CStr(i.Value(0))), LAP.ClearBeforeAdd)
                 MyDefs.CloseForm()

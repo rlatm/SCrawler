@@ -29,7 +29,7 @@ Namespace API.Reddit
             Friend File As String
             Friend Resolution As Integer
             Friend HasError As Boolean
-            Friend Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+            Friend Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
                 If ParamsArray.ArrayExists Then
                     File = ParamsArray(0)
                     Try
@@ -41,7 +41,7 @@ Namespace API.Reddit
                 End If
                 Return Me
             End Function
-            Friend Function CompareTo(ByVal Other As Resolution) As Integer Implements IComparable(Of Resolution).CompareTo
+            Friend Function CompareTo(Other As Resolution) As Integer Implements IComparable(Of Resolution).CompareTo
                 Return Resolution.CompareTo(Other.Resolution) * -1
             End Function
         End Structure
@@ -54,7 +54,7 @@ Namespace API.Reddit
         Private AudioFile As SFile
         Private CachePath As SFile
 #End Region
-        Private Sub New(ByVal URL As String, ByVal OutFile As SFile)
+        Private Sub New(URL As String, OutFile As SFile)
             PlayListURL = URL
             BaseURL = RegexReplace(URL, BaseUrlPattern)
             Video = New List(Of String)
@@ -70,7 +70,7 @@ Namespace API.Reddit
             Video.ListAddList(GetPlaylistUrls(PlayListURL, Types.Video))
             Audio.ListAddList(GetPlaylistUrls(PlayListURL, Types.Audio))
         End Sub
-        Private Overloads Function GetPlaylistUrls(ByVal PlayListURL As String, ByVal Type As Types) As List(Of String)
+        Private Overloads Function GetPlaylistUrls(PlayListURL As String, Type As Types) As List(Of String)
             Try
                 If Not BaseURL.IsEmptyString Then
                     Using w As New WebClient
@@ -117,7 +117,7 @@ Namespace API.Reddit
             ConcatData(Audio, Types.Audio, AudioFile)
             MergeFiles()
         End Sub
-        Private Overloads Sub ConcatData(ByVal Urls As List(Of String), ByVal Type As Types, ByRef TFile As SFile)
+        Private Overloads Sub ConcatData(Urls As List(Of String), Type As Types, ByRef TFile As SFile)
             Try
                 If Urls.ListExists Then
                     Dim ConcatFile As SFile = OutFile
@@ -171,13 +171,13 @@ Namespace API.Reddit
         End Function
 #End Region
 #Region "Statics"
-        Friend Shared Function Download(ByVal URL As String, ByVal f As SFile) As SFile
+        Friend Shared Function Download(URL As String, f As SFile) As SFile
             Using m As New M3U8(URL, f) : Return m.Download() : End Using
         End Function
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Private Overloads Sub Dispose(ByVal disposing As Boolean)
+        Private Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     Video.Clear()

@@ -22,7 +22,7 @@ Namespace DownloadObjects
         Private ReadOnly File As SFile = $"Settings\AutoDownload.xml"
         Private ReadOnly PlanWorking As Predicate(Of AutoDownloader) = Function(Plan) Plan.Working
         Private ReadOnly PlanDownloading As Predicate(Of AutoDownloader) = Function(Plan) Plan.Downloading
-        Private ReadOnly PlansWaiter As Action(Of Predicate(Of AutoDownloader)) = Sub(ByVal Predicate As Predicate(Of AutoDownloader))
+        Private ReadOnly PlansWaiter As Action(Of Predicate(Of AutoDownloader)) = Sub(Predicate As Predicate(Of AutoDownloader))
                                                                                       While Plans.Exists(Predicate) : Thread.Sleep(200) : End While
                                                                                   End Sub
         Friend Sub New()
@@ -42,7 +42,7 @@ Namespace DownloadObjects
                                                       AddHandler p.PauseDisabled, AddressOf OnPauseDisabled
                                                   End Sub) : Plans.ListReindex
         End Sub
-        Default Friend ReadOnly Property Item(ByVal Index As Integer) As AutoDownloader Implements IMyEnumerator(Of AutoDownloader).MyEnumeratorObject
+        Default Friend ReadOnly Property Item(Index As Integer) As AutoDownloader Implements IMyEnumerator(Of AutoDownloader).MyEnumeratorObject
             Get
                 Return Plans(Index)
             End Get
@@ -52,7 +52,7 @@ Namespace DownloadObjects
                 Return Plans.Count
             End Get
         End Property
-        Friend Function NotificationClicked(ByVal Key As String, ByRef Found As Boolean, ByRef ActivateForm As Boolean) As Boolean
+        Friend Function NotificationClicked(Key As String, ByRef Found As Boolean, ByRef ActivateForm As Boolean) As Boolean
             If Count > 0 Then
                 For Each plan As AutoDownloader In Plans
                     If plan.NotificationClicked(Key, Found, ActivateForm) Then Return True
@@ -60,14 +60,14 @@ Namespace DownloadObjects
             End If
             Return False
         End Function
-        Friend Sub Add(ByVal Plan As AutoDownloader)
+        Friend Sub Add(Plan As AutoDownloader)
             Plan.Source = Me
             AddHandler Plan.PauseDisabled, AddressOf OnPauseDisabled
             Plans.Add(Plan)
             Plans.ListReindex
             Update()
         End Sub
-        Friend Async Function RemoveAt(ByVal Index As Integer) As Task
+        Friend Async Function RemoveAt(Index As Integer) As Task
             If Index.ValueBetween(0, Count - 1) Then
                 With Plans(Index)
                     .Stop()
@@ -97,15 +97,15 @@ Namespace DownloadObjects
             End Try
         End Sub
 #Region "Groups Support"
-        Friend Sub GROUPS_Updated(ByVal Sender As DownloadGroup)
+        Friend Sub GROUPS_Updated(Sender As DownloadGroup)
             If Count > 0 Then Plans.ForEach(Sub(p) p.GROUPS_Updated(Sender))
         End Sub
-        Friend Sub GROUPS_Deleted(ByVal Sender As DownloadGroup)
+        Friend Sub GROUPS_Deleted(Sender As DownloadGroup)
             If Count > 0 Then Plans.ForEach(Sub(p) p.GROUPS_Deleted(Sender))
         End Sub
 #End Region
 #Region "Execution"
-        Friend Async Function Start(ByVal Init As Boolean) As Task
+        Friend Async Function Start(Init As Boolean) As Task
             Await Task.Run(Sub()
                                If Count > 0 Then
                                    If Plans.Exists(PlanDownloading) Then PlansWaiter(PlanDownloading)
@@ -120,11 +120,11 @@ Namespace DownloadObjects
         Friend Sub [Stop]()
             If Count > 0 Then Plans.ForEach(Sub(p) p.Stop())
         End Sub
-        Friend Property Pause(Optional ByVal LimitDate As Date? = Nothing) As PauseModes
+        Friend Property Pause(Optional LimitDate As Date? = Nothing) As PauseModes
             Get
                 If Count > 0 Then Return Plans.FirstOrDefault(Function(p) p.Pause >= PauseModes.Disabled).Pause Else Return PauseModes.Disabled
             End Get
-            Set(ByVal p As PauseModes)
+            Set(p As PauseModes)
                 If Count > 0 Then Plans.ForEach(Sub(pp) pp.Pause(LimitDate) = p)
             End Set
         End Property
@@ -139,7 +139,7 @@ Namespace DownloadObjects
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     [Stop]()

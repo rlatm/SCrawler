@@ -11,7 +11,7 @@ Partial Friend Module MainMod
         Friend ReadOnly Name As String
         Friend ReadOnly Reason As String
         Friend ReadOnly Exists As Boolean
-        Friend Sub New(ByVal Value As String)
+        Friend Sub New(Value As String)
             If Not Value.IsEmptyString Then
                 Dim v$() = Value.Split("|")
                 If v.ListExists Then
@@ -21,15 +21,15 @@ Partial Friend Module MainMod
                 End If
             End If
         End Sub
-        Friend Sub New(ByVal _Name As String, ByVal _Reason As String)
+        Friend Sub New(_Name As String, _Reason As String)
             Name = _Name
             Reason = _Reason
             Exists = True
         End Sub
-        Public Shared Widening Operator CType(ByVal Value As String) As UserBan
+        Public Shared Widening Operator CType(Value As String) As UserBan
             Return New UserBan(Value)
         End Operator
-        Public Shared Widening Operator CType(ByVal b As UserBan) As String
+        Public Shared Widening Operator CType(b As UserBan) As String
             Return b.ToString
         End Operator
         Public Overrides Function ToString() As String
@@ -42,7 +42,7 @@ Partial Friend Module MainMod
                 Return Name
             End If
         End Function
-        Public Overrides Function Equals(ByVal Obj As Object) As Boolean
+        Public Overrides Function Equals(Obj As Object) As Boolean
             If Not IsNothing(Obj) Then
                 If TypeOf Obj Is UserBan Then
                     Return Name = DirectCast(Obj, UserBan).Name
@@ -53,7 +53,7 @@ Partial Friend Module MainMod
             Return False
         End Function
     End Structure
-    Friend Function UserBanned(ByVal UserNames() As String) As String()
+    Friend Function UserBanned(UserNames() As String) As String()
         If UserNames.ListExists Then
             Dim i%
             Dim Found As New List(Of UserBan)
@@ -89,7 +89,7 @@ Partial Friend Module MainMod
         End If
         Return New String() {}
     End Function
-    Friend Function UserBanned(ByVal UserName As String) As Boolean
+    Friend Function UserBanned(UserName As String) As Boolean
         Return UserBanned({UserName}).ListExists
     End Function
 End Module

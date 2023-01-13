@@ -218,7 +218,7 @@ Friend Class SettingsCLS : Implements IDisposable
         _UpdatesSuspended = False
         ChangeDateProvider(Nothing, Nothing, Nothing)
     End Sub
-    Private Sub ChangeDateProvider(ByVal Sender As Object, ByVal Name As String, ByVal Value As Object)
+    Private Sub ChangeDateProvider(Sender As Object, Name As String, Value As Object)
         If Not _UpdatesSuspended Then
             Dim p$ = String.Empty
             If FileAddDateToFileName Then p = "yyyyMMdd"
@@ -232,7 +232,7 @@ Friend Class SettingsCLS : Implements IDisposable
         End If
     End Sub
 #Region "Script"
-    Friend Shared Sub ScriptTextBoxButtonClick(ByRef TXT As TextBoxExtended, ByVal Sender As ActionButton)
+    Friend Shared Sub ScriptTextBoxButtonClick(ByRef TXT As TextBoxExtended, Sender As ActionButton)
         If Sender.DefaultButton = ActionButton.DefaultButtons.Open Then
             Dim f As SFile = SFile.SelectFiles(TXT.Text, False, "Select script file").FirstOrDefault
             If Not f.IsEmptyString Then TXT.Text = f.ToString & " ""{0}"""
@@ -256,7 +256,7 @@ Friend Class SettingsCLS : Implements IDisposable
                     Dim cUsers As List(Of UserInfo) = UsersList.Where(Function(u) u.IncludedInCollection And Not u.Protected).ToList
                     If cUsers.ListExists Then
                         Dim d As New Dictionary(Of String, List(Of UserInfo))
-                        cUsers = cUsers.ListForEachCopy(Of List(Of UserInfo))(Function(ByVal f As UserInfo, ByVal f_indx As Integer) As UserInfo
+                        cUsers = cUsers.ListForEachCopy(Of List(Of UserInfo))(Function(f As UserInfo, f_indx As Integer) As UserInfo
                                                                                   Dim m% = IIf(f.Merged Or f.IsVirtual, 1, 2)
                                                                                   If Not f.Protected AndAlso SFile.GetPath(f.File.CutPath(m - 1).Path).Exists(SFO.Path, False) Then
                                                                                       If Not d.ContainsKey(f.CollectionName) Then
@@ -292,7 +292,7 @@ Friend Class SettingsCLS : Implements IDisposable
                                                    Where Not u.IsCollection AndAlso Not u.FileExists AndAlso Not DirectCast(u, UserDataBase).User.Protected
                                                    Select DirectCast(u, UserDataBase).User).ToList
                     If du.ListExists Then du.ForEach(Sub(u) UsersList.Remove(u)) : du.Clear()
-                    Users.ListDisposeRemoveAll(Function(ByVal u As IUserData) As Boolean
+                    Users.ListDisposeRemoveAll(Function(u As IUserData) As Boolean
                                                    If Not DirectCast(u, UserDataBase).User.Protected Then
                                                        If u.IsCollection Then
                                                            With DirectCast(u, UserDataBind)
@@ -374,7 +374,7 @@ Friend Class SettingsCLS : Implements IDisposable
             Return _UserListUpdateRequired
         End Get
     End Property
-    Friend Overloads Sub UpdateUsersList(ByVal u As UserInfo)
+    Friend Overloads Sub UpdateUsersList(u As UserInfo)
         Dim i% = UsersList.IndexOf(u)
         If i >= 0 Then
             UsersList(i) = u
@@ -396,10 +396,10 @@ Friend Class SettingsCLS : Implements IDisposable
             _UserListUpdateRequired = True
         End Try
     End Sub
-    Friend Overloads Function GetUser(ByVal User As IUserData, Optional ByVal GetCollection As Boolean = False) As IUserData
+    Friend Overloads Function GetUser(User As IUserData, Optional GetCollection As Boolean = False) As IUserData
         Return GetUser(If(User?.Key, String.Empty), GetCollection)
     End Function
-    Friend Overloads Function GetUser(ByVal UserKey As String, Optional ByVal GetCollection As Boolean = False) As IUserData
+    Friend Overloads Function GetUser(UserKey As String, Optional GetCollection As Boolean = False) As IUserData
         If Users.Count > 0 And Not UserKey.IsEmptyString Then
             Dim finder As Predicate(Of IUserData) = Function(u) u.Key = UserKey
             Dim i%, ii%
@@ -420,7 +420,7 @@ Friend Class SettingsCLS : Implements IDisposable
         End If
         Return Nothing
     End Function
-    Friend Overloads Function GetUser(ByVal User As UserInfo) As IUserData
+    Friend Overloads Function GetUser(User As UserInfo) As IUserData
         If Users.Count > 0 Then
             Dim i%, ii%
             For i = 0 To Users.Count - 1
@@ -444,11 +444,11 @@ Friend Class SettingsCLS : Implements IDisposable
         End If
         Return Nothing
     End Function
-    Friend Function GetUsers(ByVal Predicate As Predicate(Of IUserData)) As IEnumerable(Of IUserData)
+    Friend Function GetUsers(Predicate As Predicate(Of IUserData)) As IEnumerable(Of IUserData)
         With Users
             If .Count > 0 Then
                 Dim fp As Func(Of IUserData, Boolean) = FPredicate(Of IUserData).ToFunc(Predicate)
-                Return .SelectMany(Of IUserData)(Function(ByVal user As IUserData) As IEnumerable(Of IUserData)
+                Return .SelectMany(Of IUserData)(Function(user As IUserData) As IEnumerable(Of IUserData)
                                                      If user.IsCollection Then
                                                          With DirectCast(user, UserDataBind)
                                                              If .Count > 0 Then Return .Where(fp)
@@ -473,9 +473,9 @@ Friend Class SettingsCLS : Implements IDisposable
     Friend Sub DeleteCachePath()
         Reddit.ChannelsCollection.ChannelsPathCache.Delete(SFO.Path, SFODelete.None, EDP.None)
     End Sub
-    Friend Overloads Function UserExists(ByVal UserSite As String, ByVal UserID As String) As Boolean
+    Friend Overloads Function UserExists(UserSite As String, UserID As String) As Boolean
         Dim UserFinderBase As Predicate(Of IUserData) = Function(user) user.Site = UserSite And user.Name = UserID
-        Dim UserFinder As Predicate(Of IUserData) = Function(ByVal user As IUserData) As Boolean
+        Dim UserFinder As Predicate(Of IUserData) = Function(user As IUserData) As Boolean
                                                         If user.IsCollection Then
                                                             With DirectCast(user, UserDataBind)
                                                                 Return .Count > 0 AndAlso .Collections.Exists(UserFinderBase)
@@ -486,10 +486,10 @@ Friend Class SettingsCLS : Implements IDisposable
                                                     End Function
         Return Users.Count > 0 AndAlso Users.Exists(UserFinder)
     End Function
-    Friend Overloads Function UserExists(ByVal _User As IUserData) As Boolean
+    Friend Overloads Function UserExists(_User As IUserData) As Boolean
         Return UserExists(_User.Site, _User.Name)
     End Function
-    Friend Overloads Function UserExists(ByVal _User As UserInfo) As Boolean
+    Friend Overloads Function UserExists(_User As UserInfo) As Boolean
         Return UserExists(_User.Site, _User.Name)
     End Function
     Private _UpdatesSuspended As Boolean = True
@@ -505,7 +505,7 @@ Friend Class SettingsCLS : Implements IDisposable
         _UpdatesSuspended = False
         ChangeDateProvider(Nothing, Nothing, Nothing)
     End Sub
-    Default Friend ReadOnly Property Site(ByVal PluginKey As String) As SettingsHost
+    Default Friend ReadOnly Property Site(PluginKey As String) As SettingsHost
         Get
             Dim i% = Plugins.FindIndex(Function(p) p.Key = PluginKey)
             If i >= 0 Then Return Plugins(i).Settings Else Return Nothing
@@ -583,7 +583,7 @@ Friend Class SettingsCLS : Implements IDisposable
         Get
             If _ViewDateFrom.ValueF.Exists Then Return _ViewDateFrom.Value Else Return Nothing
         End Get
-        Set(ByVal d As Date?)
+        Set(d As Date?)
             If Not d.HasValue Then _ViewDateFrom.ValueF = Nothing Else _ViewDateFrom.Value = d.Value.Date
         End Set
     End Property
@@ -592,7 +592,7 @@ Friend Class SettingsCLS : Implements IDisposable
         Get
             If _ViewDateTo.ValueF.Exists Then Return _ViewDateTo.Value Else Return Nothing
         End Get
-        Set(ByVal d As Date?)
+        Set(d As Date?)
             If Not d.HasValue Then _ViewDateTo.ValueF = Nothing Else _ViewDateTo.Value = d.Value.Date
         End Set
     End Property
@@ -635,7 +635,7 @@ Friend Class SettingsCLS : Implements IDisposable
         Channels
         SavedPosts
     End Enum
-    Friend ReadOnly Property ProcessNotification(ByVal Sender As NotificationObjects) As Boolean
+    Friend ReadOnly Property ProcessNotification(Sender As NotificationObjects) As Boolean
         Get
             If Not NotificationsSilentMode And ShowNotifications Then
                 Select Case Sender
@@ -671,15 +671,15 @@ Friend Class SettingsCLS : Implements IDisposable
 #End Region
 #Region "IDisposable Support"
     Private disposedValue As Boolean = False
-    Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+    Protected Overridable Overloads Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
                 If UserListUpdateRequired Then UpdateUsersList()
-                If Not Channels Is Nothing Then
+                If Channels IsNot Nothing Then
                     Channels.Dispose()
                     DeleteCachePath()
                 End If
-                If Not Automation Is Nothing Then Automation.Dispose()
+                If Automation IsNot Nothing Then Automation.Dispose()
                 CachePath.Delete(SFO.Path, SFODelete.DeletePermanently, EDP.None)
                 Plugins.Clear()
                 LastCollections.Clear()

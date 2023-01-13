@@ -10,11 +10,11 @@ Namespace API.PornHub
     Friend Class UserExchangeOptions
         Friend Property DownloadGifs As Boolean
         Friend Property DownloadPhotoOnlyFromModelHub As Boolean
-        Friend Sub New(ByVal u As UserData)
+        Friend Sub New(u As UserData)
             DownloadGifs = u.DownloadGifs
             DownloadPhotoOnlyFromModelHub = u.DownloadPhotoOnlyFromModelHub
         End Sub
-        Friend Sub New(ByVal s As SiteSettings)
+        Friend Sub New(s As SiteSettings)
             Dim v As CheckState = CInt(s.DownloadGifs.Value)
             DownloadGifs = Not v = CheckState.Unchecked
             DownloadPhotoOnlyFromModelHub = s.DownloadPhotoOnlyFromModelHub.Value

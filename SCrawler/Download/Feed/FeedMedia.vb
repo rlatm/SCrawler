@@ -16,7 +16,7 @@ Namespace DownloadObjects
     <ToolboxItem(False), DesignTimeVisible(False)>
     Public Class FeedMedia
 #Region "Events"
-        Friend Event MediaDeleted(ByVal Sender As Object)
+        Friend Event MediaDeleted(Sender As Object)
 #End Region
 #Region "Declarations"
         Private Const VideoHeight As Integer = 450
@@ -25,7 +25,7 @@ Namespace DownloadObjects
         Private ReadOnly MyVideo As FeedVideo
         Friend ReadOnly Property Exists As Boolean
             Get
-                Return Not MyPicture Is Nothing Or Not MyVideo Is Nothing
+                Return MyPicture IsNot Nothing Or MyVideo IsNot Nothing
             End Get
         End Property
         Friend ReadOnly Property HasError As Boolean
@@ -34,7 +34,7 @@ Namespace DownloadObjects
             Get
                 Return MyBase.Width
             End Get
-            Set(ByVal w As Integer)
+            Set(w As Integer)
                 If Size.Width <> w Then
                     Dim s As New Size(w, If(MyImage Is Nothing, VideoHeight, MyImage.FitToWidthF(w).Height))
                     Dim objSize As Size = s
@@ -42,7 +42,7 @@ Namespace DownloadObjects
                     MinimumSize = objSize
                     MyBase.MaximumSize = objSize
                     Size = objSize
-                    If Not MyImage Is Nothing Then
+                    If MyImage IsNot Nothing Then
                         With MyPicture
                             .MinimumSize = Nothing
                             .MaximumSize = Nothing
@@ -67,7 +67,7 @@ Namespace DownloadObjects
         Public Sub New()
             InitializeComponent()
         End Sub
-        Friend Sub New(ByVal Media As UserMediaD, ByVal Width As Integer, ByVal Handler As MediaDeletedEventHandler)
+        Friend Sub New(Media As UserMediaD, Width As Integer, Handler As MediaDeletedEventHandler)
             Try
                 InitializeComponent()
                 File = Media.Data.File
@@ -125,7 +125,7 @@ Namespace DownloadObjects
 
                     Dim info$ = $"[{infoType}] - "
 
-                    If Not Media.User Is Nothing Then
+                    If Media.User IsNot Nothing Then
                         With Media.User
                             UserKey = .Key
                             Information &= vbNewLine.StringDup(2)
@@ -147,7 +147,7 @@ Namespace DownloadObjects
                     MinimumSize = s
                     MaximumSize = s
 
-                    If Not Handler Is Nothing Then AddHandler Me.MediaDeleted, Handler
+                    If Handler IsNot Nothing Then AddHandler Me.MediaDeleted, Handler
                 Else
                     Throw New ArgumentNullException With {.HelpLink = 1}
                 End If
@@ -163,9 +163,9 @@ Namespace DownloadObjects
 #End Region
 #Region "Dispose"
         Private Sub FeedImage_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
-            If Not MyImage Is Nothing Then MyImage.Dispose()
-            If Not MyPicture Is Nothing Then MyPicture.Dispose()
-            If Not MyVideo Is Nothing Then MyVideo.Dispose()
+            If MyImage IsNot Nothing Then MyImage.Dispose()
+            If MyPicture IsNot Nothing Then MyPicture.Dispose()
+            If MyVideo IsNot Nothing Then MyVideo.Dispose()
         End Sub
 #End Region
 #Region "LBL"
@@ -175,7 +175,7 @@ Namespace DownloadObjects
         Private Sub LBL_INFO_DoubleClick(sender As Object, e As EventArgs) Handles LBL_INFO.DoubleClick
             If Not UserKey.IsEmptyString Then
                 Dim u As IUserData = Settings.GetUser(UserKey)
-                If Not u Is Nothing Then u.OpenFolder()
+                If u IsNot Nothing Then u.OpenFolder()
             End If
         End Sub
 #End Region
@@ -191,20 +191,20 @@ Namespace DownloadObjects
         Private Sub BTT_CONTEXT_OPEN_USER_Click(sender As Object, e As EventArgs) Handles BTT_CONTEXT_OPEN_USER.Click
             If Not UserKey.IsEmptyString Then
                 Dim u As IUserData = Settings.GetUser(UserKey)
-                If Not u Is Nothing Then u.OpenFolder()
+                If u IsNot Nothing Then u.OpenFolder()
             End If
         End Sub
         Private Sub BTT_CONTEXT_OPEN_USER_URL_Click(sender As Object, e As EventArgs) Handles BTT_CONTEXT_OPEN_USER_URL.Click
             If Not UserKey.IsEmptyString Then
                 Dim u As IUserData = Settings.GetUser(UserKey)
-                If Not u Is Nothing Then u.OpenSite()
+                If u IsNot Nothing Then u.OpenSite()
             End If
         End Sub
         Private Sub BTT_CONTEXT_OPEN_USER_POST_Click(sender As Object, e As EventArgs) Handles BTT_CONTEXT_OPEN_USER_POST.Click
             Try
                 If Not UserKey.IsEmptyString And Not Post.Post.ID.IsEmptyString Then
                     Dim u As IUserData = Settings.GetUser(UserKey)
-                    If Not u Is Nothing Then
+                    If u IsNot Nothing Then
                         Dim url$ = UserDataBase.GetPostUrl(u, Post)
                         If Not url.IsEmptyString Then
                             Try : Process.Start(url) : Catch : End Try
@@ -224,11 +224,11 @@ Namespace DownloadObjects
         Private Sub BTT_CONTEXT_DELETE_Click(sender As Object, e As EventArgs) Handles BTT_CONTEXT_DELETE.Click
             DeleteFile(False)
         End Sub
-        Friend Function DeleteFile(ByVal Silent As Boolean) As Boolean
+        Friend Function DeleteFile(Silent As Boolean) As Boolean
             Const msgTitle$ = "Deleting a file"
             Try
                 If Silent OrElse MsgBoxE({$"Are you sure you want to delete the [{File.File}] file?{vbCr}{File}", msgTitle}, vbExclamation,,, {"Process", "Cancel"}) = 0 Then
-                    If Not MyVideo Is Nothing Then MyVideo.Stop()
+                    If MyVideo IsNot Nothing Then MyVideo.Stop()
                     If File.Delete(SFO.File, Settings.DeleteMode, EDP.ThrowException) Then
                         If Not Silent Then RaiseEvent MediaDeleted(Me) : MsgBoxE({"File deleted", msgTitle})
                         LBL_INFO.Height = 0

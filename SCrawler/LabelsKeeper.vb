@@ -46,7 +46,7 @@ Friend Class LabelsKeeper : Implements ICollection(Of String), IMyEnumerator(Of 
             Return LabelsList.Count
         End Get
     End Property
-    Default Friend ReadOnly Property Item(ByVal Index As Integer) As String Implements IMyEnumerator(Of String).MyEnumeratorObject
+    Default Friend ReadOnly Property Item(Index As Integer) As String Implements IMyEnumerator(Of String).MyEnumeratorObject
         Get
             Return LabelsList(Index)
         End Get
@@ -55,7 +55,7 @@ Friend Class LabelsKeeper : Implements ICollection(Of String), IMyEnumerator(Of 
         LabelsList.Clear()
         NewLabels.Clear()
     End Sub
-    Friend Sub Update(Optional ByVal Force As Boolean = False)
+    Friend Sub Update(Optional Force As Boolean = False)
         If LabelsList.Count > 0 Then
             If NewLabelsExists Or Force Then
                 If LabelsList.Contains(NoParsedUser) Then LabelsList.Remove(NoParsedUser)
@@ -67,30 +67,30 @@ Friend Class LabelsKeeper : Implements ICollection(Of String), IMyEnumerator(Of 
             LabelsFile.Delete(, Settings.DeleteMode, EDP.SendInLog)
         End If
     End Sub
-    Friend Overloads Sub Add(ByVal _Item As String) Implements ICollection(Of String).Add
+    Friend Overloads Sub Add(_Item As String) Implements ICollection(Of String).Add
         Add(_Item, True)
     End Sub
-    Friend Overloads Sub Add(ByVal _Item As String, ByVal UpdateMainFrame As Boolean)
+    Friend Overloads Sub Add(_Item As String, UpdateMainFrame As Boolean)
         If Not _Item.IsEmptyString And Not LabelsList.Contains(_Item) Then
             LabelsList.Add(_Item)
             If Not NewLabels.Contains(_Item) Then NewLabels.Add(_Item)
             If UpdateMainFrame Then RaiseEvent NewLabelAdded()
         End If
     End Sub
-    Friend Sub AddRange(ByVal _Items As IEnumerable(Of String), ByVal UpdateMainFrame As Boolean)
+    Friend Sub AddRange(_Items As IEnumerable(Of String), UpdateMainFrame As Boolean)
         If _Items.ListExists Then
             For Each i$ In _Items : Add(i, False) : Next
             If UpdateMainFrame Then RaiseEvent NewLabelAdded()
         End If
     End Sub
-    Friend Function Contains(ByVal _Item As String) As Boolean Implements ICollection(Of String).Contains
+    Friend Function Contains(_Item As String) As Boolean Implements ICollection(Of String).Contains
         Return LabelsList.Contains(_Item)
     End Function
-    Friend Function Remove(ByVal _Item As String) As Boolean Implements ICollection(Of String).Remove
+    Friend Function Remove(_Item As String) As Boolean Implements ICollection(Of String).Remove
         Return LabelsList.Remove(_Item)
     End Function
     Private ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of String).IsReadOnly
-    Private Sub CopyTo(ByVal _Array() As String, ByVal ArrayIndex As Integer) Implements ICollection(Of String).CopyTo
+    Private Sub CopyTo(_Array() As String, ArrayIndex As Integer) Implements ICollection(Of String).CopyTo
         LabelsList.CopyTo(_Array, ArrayIndex)
     End Sub
 #Region "IEnumerable Support"
@@ -103,7 +103,7 @@ Friend Class LabelsKeeper : Implements ICollection(Of String), IMyEnumerator(Of 
 #End Region
 #Region "IDisposable Support"
     Private disposedValue As Boolean = False
-    Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+    Protected Overridable Overloads Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then Clear() : Current.Dispose() : Excluded.Dispose()
             disposedValue = True

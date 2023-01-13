@@ -12,7 +12,7 @@ Imports PersonalUtilities.Forms
 Namespace DownloadObjects
     Friend Class DownloadedInfoForm
 #Region "Events"
-        Friend Event UserFind(ByVal Key As String)
+        Friend Event UserFind(Key As String)
 #End Region
 #Region "Declarations"
         Private MyView As FormView
@@ -31,7 +31,7 @@ Namespace DownloadObjects
             Get
                 Return IIf(MENU_VIEW_ALL.Checked, ViewModes.All, ViewModes.Session)
             End Get
-            Set(ByVal SMode As ViewModes)
+            Set(SMode As ViewModes)
                 Settings.InfoViewMode.Value = CInt(SMode)
             End Set
         End Property
@@ -72,7 +72,7 @@ Namespace DownloadObjects
             Hide()
         End Sub
         Private Sub DownloadedInfoForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
-            If Not MyView Is Nothing Then MyView.Dispose(Settings.Design)
+            If MyView IsNot Nothing Then MyView.Dispose(Settings.Design)
             _TempUsersList.Clear()
         End Sub
         Private Sub DownloadedInfoForm_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
@@ -90,7 +90,7 @@ Namespace DownloadObjects
 #End Region
 #Region "Refill"
         Private Class UsersDateOrder : Implements IComparer(Of IUserData)
-            Friend Function Compare(ByVal x As IUserData, ByVal y As IUserData) As Integer Implements IComparer(Of IUserData).Compare
+            Friend Function Compare(x As IUserData, y As IUserData) As Integer Implements IComparer(Of IUserData).Compare
                 Dim xv& = If(DirectCast(x, UserDataBase).LastUpdated.HasValue, DirectCast(x, UserDataBase).LastUpdated.Value.Ticks, 0)
                 Dim yv& = If(DirectCast(y, UserDataBase).LastUpdated.HasValue, DirectCast(y, UserDataBase).LastUpdated.Value.Ticks, 0)
                 Return xv.CompareTo(yv) * -1
@@ -151,7 +151,7 @@ Namespace DownloadObjects
             Try
                 If _LatestSelected.ValueBetween(0, LIST_DOWN.Items.Count - 1) AndAlso _LatestSelected.ValueBetween(0, Downloader.Downloaded.Count - 1) Then
                     Dim u As IUserData = Settings.GetUser(_TempUsersList(_LatestSelected), True)
-                    If Not u Is Nothing Then RaiseEvent UserFind(u.Key)
+                    If u IsNot Nothing Then RaiseEvent UserFind(u.Key)
                 End If
             Catch ex As Exception
             End Try
@@ -184,7 +184,7 @@ Namespace DownloadObjects
         Private Sub BTT_DOWN_Click(sender As Object, e As EventArgs) Handles BTT_DOWN.Click
             UpdateNavigationButtons(1)
         End Sub
-        Private Sub UpdateNavigationButtons(ByVal Offset As Integer?)
+        Private Sub UpdateNavigationButtons(Offset As Integer?)
             Dim u As Boolean = False, d As Boolean = False
             With LIST_DOWN
                 If .Items.Count > 0 Then
@@ -199,7 +199,7 @@ Namespace DownloadObjects
                 a = Nothing
                 If Offset.HasValue AndAlso .Items.Count > 0 AndAlso
                    (_LatestSelected + Offset.Value).ValueBetween(0, .Items.Count - 1) Then a = Sub() .SelectedIndex = _LatestSelected + Offset.Value
-                If Not a Is Nothing Then
+                If a IsNot Nothing Then
                     If LIST_DOWN.InvokeRequired Then LIST_DOWN.Invoke(a) Else a.Invoke
                 End If
             End With

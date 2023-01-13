@@ -15,8 +15,8 @@ Imports PersonalUtilities.Tools
 Namespace API
     Friend Class UserDataBind : Inherits UserDataBase : Implements ICollection(Of IUserData), IMyEnumerator(Of IUserData)
 #Region "Events"
-        Friend Event OnCollectionSelfRemoved(ByVal Collection As IUserData)
-        Friend Event OnUserRemoved(ByVal User As IUserData)
+        Friend Event OnCollectionSelfRemoved(Collection As IUserData)
+        Friend Event OnUserRemoved(User As IUserData)
 #End Region
 #Region "Declarations"
         Friend ReadOnly Property Collections As List(Of IUserData)
@@ -41,11 +41,11 @@ Namespace API
                     Return _CollectionName
                 End If
             End Get
-            Set(ByVal NewName As String)
+            Set(NewName As String)
                 ChangeCollectionName(NewName, True)
             End Set
         End Property
-        Friend Overrides Sub ChangeCollectionName(ByVal NewName As String, ByVal UpdateSettings As Boolean)
+        Friend Overrides Sub ChangeCollectionName(NewName As String, UpdateSettings As Boolean)
             _CollectionName = NewName
             If Count > 0 Then Collections.ForEach(Sub(c) c.CollectionName = NewName)
         End Sub
@@ -53,7 +53,7 @@ Namespace API
             Get
                 Return CollectionName
             End Get
-            Set(ByVal NewCollectionName As String)
+            Set(NewCollectionName As String)
                 CollectionName = NewCollectionName
             End Set
         End Property
@@ -65,7 +65,7 @@ Namespace API
                     Return String.Empty
                 End If
             End Get
-            Set(ByVal NewName As String)
+            Set(NewName As String)
                 If Count > 0 Then Collections.ForEach(Sub(c)
                                                           c.FriendlyName = NewName
                                                           c.UpdateUserInformation()
@@ -76,18 +76,18 @@ Namespace API
             Get
                 Return Count > 0 AndAlso Collections.Exists(Function(c) c.Exists)
             End Get
-            Set(ByVal e As Boolean)
+            Set(e As Boolean)
             End Set
         End Property
         Friend Overrides Property UserSuspended As Boolean
             Get
                 Return Count > 0 AndAlso Collections.LongCount(Function(c) c.Suspended) = Count
             End Get
-            Set(ByVal s As Boolean)
+            Set(s As Boolean)
             End Set
         End Property
 #Region "Images"
-        Friend Overrides Sub SetPicture(ByVal f As SFile)
+        Friend Overrides Sub SetPicture(f As SFile)
             If Count > 0 Then Collections.ForEach(Sub(c) c.SetPicture(f))
         End Sub
         Friend Overrides Function GetUserPicture() As Image
@@ -95,13 +95,13 @@ Namespace API
                 Dim img As Image
                 For Each u As UserDataBase In Collections
                     img = u.GetPicture(Of Image)(False)
-                    If Not img Is Nothing Then Return img
+                    If img IsNot Nothing Then Return img
                 Next
             End If
             Return GetNullPicture(If(Settings.ViewMode.Value = ViewModes.IconLarge, Settings.MaxLargeImageHeight, Settings.MaxSmallImageHeight))
         End Function
 #End Region
-        Friend Overrides ReadOnly Property DownloadedTotal(Optional ByVal Total As Boolean = True) As Integer
+        Friend Overrides ReadOnly Property DownloadedTotal(Optional Total As Boolean = True) As Integer
             Get
                 If Count > 0 Then
                     Return Collections.Select(Function(u) u.DownloadedTotal(Total)).Sum
@@ -127,7 +127,7 @@ Namespace API
                     Return Nothing
                 End If
             End Get
-            Set(ByVal NewFile As SFile)
+            Set(NewFile As SFile)
             End Set
         End Property
         Friend Overrides Property FileExists As Boolean
@@ -138,7 +138,7 @@ Namespace API
                     Return False
                 End If
             End Get
-            Set(ByVal IsExists As Boolean)
+            Set(IsExists As Boolean)
             End Set
         End Property
         Friend Overrides Property DataMerging As Boolean
@@ -149,7 +149,7 @@ Namespace API
                     Return False
                 End If
             End Get
-            Set(ByVal IsMerged As Boolean)
+            Set(IsMerged As Boolean)
                 MergeData(IsMerged)
             End Set
         End Property
@@ -157,7 +157,7 @@ Namespace API
             Get
                 Return MyBase.HasError Or (Count > 0 AndAlso Collections.Exists(Function(c) c.HasError))
             End Get
-            Set(ByVal __HasError As Boolean)
+            Set(__HasError As Boolean)
                 MyBase.HasError = __HasError
                 If Count > 0 Then Collections.ForEach(Sub(c) c.HasError = False)
             End Set
@@ -170,7 +170,7 @@ Namespace API
                     Return False
                 End If
             End Get
-            Set(ByVal Temp As Boolean)
+            Set(Temp As Boolean)
                 Collections.ForEach(Sub(c) c.Temporary = Temp)
                 UpdateUserInformation()
             End Set
@@ -183,7 +183,7 @@ Namespace API
                     Return False
                 End If
             End Get
-            Set(ByVal Fav As Boolean)
+            Set(Fav As Boolean)
                 Collections.ForEach(Sub(c) c.Favorite = Fav)
                 UpdateUserInformation()
             End Set
@@ -192,7 +192,7 @@ Namespace API
             Get
                 Return Count > 0 AndAlso Collections(0).ReadyForDownload
             End Get
-            Set(ByVal IsReady As Boolean)
+            Set(IsReady As Boolean)
                 If Count > 0 Then Collections.ForEach(Sub(c) c.ReadyForDownload = IsReady)
             End Set
         End Property
@@ -222,7 +222,7 @@ Namespace API
                 End If
                 Return Nothing
             End Get
-            Set(ByVal NewDate As Date?)
+            Set(NewDate As Date?)
             End Set
         End Property
         Friend Overrides ReadOnly Property FitToAddParams As Boolean
@@ -234,8 +234,8 @@ Namespace API
             Get
                 Return Count > 0 AndAlso Collections.Exists(Function(c) c.ScriptUse)
             End Get
-            Set(ByVal u As Boolean)
-                If Count > 0 Then Collections.ForEach(Sub(ByVal c As IUserData)
+            Set(u As Boolean)
+                If Count > 0 Then Collections.ForEach(Sub(c As IUserData)
                                                           Dim b As Boolean = c.ScriptUse = u
                                                           c.ScriptUse = u
                                                           If Not b Then c.UpdateUserInformation()
@@ -296,7 +296,7 @@ Namespace API
             _IsCollection = True
             Collections = New List(Of IUserData)
         End Sub
-        Friend Sub New(ByVal _Name As String)
+        Friend Sub New(_Name As String)
             Me.New
             CollectionName = _Name
         End Sub
@@ -308,10 +308,10 @@ Namespace API
         Friend Overrides Sub UpdateUserInformation()
             If Count > 0 Then Collections.ForEach(Sub(c) c.UpdateUserInformation())
         End Sub
-        Friend Overrides Sub LoadContentInformation(Optional ByVal Force As Boolean = False)
+        Friend Overrides Sub LoadContentInformation(Optional Force As Boolean = False)
             If Count > 0 Then Collections.ForEach(Sub(c) DirectCast(c, UserDataBase).LoadContentInformation(Force))
         End Sub
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
         End Sub
 #End Region
 #Region "Download"
@@ -319,7 +319,7 @@ Namespace API
             Get
                 Return If(Count > 0, Item(0).DownloadTopCount, Nothing)
             End Get
-            Set(ByVal NewLimit As Integer?)
+            Set(NewLimit As Integer?)
                 If Count > 0 Then Collections.ForEach(Sub(c) c.DownloadTopCount = NewLimit)
             End Set
         End Property
@@ -327,7 +327,7 @@ Namespace API
             Get
                 Return If(Count > 0, DirectCast(Item(0), UserDataBase).IncludeInTheFeed, Nothing)
             End Get
-            Set(ByVal Include As Boolean)
+            Set(Include As Boolean)
                 If Count > 0 Then Collections.ForEach(Sub(c) DirectCast(c, UserDataBase).IncludeInTheFeed = Include)
             End Set
         End Property
@@ -335,7 +335,7 @@ Namespace API
             Get
                 Return If(Count > 0, Item(0).DownloadDateFrom, Nothing)
             End Get
-            Set(ByVal d As Date?)
+            Set(d As Date?)
                 If Count > 0 Then Collections.ForEach(Sub(c) c.DownloadDateFrom = d)
             End Set
         End Property
@@ -343,30 +343,30 @@ Namespace API
             Get
                 Return If(Count > 0, Item(0).DownloadDateTo, Nothing)
             End Get
-            Set(ByVal d As Date?)
+            Set(d As Date?)
                 If Count > 0 Then Collections.ForEach(Sub(c) c.DownloadDateTo = d)
             End Set
         End Property
-        Friend Overrides Sub DownloadData(ByVal Token As CancellationToken)
+        Friend Overrides Sub DownloadData(Token As CancellationToken)
             If Count > 0 Then Downloader.AddRange(Collections, True)
         End Sub
-        Friend Overloads Sub DownloadData(ByVal Token As CancellationToken, ByVal __IncludedInTheFeed As Boolean)
+        Friend Overloads Sub DownloadData(Token As CancellationToken, __IncludedInTheFeed As Boolean)
             If Count > 0 Then Downloader.AddRange(Collections, __IncludedInTheFeed)
         End Sub
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
         End Sub
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
         End Sub
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal s As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional s As Object = Nothing) As Integer
             Return 0
         End Function
-        Private Sub User_OnUserUpdated(ByVal User As IUserData)
+        Private Sub User_OnUserUpdated(User As IUserData)
             OnUserUpdated()
         End Sub
 #End Region
 #Region "Open site, folder"
-        Friend Overrides Sub OpenSite(Optional ByVal e As ErrorsDescriber = Nothing)
+        Friend Overrides Sub OpenSite(Optional e As ErrorsDescriber = Nothing)
             If Not e.Exists Then e = New ErrorsDescriber(EDP.SendInLog)
             If Count > 0 Then Collections.ForEach(Sub(c) c.OpenSite(e))
         End Sub
@@ -396,7 +396,7 @@ Namespace API
             Dim _SpecialCollectionPath As SFile = Nothing
             If Count > 0 And Not IsVirtual Then
                 Dim _RealUser As UserDataBase = Collections.Find(RealUser)
-                If Not _RealUser Is Nothing Then _SpecialCollectionPath = _RealUser.User.SpecialCollectionPath
+                If _RealUser IsNot Nothing Then _SpecialCollectionPath = _RealUser.User.SpecialCollectionPath
             End If
             Return _SpecialCollectionPath
         End Function
@@ -407,12 +407,12 @@ Namespace API
                 Return False
             End Get
         End Property
-        Private Sub CopyTo(ByVal _Array() As IUserData, ByVal _ArrayIndex As Integer) Implements ICollection(Of IUserData).CopyTo
+        Private Sub CopyTo(_Array() As IUserData, _ArrayIndex As Integer) Implements ICollection(Of IUserData).CopyTo
             Throw New NotImplementedException("The [CopyTo] method is not supported in a collection context")
         End Sub
 #End Region
 #Region "Item, Count, Clear"
-        Default Friend ReadOnly Property Item(ByVal Index As Integer) As IUserData Implements IMyEnumerator(Of IUserData).MyEnumeratorObject
+        Default Friend ReadOnly Property Item(Index As Integer) As IUserData Implements IMyEnumerator(Of IUserData).MyEnumeratorObject
             Get
                 Return Collections(Index)
             End Get
@@ -432,7 +432,7 @@ Namespace API
 #End Region
 #Region "Add"
         ''' <exception cref="InvalidOperationException"></exception>
-        Friend Overloads Sub Add(ByVal _Item As IUserData) Implements ICollection(Of IUserData).Add
+        Friend Overloads Sub Add(_Item As IUserData) Implements ICollection(Of IUserData).Add
             With _Item
                 If .MoveFiles(CollectionName, GetRealUserSpecialCollectionPath()) Then
                     If Not _Item.IsVirtual And DataMerging Then DirectCast(.Self, UserDataBase).MergeData()
@@ -457,9 +457,9 @@ Namespace API
             End With
         End Sub
         ''' <summary>FOR SETTINGS START LOADING ONLY</summary>
-        Friend Overloads Sub Add(ByVal u As UserInfo, Optional ByVal _LoadData As Boolean = True)
+        Friend Overloads Sub Add(u As UserInfo, Optional _LoadData As Boolean = True)
             Collections.Add(GetInstance(u, _LoadData))
-            If Not Collections.Last Is Nothing Then
+            If Collections.Last IsNot Nothing Then
                 With Collections.Last
                     If _CollectionName.IsEmptyString Then _CollectionName = .CollectionName
                     AddRemoveBttDeleteHandler(.Self, True)
@@ -469,7 +469,7 @@ Namespace API
                 Collections.RemoveAt(Count - 1)
             End If
         End Sub
-        Private Sub AddRemoveBttDeleteHandler(ByRef User As IUserData, ByVal IsAdd As Boolean)
+        Private Sub AddRemoveBttDeleteHandler(ByRef User As IUserData, IsAdd As Boolean)
             Try
                 With DirectCast(User, UserDataBase)
                     If IsAdd Then
@@ -495,10 +495,10 @@ Namespace API
         End Sub
 #End Region
 #Region "Move, Merge"
-        Friend Overrides Function MoveFiles(ByVal __CollectionName As String, ByVal __SpecialCollectionPath As SFile) As Boolean
+        Friend Overrides Function MoveFiles(__CollectionName As String, __SpecialCollectionPath As SFile) As Boolean
             Throw New NotImplementedException("Move files is not available in the collection context")
         End Function
-        Friend Overloads Sub MergeData(ByVal Merging As Boolean)
+        Friend Overloads Sub MergeData(Merging As Boolean)
             If Count > 0 Then
                 If Merging Then
                     If DataMerging Then
@@ -524,7 +524,7 @@ Namespace API
         End Sub
 #End Region
 #Region "Remove, Delete"
-        Friend Function Remove(ByVal _Item As IUserData) As Boolean Implements ICollection(Of IUserData).Remove
+        Friend Function Remove(_Item As IUserData) As Boolean Implements ICollection(Of IUserData).Remove
             If DataMerging Then
                 MsgBoxE($"Collection [{CollectionName}] data is already merged" & vbCr &
                         "Combined data can not be undone" & vbCr &
@@ -538,7 +538,7 @@ Namespace API
                 Return Collections.Remove(_Item)
             End If
         End Function
-        Friend Overrides Function Delete(Optional ByVal Multiple As Boolean = False, Optional ByVal CollectionValue As Integer = -1) As Integer
+        Friend Overrides Function Delete(Optional Multiple As Boolean = False, Optional CollectionValue As Integer = -1) As Integer
             If Count > 0 Then
                 Const MsgTitle$ = "Deleting a collection"
                 Dim f As SFile = Nothing
@@ -583,7 +583,7 @@ Namespace API
                             MsgBoxE({$"Collection [{CollectionName}] data merged{vbCr}Unable to split merged collection{vbCr}Operation canceled", MsgTitle}, vbExclamation)
                             Return 0
                         Else
-                            Collections.ForEach(Sub(ByVal c As IUserData)
+                            Collections.ForEach(Sub(c As IUserData)
                                                     If c.MoveFiles(String.Empty, Nothing) Then
                                                         UserListLoader.UpdateUser(Settings.GetUser(c), True)
                                                         MainFrameObj.ImageHandler(c)
@@ -649,12 +649,12 @@ Namespace API
         End Sub
 #End Region
 #Region "Copy"
-        Friend Overrides Function CopyFiles(ByVal DestinationPath As SFile, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean
+        Friend Overrides Function CopyFiles(DestinationPath As SFile, Optional e As ErrorsDescriber = Nothing) As Boolean
             Return Count > 0 AndAlso Collections(0).CopyFiles(DestinationPath, e)
         End Function
 #End Region
 #Region "Contains"
-        Friend Function Contains(ByVal _Item As IUserData) As Boolean Implements ICollection(Of IUserData).Contains
+        Friend Function Contains(_Item As IUserData) As Boolean Implements ICollection(Of IUserData).Contains
             Return Count > 0 AndAlso Collections.Contains(_Item)
         End Function
 #End Region
@@ -667,7 +667,7 @@ Namespace API
         End Function
 #End Region
 #Region "IEquatable support"
-        Friend Overrides Function Equals(ByVal Other As UserDataBase) As Boolean
+        Friend Overrides Function Equals(Other As UserDataBase) As Boolean
             If Other.IsCollection Then
                 Return CollectionName = Other.CollectionName
             Else
@@ -676,7 +676,7 @@ Namespace API
         End Function
 #End Region
 #Region "IDisposable Support"
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then Collections.ListClearDispose
             MyBase.Dispose(disposing)
         End Sub

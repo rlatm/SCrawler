@@ -27,10 +27,10 @@ Namespace API.LPSG
             UrlPatternUser = "https://www.lpsg.com/threads/{0}/"
             UserRegex = RParams.DMS(".+?lpsg.com/threads/([^/]+)", 1)
         End Sub
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             Return New UserData
         End Function
-        Friend Overrides Function Available(ByVal What As ISiteSettings.Download, ByVal Silent As Boolean) As Boolean
+        Friend Overrides Function Available(What As ISiteSettings.Download, Silent As Boolean) As Boolean
             Return If(Responser.Cookies?.Count, 0) > 0
         End Function
     End Class

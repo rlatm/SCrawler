@@ -76,7 +76,7 @@ Namespace API.Twitter
             UrlPatternUser = "https://twitter.com/{0}"
             ImageVideoContains = "twitter"
         End Sub
-        Private Sub ChangeResponserFields(ByVal PropName As String, ByVal Value As Object)
+        Private Sub ChangeResponserFields(PropName As String, Value As Object)
             If Not PropName.IsEmptyString Then
                 Dim f$ = String.Empty
                 Select Case PropName
@@ -90,17 +90,17 @@ Namespace API.Twitter
                 End If
             End If
         End Sub
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             If What = ISiteSettings.Download.SavedPosts Then
                 Return New UserData With {.IsSavedPosts = True, .User = New UserInfo With {.Name = CStr(AConvert(Of String)(SavedPostsUserName.Value, String.Empty))}}
             Else
                 Return New UserData
             End If
         End Function
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             Return UserData.GetVideoInfo(URL, Responser)
         End Function
-        Friend Overrides Function GetUserPostUrl(ByVal User As UserDataBase, ByVal Media As UserMedia) As String
+        Friend Overrides Function GetUserPostUrl(User As UserDataBase, Media As UserMedia) As String
             Return $"https://twitter.com/{User.Name}/status/{Media.Post.ID}"
         End Function
         Friend Overrides Function BaseAuthExists() As Boolean

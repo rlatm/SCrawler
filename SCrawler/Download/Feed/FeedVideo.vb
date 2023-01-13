@@ -42,7 +42,7 @@ Namespace DownloadObjects
         Public Sub New()
             InitializeComponent()
         End Sub
-        Friend Sub New(ByVal File As SFile)
+        Friend Sub New(File As SFile)
             InitializeComponent()
             Try
                 MediaFile = File
@@ -78,8 +78,8 @@ Namespace DownloadObjects
         Private _Disposed As Boolean = False
         Private Sub FeedVideo_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
             _Disposed = True
-            If Not MediaPlayer Is Nothing Then MediaPlayer.Dispose()
-            If Not MyImage Is Nothing Then MyImage.Dispose()
+            If MediaPlayer IsNot Nothing Then MediaPlayer.Dispose()
+            If MyImage IsNot Nothing Then MyImage.Dispose()
         End Sub
         Private Async Sub BTT_PLAY_Click(sender As Object, e As EventArgs) Handles BTT_PLAY.Click
             If _Disposed Then Exit Sub
@@ -163,7 +163,7 @@ Namespace DownloadObjects
             Catch
             End Try
         End Sub
-        Private Async Function RunAction(ByVal Action As Action, ByVal ActionName As String) As Task
+        Private Async Function RunAction(Action As Action, ActionName As String) As Task
             Try
                 If _Disposed Then Exit Function
                 Using ts As New CancellationTokenSource

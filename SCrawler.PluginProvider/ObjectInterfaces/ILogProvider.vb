@@ -8,9 +8,9 @@
 ' but WITHOUT ANY WARRANTY
 Namespace Plugin
     Public Interface ILogProvider
-        Overloads Sub Add(ByVal Message As String)
-        Overloads Sub Add(ByVal ex As Exception, ByVal Message As String,
-                          Optional ByVal ShowMainMsg As Boolean = False, Optional ByVal ShowErrorMsg As Boolean = False,
-                          Optional ByVal SendInLog As Boolean = True)
+        Overloads Sub Add(Message As String)
+        Overloads Sub Add(ex As Exception, Message As String,
+                          Optional ShowMainMsg As Boolean = False, Optional ShowErrorMsg As Boolean = False,
+                          Optional SendInLog As Boolean = True)
     End Interface
 End Namespace

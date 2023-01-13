@@ -13,7 +13,7 @@ Friend Class UserImage : Inherits ImageRenderer
     Friend Const ImagePostfix_Small As String = "_Small"
     Private _LargeAddress As SFile
     Private _SmallAddress As SFile
-    Friend Sub New(ByVal _ImgOriginal As SFile, ByVal Destination As SFile, Optional ByVal GenerateLargeSmallPictures As Boolean = True)
+    Friend Sub New(_ImgOriginal As SFile, Destination As SFile, Optional GenerateLargeSmallPictures As Boolean = True)
         MyBase.New(_ImgOriginal)
         Dim f As SFile = Destination
         f.Path = f.PathWithSeparator & "Pictures"
@@ -29,7 +29,7 @@ Friend Class UserImage : Inherits ImageRenderer
             GetImage(Settings.MaxLargeImageHeight.Value, False)
         End If
     End Sub
-    Friend Sub New(ByVal _ImgOriginal As SFile, ByVal _ImgLarge As SFile, ByVal _ImgSmall As SFile, ByVal Destination As SFile)
+    Friend Sub New(_ImgOriginal As SFile, _ImgLarge As SFile, _ImgSmall As SFile, Destination As SFile)
         Me.New(_ImgOriginal, Destination, False)
         Dim i As New ImageRenderer(_ImgLarge)
         ResizedImages.Add(i.Size, i)
@@ -52,7 +52,7 @@ Friend Class UserImage : Inherits ImageRenderer
     End Property
     ''' <exception cref="ArgumentNullException"></exception>
     ''' <exception cref="ArgumentOutOfRangeException"></exception>
-    Private Shadows Function GetImage(ByVal h As Integer, ByVal IsSmall As Boolean) As ImageRenderer
+    Private Shadows Function GetImage(h As Integer, IsSmall As Boolean) As ImageRenderer
         With ResizedImages
             If .Count > 0 Then
                 Dim ki% = .Keys.ToList.FindIndex(Function(s) s.Height = h)

@@ -20,12 +20,12 @@ Friend Class ListImagesLoader
                 Return LVI.Name
             End Get
         End Property
-        Friend Sub New(ByVal u As IUserData, ByVal l As ListView)
+        Friend Sub New(u As IUserData, l As ListView)
             User = u
             LVI = u.GetLVI(l)
             Index = u.Index
         End Sub
-        Friend Function CompareTo(ByVal Other As UserOption) As Integer Implements IComparable(Of UserOption).CompareTo
+        Friend Function CompareTo(Other As UserOption) As Integer Implements IComparable(Of UserOption).CompareTo
             Return Index.CompareTo(Other.Index)
         End Function
     End Structure
@@ -58,7 +58,7 @@ Friend Class ListImagesLoader
                                                                                Catch ex As Exception
                                                                                    ErrorsDescriber.Execute(EDP.SendInLog, ex, "[ListImagesLoader.UpdateImages]")
                                                                                End Try
-                                                                               If Not ar Is Nothing Then MyList.EndInvoke(ar)
+                                                                               If ar IsNot Nothing Then MyList.EndInvoke(ar)
                                                                                UpdateInProgress = False
                                                                            End Sub
                                                          If MyList.InvokeRequired Then
@@ -87,9 +87,9 @@ Friend Class ListImagesLoader
                 Dim a As Action = Sub()
                                       With MyList
                                           .Items.Clear()
-                                          If Not .LargeImageList Is Nothing Then .LargeImageList.Images.Clear()
+                                          If .LargeImageList IsNot Nothing Then .LargeImageList.Images.Clear()
                                           .LargeImageList = New ImageList
-                                          If Not .SmallImageList Is Nothing Then .SmallImageList.Images.Clear()
+                                          If .SmallImageList IsNot Nothing Then .SmallImageList.Images.Clear()
                                           .SmallImageList = New ImageList
                                           If Settings.ViewModeIsPicture Then
                                               .LargeImageList.ColorDepth = ColorDepth.Depth32Bit
@@ -147,7 +147,7 @@ Friend Class ListImagesLoader
             ErrorsDescriber.Execute(EDP.SendInLog, ex, "[ListImagesLoader.Update]")
         End Try
     End Sub
-    Friend Sub UpdateUser(ByVal User As IUserData, ByVal Add As Boolean)
+    Friend Sub UpdateUser(User As IUserData, Add As Boolean)
         Try
             Dim a As Action
             If Add Then
@@ -184,7 +184,7 @@ Friend Class ListImagesLoader
         Catch ex As Exception
         End Try
     End Sub
-    Friend Shared Function ApplyLVIColor(ByVal User As IUserData, ByVal LVI As ListViewItem, ByVal IsInit As Boolean) As ListViewItem
+    Friend Shared Function ApplyLVIColor(User As IUserData, LVI As ListViewItem, IsInit As Boolean) As ListViewItem
         With LVI
             If Not User.Exists Then
                 .BackColor = MyColor.DeleteBack
@@ -202,7 +202,7 @@ Friend Class ListImagesLoader
         End With
         Return LVI
     End Function
-    Private Shared Function CheckUserCollection(ByVal User As IUserData) As Boolean
+    Private Shared Function CheckUserCollection(User As IUserData) As Boolean
         If User.IsCollection Then
             With DirectCast(User, UserDataBind)
                 If .Count > 0 Then Return .Collections.Exists(Function(c) Not c.Exists) Else Return False

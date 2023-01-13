@@ -25,7 +25,7 @@ Namespace API.Xhamster
             Friend IsPhoto As Boolean
         End Structure
         Private ReadOnly _TempPhotoData As List(Of UserMedia)
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
         End Sub
 #End Region
 #Region "Initializer"
@@ -35,7 +35,7 @@ Namespace API.Xhamster
         End Sub
 #End Region
 #Region "Download base functions"
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             _TempPhotoData.Clear()
             If DownloadVideos Then DownloadData(1, True, Token)
             If DownloadImages Then
@@ -43,7 +43,7 @@ Namespace API.Xhamster
                 ReparsePhoto(Token)
             End If
         End Sub
-        Private Overloads Sub DownloadData(ByVal Page As Integer, ByVal IsVideo As Boolean, ByVal Token As CancellationToken)
+        Private Overloads Sub DownloadData(Page As Integer, IsVideo As Boolean, Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Dim MaxPage% = -1
@@ -115,7 +115,7 @@ Namespace API.Xhamster
         End Sub
 #End Region
 #Region "Reparse video, photo"
-        Protected Overrides Sub ReparseVideo(ByVal Token As CancellationToken)
+        Protected Overrides Sub ReparseVideo(Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 If _TempMediaList.Count > 0 AndAlso _TempMediaList.Exists(Function(tm) tm.Type = UTypes.VideoPre) Then
@@ -140,13 +140,13 @@ Namespace API.Xhamster
                 ProcessException(ex, Token, "video reparsing error", False)
             End Try
         End Sub
-        Private Overloads Sub ReparsePhoto(ByVal Token As CancellationToken)
+        Private Overloads Sub ReparsePhoto(Token As CancellationToken)
             If _TempPhotoData.Count > 0 Then
                 For i% = 0 To _TempPhotoData.Count - 1 : ReparsePhoto(i, 1, Token) : Next
                 _TempPhotoData.Clear()
             End If
         End Sub
-        Private Overloads Sub ReparsePhoto(ByVal Index As Integer, ByVal Page As Integer, ByVal Token As CancellationToken)
+        Private Overloads Sub ReparsePhoto(Index As Integer, Page As Integer, Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Dim MaxPage% = -1
@@ -190,7 +190,7 @@ Namespace API.Xhamster
         End Sub
 #End Region
 #Region "Reparse missing"
-        Protected Overrides Sub ReparseMissing(ByVal Token As CancellationToken)
+        Protected Overrides Sub ReparseMissing(Token As CancellationToken)
             Dim rList As New List(Of Integer)
             Try
                 If ContentMissingExists Then
@@ -219,8 +219,8 @@ Namespace API.Xhamster
         End Sub
 #End Region
 #Region "GetM3U8"
-        Private Overloads Function GetM3U8(ByRef m As UserMedia, ByVal URL As String, ByVal Responser As Responser,
-                                           Optional ByVal e As ErrorsDescriber = Nothing) As Boolean
+        Private Overloads Function GetM3U8(ByRef m As UserMedia, URL As String, Responser As Responser,
+                                           Optional e As ErrorsDescriber = Nothing) As Boolean
             Try
                 If Not URL.IsEmptyString Then
                     Dim r$ = Responser.GetResponse(URL)
@@ -241,14 +241,14 @@ Namespace API.Xhamster
                 Return ErrorsDescriber.Execute(e, ex, $"[{ToStringForLog()}]: API.Xhamster.GetM3U8({URL})", False)
             End Try
         End Function
-        Private Overloads Function GetM3U8(ByRef m As UserMedia, ByVal j As EContainer) As Boolean
+        Private Overloads Function GetM3U8(ByRef m As UserMedia, j As EContainer) As Boolean
             Dim url$ = j.Value({"xplayerSettings", "sources", "hls"}, "url")
             If Not url.IsEmptyString Then m.URL = url : m.Type = UTypes.m3u8 : Return True
             Return False
         End Function
 #End Region
 #Region "Standalone downloader"
-        Friend Shared Function GetVideoInfo(ByVal URL As String, ByVal Responser As Responser, ByVal Path As SFile) As UserMedia
+        Friend Shared Function GetVideoInfo(URL As String, Responser As Responser, Path As SFile) As UserMedia
             Try
                 Using u As New UserData With {.Responser = Responser, .HOST = Settings(XhamsterSiteKey)}
                     Dim m As UserMedia = Nothing
@@ -269,18 +269,18 @@ Namespace API.Xhamster
         End Function
 #End Region
 #Region "Download data"
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             DownloadContentDefault(Token)
         End Sub
-        Protected Overloads Overrides Function DownloadM3U8(ByVal URL As String, ByVal Media As UserMedia, ByVal DestinationFile As SFile) As SFile
+        Protected Overloads Overrides Function DownloadM3U8(URL As String, Media As UserMedia, DestinationFile As SFile) As SFile
             Media.File = DestinationFile
             Return M3U8.Download(Media, Responser, MySettings.DownloadUHD.Value)
         End Function
 #End Region
 #Region "Create media"
-        Private Shared Function ExtractMedia(ByVal j As EContainer, ByVal t As UTypes, Optional ByVal UrlNode As String = "pageURL",
-                                             Optional ByVal DetectGalery As Boolean = True, Optional ByVal PostDate As Date? = Nothing) As UserMedia
-            If Not j Is Nothing Then
+        Private Shared Function ExtractMedia(j As EContainer, t As UTypes, Optional UrlNode As String = "pageURL",
+                                             Optional DetectGalery As Boolean = True, Optional PostDate As Date? = Nothing) As UserMedia
+            If j IsNot Nothing Then
                 Dim m As New UserMedia(j.Value(UrlNode).Replace("\", String.Empty), t) With {
                     .Post = New UserPost With {
                         .ID = j.Value("id"),
@@ -329,13 +329,13 @@ Namespace API.Xhamster
         End Function
 #End Region
 #Region "Exception"
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             Return If(Responser.Status = Net.WebExceptionStatus.ConnectionClosed, 1, 0)
         End Function
 #End Region
 #Region "Idisposable support"
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then _TempPhotoData.Clear()
             MyBase.Dispose(disposing)
         End Sub

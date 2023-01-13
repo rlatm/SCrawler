@@ -8,12 +8,12 @@
 ' but WITHOUT ANY WARRANTY
 Namespace Plugin.Hosts
     Friend Class LogHost : Implements ILogProvider
-        Friend Sub Add(ByVal Message As String) Implements ILogProvider.Add
+        Friend Sub Add(Message As String) Implements ILogProvider.Add
             MyMainLOG = Message
         End Sub
-        Friend Sub Add(ByVal ex As Exception, ByVal Message As String,
-                       Optional ByVal ShowMainMsg As Boolean = False, Optional ByVal ShowErrorMsg As Boolean = False,
-                       Optional ByVal SendInLog As Boolean = True) Implements ILogProvider.Add
+        Friend Sub Add(ex As Exception, Message As String,
+                       Optional ShowMainMsg As Boolean = False, Optional ShowErrorMsg As Boolean = False,
+                       Optional SendInLog As Boolean = True) Implements ILogProvider.Add
             ErrorsDescriber.Execute(New ErrorsDescriber(ShowMainMsg, ShowErrorMsg, SendInLog), ex, Message)
         End Sub
     End Class

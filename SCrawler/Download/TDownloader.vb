@@ -16,12 +16,12 @@ Imports Download = SCrawler.Plugin.ISiteSettings.Download
 Namespace DownloadObjects
     Friend Class TDownloader : Implements IDisposable
 #Region "Events"
-        Friend Event JobsChange(ByVal JobsCount As Integer)
+        Friend Event JobsChange(JobsCount As Integer)
         Friend Event DownloadCountChange()
-        Friend Event Downloading(ByVal Value As Boolean)
+        Friend Event Downloading(Value As Boolean)
         Friend Event SendNotification As NotificationEventHandler
         Friend Event Reconfigured()
-        Friend Event FeedFilesChanged(ByVal Added As Boolean)
+        Friend Event FeedFilesChanged(Added As Boolean)
 #End Region
 #Region "Declarations"
 #Region "Files"
@@ -38,14 +38,14 @@ Namespace DownloadObjects
             Friend ReadOnly Data As UserMedia
             Friend ReadOnly [Date] As Date
             Friend ReadOnly Session As Integer
-            Friend Sub New(ByVal Data As UserMedia, ByVal User As IUserData, ByVal Session As Integer)
+            Friend Sub New(Data As UserMedia, User As IUserData, Session As Integer)
                 Me.Data = Data
                 Me.User = User
                 [Date] = Now
                 Me.Session = Session
             End Sub
-            Private Sub New(ByVal e As EContainer)
-                If Not e Is Nothing Then
+            Private Sub New(e As EContainer)
+                If e IsNot Nothing Then
                     If e.Contains(Name_User) Then
                         Dim u As UserInfo = e(Name_User)
                         If Not u.Name.IsEmptyString And Not u.Site.IsEmptyString Then User = Settings.GetUser(u)
@@ -57,10 +57,10 @@ Namespace DownloadObjects
                     If f.Exists Then Data.File = f
                 End If
             End Sub
-            Public Shared Widening Operator CType(ByVal e As EContainer) As UserMediaD
+            Public Shared Widening Operator CType(e As EContainer) As UserMediaD
                 Return New UserMediaD(e)
             End Operator
-            Private Function CompareTo(ByVal Other As UserMediaD) As Integer Implements IComparable(Of UserMediaD).CompareTo
+            Private Function CompareTo(Other As UserMediaD) As Integer Implements IComparable(Of UserMediaD).CompareTo
                 If Not Session = Other.Session Then
                     Return Session.CompareTo(Other.Session) * -1
                 ElseIf Not If(User?.GetHashCode, 0) = If(Other.User?.GetHashCode, 0) Then
@@ -69,19 +69,19 @@ Namespace DownloadObjects
                     Return [Date].Ticks.CompareTo(Other.Date.Ticks) * -1
                 End If
             End Function
-            Private Overloads Function Equals(ByVal Other As UserMediaD) As Boolean Implements IEquatable(Of UserMediaD).Equals
+            Private Overloads Function Equals(Other As UserMediaD) As Boolean Implements IEquatable(Of UserMediaD).Equals
                 Return Data.File = Other.Data.File
             End Function
-            Public Overloads Overrides Function Equals(ByVal Obj As Object) As Boolean
+            Public Overloads Overrides Function Equals(Obj As Object) As Boolean
                 Return Equals(DirectCast(Obj, UserMedia))
             End Function
-            Friend Function ToEContainer(Optional ByVal e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
+            Friend Function ToEContainer(Optional e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
                 Return ListAddValue(New EContainer(Name_Data, String.Empty) From {
                                         Data.ToEContainer,
                                         New EContainer(Name_Date, AConvert(Of String)([Date], ParsersDataDateProvider, String.Empty)),
                                         New EContainer(Name_Session, Session),
                                         New EContainer(Name_File, Data.File)},
-                                    If(Not User Is Nothing, DirectCast(User, UserDataBase).User.ToEContainer, Nothing), LAP.IgnoreICopier)
+                                    If(User IsNot Nothing, DirectCast(User, UserDataBase).User.ToEContainer, Nothing), LAP.IgnoreICopier)
             End Function
         End Structure
         Friend ReadOnly Property Files As List(Of UserMediaD)
@@ -146,7 +146,7 @@ Namespace DownloadObjects
             Private Get
                 Return _AutoDownloaderTasks > 0
             End Get
-            Set(ByVal adw As Boolean)
+            Set(adw As Boolean)
                 _AutoDownloaderTasks += IIf(adw, 1, -1)
             End Set
         End Property
@@ -186,17 +186,17 @@ Namespace DownloadObjects
                     Return Nothing
                 End Get
             End Property
-            Friend Sub New(ByVal JobType As Download)
+            Friend Sub New(JobType As Download)
                 Hosts = New List(Of SettingsHost)
                 RemovingKeys = New List(Of String)
                 Keys = New List(Of String)
                 [Type] = JobType
             End Sub
-            Friend Sub New(ByVal JobType As Download, ByVal GroupName As String)
+            Friend Sub New(JobType As Download, GroupName As String)
                 Me.New(JobType)
                 Me.GroupName = GroupName
             End Sub
-            Public Overloads Function Add(ByVal User As IUserData, ByVal _IncludedInTheFeed As Boolean) As Boolean
+            Public Overloads Function Add(User As IUserData, _IncludedInTheFeed As Boolean) As Boolean
                 With DirectCast(User, UserDataBase)
                     If Keys.Count > 0 Then
                         Dim i% = Keys.IndexOf(.User.Plugin)
@@ -216,11 +216,11 @@ Namespace DownloadObjects
                 Hosts.Add(h)
                 Keys.Add(h.Key)
             End Sub
-            Friend Function UserHost(ByVal User As IUserData) As SettingsHost
+            Friend Function UserHost(User As IUserData) As SettingsHost
                 Dim i% = Keys.IndexOf(DirectCast(User, UserDataBase).User.Plugin)
                 If i >= 0 Then Return Hosts(i) Else Throw New KeyNotFoundException($"Plugin key [{DirectCast(User, UserDataBase).User.Plugin}] not found")
             End Function
-            Friend Function Available(ByVal Silent As Boolean) As Boolean
+            Friend Function Available(Silent As Boolean) As Boolean
                 If Hosts.Count > 0 Then
                     Dim k$
                     For i% = Hosts.Count - 1 To 0 Step -1
@@ -248,7 +248,7 @@ Namespace DownloadObjects
                 _Working = False
                 TokenSource = Nothing
                 Try
-                    If Not Thread Is Nothing Then
+                    If Thread IsNot Nothing Then
                         If Thread.IsAlive Then Thread.Abort()
                         Thread = Nothing
                     End If
@@ -257,7 +257,7 @@ Namespace DownloadObjects
                 If Hosts.Count > 0 Then Hosts.ForEach(Sub(h) h.DownloadDone([Type]))
             End Sub
 #Region "IDisposable Support"
-            Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+            Protected Overrides Sub Dispose(disposing As Boolean)
                 If Not disposedValue And disposing Then
                     Hosts.Clear()
                     Keys.Clear()
@@ -344,7 +344,7 @@ Namespace DownloadObjects
                     .Visible(, False) = False
                 End With
                 MyProgressForm.DisableProgressChange = True
-                If Pool.Count > 0 Then Pool.ForEach(Sub(p) If Not p.Progress Is Nothing Then p.Progress.Maximum = 0)
+                If Pool.Count > 0 Then Pool.ForEach(Sub(p) If p.Progress IsNot Nothing Then p.Progress.Maximum = 0)
                 ExecuteCommand(Settings.DownloadsCompleteCommand)
                 UpdateJobsLabel()
                 If MissingPostsDetected And Settings.AddMissingToLog Then
@@ -360,7 +360,7 @@ Namespace DownloadObjects
         Private Sub StartDownloading(ByRef _Job As Job)
             Dim isSeparated As Boolean = _Job.IsSeparated
             Dim n$ = _Job.Name
-            Dim pt As Func(Of String, String) = Function(ByVal t As String) As String
+            Dim pt As Func(Of String, String) = Function(t As String) As String
                                                     Dim _t$ = If(isSeparated, $"{n} {Left(t, 1).ToLower}{Right(t, t.Length - 1)}", t)
                                                     If Not AutoDownloaderWorking Then RaiseEvent SendNotification(SettingsCLS.NotificationObjects.Profiles, _t)
                                                     Return _t
@@ -396,7 +396,7 @@ Namespace DownloadObjects
         Private Sub UpdateJobsLabel()
             RaiseEvent JobsChange(Count)
         End Sub
-        Private Sub DownloadData(ByRef _Job As Job, ByVal Token As CancellationToken)
+        Private Sub DownloadData(ByRef _Job As Job, Token As CancellationToken)
             Try
                 If _Job.Count > 0 Then
                     Const nf As ANumbers.Formats = ANumbers.Formats.Number
@@ -469,7 +469,7 @@ Namespace DownloadObjects
         End Sub
 #End Region
 #Region "Add"
-        Private Sub AddItem(ByVal Item As IUserData, ByVal _UpdateJobsLabel As Boolean, ByVal _IncludedInTheFeed As Boolean)
+        Private Sub AddItem(Item As IUserData, _UpdateJobsLabel As Boolean, _IncludedInTheFeed As Boolean)
             ReconfPool()
             If Item.IsCollection Then
                 DirectCast(Item, API.UserDataBind).DownloadData(Nothing, _IncludedInTheFeed)
@@ -484,11 +484,11 @@ Namespace DownloadObjects
                 End If
             End If
         End Sub
-        Friend Sub Add(ByVal Item As IUserData, ByVal _IncludedInTheFeed As Boolean)
+        Friend Sub Add(Item As IUserData, _IncludedInTheFeed As Boolean)
             AddItem(Item, True, _IncludedInTheFeed)
             Start()
         End Sub
-        Friend Sub AddRange(ByVal _Items As IEnumerable(Of IUserData), ByVal _IncludedInTheFeed As Boolean)
+        Friend Sub AddRange(_Items As IEnumerable(Of IUserData), _IncludedInTheFeed As Boolean)
             If _Items.ListExists Then
                 For i% = 0 To _Items.Count - 1 : AddItem(_Items(i), False, _IncludedInTheFeed) : Next
                 UpdateJobsLabel()
@@ -497,7 +497,7 @@ Namespace DownloadObjects
         End Sub
 #End Region
 #Region "Contains, Remove"
-        Private Function Contains(ByVal _Item As IUserData)
+        Private Function Contains(_Item As IUserData)
             If Pool.Count > 0 Then
                 For Each j As Job In Pool
                     If j.Items.Count > 0 AndAlso j.Items.Contains(_Item) Then Return True
@@ -505,14 +505,14 @@ Namespace DownloadObjects
             End If
             Return False
         End Function
-        Friend Sub UserRemove(ByVal _Item As IUserData)
+        Friend Sub UserRemove(_Item As IUserData)
             If Downloaded.Count > 0 AndAlso Downloaded.Contains(_Item) Then Downloaded.Remove(_Item) : RaiseEvent DownloadCountChange()
-            If Files.Count > 0 AndAlso Files.RemoveAll(Function(f) Not f.User Is Nothing AndAlso f.User.Equals(_Item)) > 0 Then RaiseEvent FeedFilesChanged(False)
+            If Files.Count > 0 AndAlso Files.RemoveAll(Function(f) f.User IsNot Nothing AndAlso f.User.Equals(_Item)) > 0 Then RaiseEvent FeedFilesChanged(False)
         End Sub
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     [Stop]()

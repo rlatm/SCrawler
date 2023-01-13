@@ -47,7 +47,7 @@ Namespace DownloadObjects
                                   With TP_MAIN
                                       If .Controls.Count > 0 Then
                                           For Each c As Control In .Controls
-                                              If Not c Is Nothing Then c.Dispose()
+                                              If c IsNot Nothing Then c.Dispose()
                                           Next
                                           .Controls.Clear()
                                       End If

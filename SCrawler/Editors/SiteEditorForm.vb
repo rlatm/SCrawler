@@ -24,8 +24,8 @@ Namespace Editors
             Private Property ErrorMessage As String Implements IFieldsCheckerProvider.ErrorMessage
             Private Property Name As String Implements IFieldsCheckerProvider.Name
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 If ACheck(Value) AndAlso CStr(Value).Contains("/") Then
                     ErrorMessage = $"Path [{Name}] contains forbidden character ""/"""
                     Return Nothing
@@ -33,13 +33,13 @@ Namespace Editors
                     Return Value
                 End If
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the context of [SavedPostsChecker]")
             End Function
         End Class
 #End Region
         Private ReadOnly Property Host As SettingsHost
-        Friend Sub New(ByVal h As SettingsHost)
+        Friend Sub New(h As SettingsHost)
             InitializeComponent()
             MyDefs = New DefaultFormOptions(Me, Settings.Design)
             Host = h
@@ -57,7 +57,7 @@ Namespace Editors
                     With Host
                         With .Source
                             Text = .Site
-                            If Not .Icon Is Nothing Then Icon = .Icon Else ShowIcon = False
+                            If .Icon IsNot Nothing Then Icon = .Icon Else ShowIcon = False
                         End With
 
                         SetCookieText()
@@ -76,7 +76,7 @@ Namespace Editors
 
                         Dim offset% = PropertyValueHost.LeftOffsetDefault
                         Dim h% = 0, c% = 0
-                        Dim AddTpControl As Action(Of Control, Integer) = Sub(ByVal cnt As Control, ByVal _height As Integer)
+                        Dim AddTpControl As Action(Of Control, Integer) = Sub(cnt As Control, _height As Integer)
                                                                               TP_SITE_PROPS.RowStyles.Add(New RowStyle(SizeType.Absolute, _height))
                                                                               TP_SITE_PROPS.RowCount += 1
                                                                               TP_SITE_PROPS.Controls.Add(cnt, 0, TP_SITE_PROPS.RowStyles.Count - 1)
@@ -99,7 +99,7 @@ Namespace Editors
                             .PropList.Sort()
                             For Each pAuth As Boolean In pArr
                                 For Each prop As PropertyValueHost In .PropList
-                                    If Not prop.Options Is Nothing Then
+                                    If prop.Options IsNot Nothing Then
                                         With prop
                                             If .Options.IsAuth = pAuth Then
 
@@ -115,7 +115,7 @@ Namespace Editors
                                                 .CreateControl(TT_MAIN)
                                                 AddTpControl(.Control, .ControlHeight)
                                                 If .LeftOffset > offset Then offset = .LeftOffset
-                                                If Not .Options.AllowNull Or Not .ProviderFieldsChecker Is Nothing Then _
+                                                If Not .Options.AllowNull Or .ProviderFieldsChecker IsNot Nothing Then _
                                                    MyDefs.MyFieldsCheckerE.AddControl(.Control, .Options.ControlText, .Type,
                                                                                       .Options.AllowNull, .ProviderFieldsChecker)
                                             End If
@@ -126,7 +126,7 @@ Namespace Editors
                         End If
 
                         SpecialButton = .GetSettingsButtonInternal
-                        If Not SpecialButton Is Nothing Then AddTpControl(SpecialButton, 28)
+                        If SpecialButton IsNot Nothing Then AddTpControl(SpecialButton, 28)
                         TP_SITE_PROPS.BaseControlsPadding = New Padding(offset, 0, 0, 0)
                         offset += PaddingE.GetOf({TP_SITE_PROPS}).Left
                         TXT_PATH.CaptionWidth = offset
@@ -151,18 +151,18 @@ Namespace Editors
         End Sub
         Private Sub SiteEditorForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
             If Host.PropList.Count > 0 Then Host.PropList.ForEach(Sub(p) p.DisposeControl())
-            If Not SpecialButton Is Nothing Then SpecialButton.Dispose()
+            If SpecialButton IsNot Nothing Then SpecialButton.Dispose()
             LBL_AUTH.Dispose()
             LBL_OTHER.Dispose()
             Host.Source.EndEdit()
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             If MyDefs.MyFieldsChecker.AllParamsOK Then
                 Dim i%, ii%
                 With Host
                     Dim indxList As New List(Of Integer)
                     For i = 0 To .PropList.Count - 1
-                        If .PropList(i).PropertiesChecking.ListExists And Not .PropList(i).PropertiesCheckingMethod Is Nothing Then indxList.Add(i)
+                        If .PropList(i).PropertiesChecking.ListExists And .PropList(i).PropertiesCheckingMethod IsNot Nothing Then indxList.Add(i)
                     Next
                     If indxList.Count > 0 Then
                         Dim pList As New List(Of PropertyData)
@@ -186,7 +186,7 @@ Namespace Editors
                     .DownloadSiteData.Value = CH_DOWNLOAD_SITE_DATA.Checked
                     .GetUserMediaOnly.Value = CH_GET_USER_MEDIA_ONLY.Checked
 
-                    If .PropList.Count > 0 Then .PropList.ForEach(Sub(p) If Not p.Options Is Nothing Then p.UpdateValueByControl())
+                    If .PropList.Count > 0 Then .PropList.ForEach(Sub(p) If p.Options IsNot Nothing Then p.UpdateValueByControl())
 
                     .Source.Update()
                 End With
@@ -196,22 +196,22 @@ Namespace Editors
                 MyDefs.CloseForm()
             End If
         End Sub
-        Private Sub TXT_PATH_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_PATH.ActionOnButtonClick
+        Private Sub TXT_PATH_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_PATH.ActionOnButtonClick
             ChangePath(Sender, Host.Path(False), TXT_PATH)
         End Sub
-        Private Sub TXT_PATH_SAVED_POSTS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_PATH_SAVED_POSTS.ActionOnButtonClick
+        Private Sub TXT_PATH_SAVED_POSTS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_PATH_SAVED_POSTS.ActionOnButtonClick
             ChangePath(Sender, Host.SavedPostsPath(False), TXT_PATH_SAVED_POSTS)
         End Sub
-        Private Sub ChangePath(ByVal Sender As ActionButton, ByVal PathValue As SFile, ByRef CNT As TextBoxExtended)
+        Private Sub ChangePath(Sender As ActionButton, PathValue As SFile, ByRef CNT As TextBoxExtended)
             If Sender.DefaultButton = ADB.Open Then
                 Dim f As SFile = SFile.SelectPath(PathValue).IfNullOrEmpty(PathValue)
                 If Not f.IsEmptyString Then CNT.Text = f
             End If
         End Sub
-        Private Sub TXT_COOKIES_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_COOKIES.ActionOnButtonClick
+        Private Sub TXT_COOKIES_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_COOKIES.ActionOnButtonClick
             Select Case Sender.DefaultButton
                 Case ADB.Edit
-                    If Not Host.Responser Is Nothing Then
+                    If Host.Responser IsNot Nothing Then
                         Using f As New CookieListForm With {.DesignXML = Settings.Design, .UseGrid = False}
                             f.SetCollection(Host.Responser.Cookies)
                             f.ShowDialog()
@@ -223,9 +223,9 @@ Namespace Editors
                         SetCookieText()
                     End If
                 Case ADB.Clear
-                    If Not Host.Responser Is Nothing Then
+                    If Host.Responser IsNot Nothing Then
                         With Host.Responser
-                            If Not .Cookies Is Nothing Then .Cookies.Dispose()
+                            If .Cookies IsNot Nothing Then .Cookies.Dispose()
                             .Cookies = New CookieKeeper(.CookiesDomain)
                             MyDefs.MyOkCancel.EnableOK = True
                         End With
@@ -234,7 +234,7 @@ Namespace Editors
             End Select
         End Sub
         Private Sub SetCookieText()
-            If Not Host.Responser Is Nothing Then TXT_COOKIES.Text = $"{If(Host.Responser.Cookies?.Count, 0)} cookies"
+            If Host.Responser IsNot Nothing Then TXT_COOKIES.Text = $"{If(Host.Responser.Cookies?.Count, 0)} cookies"
         End Sub
         Private Sub SpecialButton_Click(sender As Object, e As EventArgs) Handles SpecialButton.Click
             MyDefs.Detector()

@@ -35,7 +35,7 @@ Namespace DownloadObjects
         Private ReadOnly Place As ButtonsPlace
 #End Region
 #Region "Initializer"
-        Friend Sub New(ByVal Place As ButtonsPlace)
+        Friend Sub New(Place As ButtonsPlace)
             Me.Place = Place
             CreateButton(BTT_PAUSE_H1, "1 hour", PauseModes.H1)
             CreateButton(BTT_PAUSE_H2, "2 hours", PauseModes.H2)
@@ -51,7 +51,7 @@ Namespace DownloadObjects
             SEP_3 = New ToolStripSeparator
             If Place = ButtonsPlace.MainFrame Then TrayButtons = New AutoDownloaderPauseButtons(ButtonsPlace.Tray)
         End Sub
-        Private Sub CreateButton(ByRef BTT As ToolStripMenuItem, ByVal Text As String, ByVal Tag As PauseModes, Optional ByVal ToolTip As String = "")
+        Private Sub CreateButton(ByRef BTT As ToolStripMenuItem, Text As String, Tag As PauseModes, Optional ToolTip As String = "")
             BTT = New ToolStripMenuItem With {
                 .Text = Text,
                 .DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
@@ -81,13 +81,13 @@ Namespace DownloadObjects
             End With
         End Sub
         ''' <summary>Scheduler</summary>
-        Friend Overloads Sub AddButtons(ByRef Destination As ToolStripDropDownItem, ByVal Toolbar As ToolStrip)
+        Friend Overloads Sub AddButtons(ByRef Destination As ToolStripDropDownItem, Toolbar As ToolStrip)
             Destination.DropDownItems.AddRange(ButtonsArray)
             Me.Toolbar = Toolbar
         End Sub
 #End Region
 #Region "Buttons handlers"
-        Private Sub BTT_PAUSE_AUTOMATION_Click(ByVal Sender As ToolStripMenuItem, ByVal e As EventArgs) Handles BTT_PAUSE_H1.Click, BTT_PAUSE_H2.Click,
+        Private Sub BTT_PAUSE_AUTOMATION_Click(Sender As ToolStripMenuItem, e As EventArgs) Handles BTT_PAUSE_H1.Click, BTT_PAUSE_H2.Click,
                                                                                                                 BTT_PAUSE_H3.Click, BTT_PAUSE_H4.Click,
                                                                                                                 BTT_PAUSE_H6.Click, BTT_PAUSE_H12.Click,
                                                                                                                 BTT_PAUSE_UNTIL.Click, BTT_PAUSE_UNLIMITED.Click,
@@ -123,7 +123,7 @@ Namespace DownloadObjects
         Friend Overloads Sub UpdatePauseButtons() Handles TrayButtons.Updating
             UpdatePauseButtons(True)
         End Sub
-        Friend Overloads Sub UpdatePauseButtons(ByVal UpdateBase As Boolean, Optional ByVal FromMainFrame As Boolean = False)
+        Friend Overloads Sub UpdatePauseButtons(UpdateBase As Boolean, Optional FromMainFrame As Boolean = False)
             Try
                 With Settings.Automation
                     Dim p As PauseModes = PauseModes.Disabled
@@ -138,7 +138,7 @@ Namespace DownloadObjects
                                                                         BTT_PAUSE_UNLIMITED, BTT_PAUSE_DISABLE}
 
                     If UpdateBase Then UpdateBaseButton(Not p = PauseModes.Disabled)
-                    If Not VerifyAll OrElse Settings.Automation.All(Function(ByVal plan As AutoDownloader)
+                    If Not VerifyAll OrElse Settings.Automation.All(Function(plan As AutoDownloader)
                                                                         If plan.Mode = AutoDownloader.Modes.None Then
                                                                             Return True
                                                                         Else
@@ -156,7 +156,7 @@ Namespace DownloadObjects
                             Case PauseModes.Until : cnt = BTT_PAUSE_UNTIL
                             Case PauseModes.Unlimited : cnt = BTT_PAUSE_UNLIMITED
                         End Select
-                        If Not cnt Is Nothing Then
+                        If cnt IsNot Nothing Then
                             cntList.Remove(cnt)
                             ApplyButtonStyle(cnt, Sub() cnt.Checked = True)
                         End If
@@ -175,7 +175,7 @@ Namespace DownloadObjects
                 End Select
             End Try
         End Sub
-        Private Sub UpdateBaseButton(ByVal Checked As Boolean)
+        Private Sub UpdateBaseButton(Checked As Boolean)
             With MainFrameObj.MF
                 Select Case Place
                     Case ButtonsPlace.MainFrame : ApplyButtonStyle(.BTT_DOWN_AUTOMATION_PAUSE, Sub()
@@ -194,7 +194,7 @@ Namespace DownloadObjects
                 End Select
             End With
         End Sub
-        Private Sub ApplyButtonStyle(ByVal cnt As ToolStripMenuItem, ByVal a As Action)
+        Private Sub ApplyButtonStyle(cnt As ToolStripMenuItem, a As Action)
             With MainFrameObj.MF
                 Select Case Place
                     Case ButtonsPlace.MainFrame : ControlInvokeFast(.Toolbar_TOP, cnt, a)
@@ -206,7 +206,7 @@ Namespace DownloadObjects
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     BTT_PAUSE_H1.Dispose()

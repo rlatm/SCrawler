@@ -32,7 +32,7 @@ Friend Class UserFinder : Implements IDisposable
             Return FoundUsers.Count
         End Get
     End Property
-    Friend Sub New(ByVal Path As SFile)
+    Friend Sub New(Path As SFile)
         Paths = New List(Of SFile) From {Path}
         PathStr = vbCr & Path.ToString
         FoundUsers = New List(Of UserInfo)
@@ -52,7 +52,7 @@ Friend Class UserFinder : Implements IDisposable
         End If
         Return files
     End Function
-    Friend Function Find(ByVal OriginalLocations As Boolean) As Boolean
+    Friend Function Find(OriginalLocations As Boolean) As Boolean
         Try
             Me.OriginalLocations = OriginalLocations
             If OriginalLocations Then
@@ -126,7 +126,7 @@ Friend Class UserFinder : Implements IDisposable
                     Else
                         s = Settings(u.Plugin)
                     End If
-                    If Not s Is Nothing Then
+                    If s IsNot Nothing Then
                         u.Plugin = s.Key
                         If Not OriginalLocations Then
                             If u.IncludedInCollection And u.UserModel = UsageModel.Default Then
@@ -160,7 +160,7 @@ Friend Class UserFinder : Implements IDisposable
         Const DesignNode$ = "ImportUserSelector"
         Try
             Dim uStr As Func(Of UserInfo, String) = Function(u) $"{IIf(u.CollectionName.IsEmptyString, String.Empty, $"[{u.CollectionName}]: ")}{u.Site} - {u.Name}"
-            Dim uc As Comparison(Of UserInfo) = Function(ByVal x As UserInfo, ByVal y As UserInfo) As Integer
+            Dim uc As Comparison(Of UserInfo) = Function(x As UserInfo, y As UserInfo) As Integer
                                                     If Not x.CollectionName.IsEmptyString And Not y.CollectionName.IsEmptyString Then
                                                         Return x.CollectionName.CompareTo(y.CollectionName)
                                                     ElseIf Not x.CollectionName.IsEmptyString Then
@@ -308,7 +308,7 @@ Friend Class UserFinder : Implements IDisposable
     End Function
 #Region "IDisposable Support"
     Private disposedValue As Boolean = False
-    Protected Overridable Sub Dispose(ByVal disposing As Boolean)
+    Protected Overridable Sub Dispose(disposing As Boolean)
         If Not disposedValue Then
             If disposing Then
                 Paths.Clear()

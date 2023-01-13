@@ -44,7 +44,7 @@ Namespace DownloadObjects.Groups
             Sites = New List(Of String)
             SitesExcluded = New List(Of String)
         End Sub
-        Protected Sub Import(ByVal e As EContainer)
+        Protected Sub Import(e As EContainer)
             Name = e.Value(Name_Name)
             Temporary = e.Value(Name_Temporary).FromXML(Of Integer)(CInt(CheckState.Indeterminate))
             Favorite = e.Value(Name_Favorite).FromXML(Of Integer)(CInt(CheckState.Indeterminate))
@@ -57,7 +57,7 @@ Namespace DownloadObjects.Groups
             If Not e.Value(Name_Sites).IsEmptyString Then Sites.ListAddList(e.Value(Name_Sites).Split("|"), l)
             If Not e.Value(Name_Sites_Excluded).IsEmptyString Then SitesExcluded.ListAddList(e.Value(Name_Sites_Excluded).Split("|"), l)
         End Sub
-        Protected Function Export(ByVal e As EContainer) As EContainer
+        Protected Function Export(e As EContainer) As EContainer
             e.AddRange({New EContainer(Name_Name, Name),
                         New EContainer(Name_Temporary, CInt(Temporary)),
                         New EContainer(Name_Favorite, CInt(Favorite)),
@@ -71,7 +71,7 @@ Namespace DownloadObjects.Groups
         End Function
 #Region "IDisposable Support"
         Protected disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     Labels.Clear()

@@ -18,16 +18,16 @@ Namespace Plugin.Hosts
         Friend Overrides Function ExchangeOptionsGet() As Object
             Return ExternalPlugin.ExchangeOptionsGet
         End Function
-        Friend Overrides Sub ExchangeOptionsSet(ByVal Obj As Object)
+        Friend Overrides Sub ExchangeOptionsSet(Obj As Object)
             ExternalPlugin.ExchangeOptionsSet(Obj)
         End Sub
-        Friend Sub New(ByVal SourceClass As IPluginContentProvider)
+        Friend Sub New(SourceClass As IPluginContentProvider)
             ExternalPlugin = SourceClass
-            UseInternalDownloader = Not ExternalPlugin.GetType.GetCustomAttribute(Of Attributes.UseInternalDownloader)() Is Nothing
+            UseInternalDownloader = ExternalPlugin.GetType.GetCustomAttribute(Of Attributes.UseInternalDownloader)() IsNot Nothing
             AddHandler ExternalPlugin.ProgressChanged, AddressOf ExternalPlugin_ProgressChanged
             AddHandler ExternalPlugin.TotalCountChanged, AddressOf ExternalPlugin_TotalCountChanged
         End Sub
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
             If Loading Then
                 ExternalPlugin.XmlFieldsSet(ToKeyValuePair(Of String, EContainer)(Container))
             Else
@@ -38,7 +38,7 @@ Namespace Plugin.Hosts
                 End If
             End If
         End Sub
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             With ExternalPlugin
                 .Settings = HOST.Source
                 .Thrower = Me
@@ -75,7 +75,7 @@ Namespace Plugin.Hosts
                 UserSuspended = .UserSuspended
             End With
         End Sub
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             If UseInternalDownloader Then
                 DownloadContentDefault(Token)
             Else
@@ -95,19 +95,19 @@ Namespace Plugin.Hosts
                 End With
             End If
         End Sub
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             LogError(ex, Message)
             HasError = True
             Return 0
         End Function
-        Private Sub ExternalPlugin_ProgressChanged(ByVal Count As Integer)
+        Private Sub ExternalPlugin_ProgressChanged(Count As Integer)
             Progress.Perform(Count)
         End Sub
-        Private Sub ExternalPlugin_TotalCountChanged(ByVal Count As Integer)
+        Private Sub ExternalPlugin_TotalCountChanged(Count As Integer)
             Progress.Maximum += Count
         End Sub
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If disposing And Not disposedValue Then
                 With ExternalPlugin
                     If .ExistingContentList.ListExists Then .ExistingContentList.Clear()

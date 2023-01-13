@@ -79,7 +79,7 @@ Namespace DownloadObjects
             End Try
         End Sub
 #Region "Add, Edit, Delete"
-        Private Sub MyDefs_ButtonAddClick(ByVal Sender As Object, ByVal e As EditToolbarEventArgs) Handles MyDefs.ButtonAddClick
+        Private Sub MyDefs_ButtonAddClick(Sender As Object, e As EditToolbarEventArgs) Handles MyDefs.ButtonAddClick
             Dim a As New AutoDownloader(True)
             Using f As New AutoDownloaderEditorForm(a)
                 f.ShowDialog()
@@ -100,7 +100,7 @@ Namespace DownloadObjects
             End If
         End Sub
         Private _DeleteInProgress As Boolean = False
-        Private Async Sub MyDefs_ButtonDeleteClickE(ByVal Sender As Object, ByVal e As EditToolbarEventArgs) Handles MyDefs.ButtonDeleteClickE
+        Private Async Sub MyDefs_ButtonDeleteClickE(Sender As Object, e As EditToolbarEventArgs) Handles MyDefs.ButtonDeleteClickE
             Const MsgTitle$ = "Deleting a plan..."
             If Not _DeleteInProgress Then
                 If _LatestSelected.ValueBetween(0, LIST_PLANS.Items.Count - 1) Then

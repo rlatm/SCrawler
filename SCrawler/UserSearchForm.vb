@@ -21,7 +21,7 @@ Friend Class UserSearchForm
         Friend ReadOnly Text As String
         Friend ReadOnly IsCollection As Boolean
         Friend ReadOnly Mode As Modes
-        Friend Sub New(ByVal User As IUserData, ByVal Mode As Modes)
+        Friend Sub New(User As IUserData, Mode As Modes)
             Key = User.Key
             IsCollection = User.IsCollection
             Text = $"[{IIf(IsCollection, "C", "U")}] "
@@ -33,14 +33,14 @@ Friend Class UserSearchForm
             End If
             Me.Mode = Mode
         End Sub
-        Private Function CompareTo(ByVal Other As SearchResult) As Integer Implements IComparable(Of SearchResult).CompareTo
+        Private Function CompareTo(Other As SearchResult) As Integer Implements IComparable(Of SearchResult).CompareTo
             If CInt(Mode).CompareTo(CInt(Other.Mode)) = 0 Then
                 Return IsCollection.CompareTo(Other.IsCollection)
             Else
                 Return CInt(Mode).CompareTo(CInt(Other.Mode)) = 0
             End If
         End Function
-        Public Overrides Function Equals(ByVal Obj As Object) As Boolean
+        Public Overrides Function Equals(Obj As Object) As Boolean
             With DirectCast(Obj, SearchResult) : Return Key = .Key And Mode = .Mode : End With
         End Function
     End Structure
@@ -103,17 +103,17 @@ Friend Class UserSearchForm
                     Dim __descr As Boolean = CH_SEARCH_IN_DESCR.Checked
                     Dim __name As Boolean = CH_SEARCH_IN_NAME.Checked
                     Dim __lbl As Boolean = CH_SEARCH_IN_LABEL.Checked
-                    Dim _CheckUrl As Action(Of IUserData) = Sub(ByVal u As IUserData)
+                    Dim _CheckUrl As Action(Of IUserData) = Sub(u As IUserData)
                                                                 If cu AndAlso ((u.Site = s.SiteName Or u.HOST.Key = s.HostKey) And u.Name.ToLower = s.UserName) Then _
                                                                    Results.ListAddValue(New SearchResult(u, SearchResult.Modes.URL), RLP)
                                                             End Sub
-                    Dim _CheckDescr As Action(Of IUserData) = Sub(ByVal u As IUserData)
+                    Dim _CheckDescr As Action(Of IUserData) = Sub(u As IUserData)
                                                                   If __descr AndAlso Not u.Description.IsEmptyString AndAlso
                                                                      u.Description.Contains(t) Then _
                                                                      Results.ListAddValue(New SearchResult(u, SearchResult.Modes.Description), RLP)
                                                               End Sub
                     Dim _LabelPredicate As Predicate(Of String) = Function(l) l.ToLower.Contains(t)
-                    Dim _CheckLabels As Action(Of IUserData) = Sub(ByVal u As IUserData)
+                    Dim _CheckLabels As Action(Of IUserData) = Sub(u As IUserData)
                                                                    If __lbl AndAlso u.Labels.ListExists AndAlso u.Labels.Exists(_LabelPredicate) Then _
                                                                       Results.ListAddValue(New SearchResult(u, SearchResult.Modes.Label), RLP)
                                                                End Sub

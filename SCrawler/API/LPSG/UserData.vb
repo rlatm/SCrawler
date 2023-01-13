@@ -16,7 +16,7 @@ Imports Converters = PersonalUtilities.Functions.SymbolsConverter.Converters
 Namespace API.LPSG
     Friend Class UserData : Inherits UserDataBase
         Private Const Name_LatestPage As String = "LatestPage"
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
             If Loading Then
                 LatestPage = Container.Value(Name_LatestPage)
             Else
@@ -25,7 +25,7 @@ Namespace API.LPSG
         End Sub
         Private Property LatestPage As String = String.Empty
         Private Enum Mode : Internal : External : End Enum
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Responser.DeclaredError = EDP.ThrowException
@@ -56,7 +56,7 @@ Namespace API.LPSG
                 ProcessException(ex, Token, $"data downloading error [{URL}]")
             End Try
         End Sub
-        Private Sub UpdateMediaList(ByVal l As List(Of String), ByVal m As Mode)
+        Private Sub UpdateMediaList(l As List(Of String), m As Mode)
             If l.ListExists Then
                 Dim f As SFile
                 Dim u$
@@ -87,13 +87,13 @@ Namespace API.LPSG
                 Next
             End If
         End Sub
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             With Responser : .Mode = Responser.Modes.WebClient : .ResetStatus() : End With
             UseResponserClient = True
             DownloadContentDefault(Token)
         End Sub
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             If Responser.StatusCode = Net.HttpStatusCode.ServiceUnavailable Then
                 MyMainLOG = $"{ToStringForLog()}: LPSG not available"
                 Return 1

@@ -27,14 +27,14 @@ Namespace Plugin.Hosts
         End Property
         Friend ReadOnly Property Exists As Boolean
             Get
-                Return Not Settings Is Nothing
+                Return Settings IsNot Nothing
             End Get
         End Property
         Private ReadOnly GitHubInfo As Github
         Private ReadOnly AssemblyVersion As Version
         Friend ReadOnly Property HasNewVersion As Boolean
             Get
-                If Not GitHubInfo Is Nothing Then
+                If GitHubInfo IsNot Nothing Then
                     Return NewVersionExists(AssemblyVersion, GitHubInfo.UserName, GitHubInfo.Repository)
                 Else
                     Return False
@@ -42,15 +42,15 @@ Namespace Plugin.Hosts
             End Get
         End Property
         Friend ReadOnly Property HasError As Boolean
-        Private Sub New(ByVal s As ISiteSettings, ByRef _XML As XmlFile, ByVal GlobalPath As SFile,
+        Private Sub New(s As ISiteSettings, ByRef _XML As XmlFile, GlobalPath As SFile,
                         ByRef _Temp As XMLValue(Of Boolean), ByRef _Imgs As XMLValue(Of Boolean), ByRef _Vids As XMLValue(Of Boolean))
             Settings = New SettingsHost(s, _XML, GlobalPath, _Temp, _Imgs, _Vids)
         End Sub
-        Private Sub New(ByVal AssemblyFile As SFile, ByRef _XML As XmlFile, ByVal GlobalPath As SFile,
+        Private Sub New(AssemblyFile As SFile, ByRef _XML As XmlFile, GlobalPath As SFile,
                         ByRef _Temp As XMLValue(Of Boolean), ByRef _Imgs As XMLValue(Of Boolean), ByRef _Vids As XMLValue(Of Boolean))
             Try
                 Dim a As Assembly = Assembly.Load(AssemblyName.GetAssemblyName(AssemblyFile))
-                If Not a Is Nothing Then
+                If a IsNot Nothing Then
                     GitHubInfo = a.GetCustomAttribute(Of Github)()
                     AssemblyVersion = New Version(FileVersionInfo.GetVersionInfo(a.Location).FileVersion)
                     Dim t() As Type = a.GetTypes
@@ -60,7 +60,7 @@ Namespace Plugin.Hosts
                             If tt.IsInterface Or tt.IsAbstract Then
                                 Continue For
                             Else
-                                If Not tt.GetInterface(tSettings) Is Nothing Then
+                                If tt.GetInterface(tSettings) IsNot Nothing Then
                                     Settings = New SettingsHost(Activator.CreateInstance(tt), _XML, GlobalPath, _Temp, _Imgs, _Vids)
                                 End If
                             End If
@@ -72,7 +72,7 @@ Namespace Plugin.Hosts
                 _HasError = True
             End Try
         End Sub
-        Friend Shared Function GetMyHosts(ByRef _XML As XmlFile, ByVal GlobalPath As SFile,
+        Friend Shared Function GetMyHosts(ByRef _XML As XmlFile, GlobalPath As SFile,
                                           ByRef _Temp As XMLValue(Of Boolean), ByRef _Imgs As XMLValue(Of Boolean),
                                           ByRef _Vids As XMLValue(Of Boolean)) As IEnumerable(Of PluginHost)
             Return {New PluginHost(New API.Reddit.SiteSettings, _XML, GlobalPath, _Temp, _Imgs, _Vids),
@@ -85,7 +85,7 @@ Namespace Plugin.Hosts
                     New PluginHost(New API.Xhamster.SiteSettings, _XML, GlobalPath, _Temp, _Imgs, _Vids),
                     New PluginHost(New API.XVIDEOS.SiteSettings, _XML, GlobalPath, _Temp, _Imgs, _Vids)}
         End Function
-        Friend Shared Function GetPluginsHosts(ByRef _XML As XmlFile, ByVal GlobalPath As SFile,
+        Friend Shared Function GetPluginsHosts(ByRef _XML As XmlFile, GlobalPath As SFile,
                                                ByRef _Temp As XMLValue(Of Boolean), ByRef _Imgs As XMLValue(Of Boolean),
                                                ByRef _Vids As XMLValue(Of Boolean)) As IEnumerable(Of PluginHost)
             Try

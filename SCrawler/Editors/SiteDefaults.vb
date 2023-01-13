@@ -18,7 +18,7 @@ Namespace Editors
             InitCheckBox(CH_IMG, "Download images")
             InitCheckBox(CH_VID, "Download videos")
         End Sub
-        Private Sub InitCheckBox(ByRef CH As CheckBox, ByVal Caption As String)
+        Private Sub InitCheckBox(ByRef CH As CheckBox, Caption As String)
             CH = New CheckBox With {.Text = Caption, .Dock = DockStyle.Fill, .UseVisualStyleBackColor = True,
                                     .ThreeState = True, .CheckState = CheckState.Indeterminate}
         End Sub
@@ -52,7 +52,7 @@ Namespace Editors
             Get
                 Return _BaseControlsPadding
             End Get
-            Set(ByVal p As Padding)
+            Set(p As Padding)
                 _BaseControlsPadding = p
                 CH_TEMP.Padding = p
                 CH_IMG.Padding = p
@@ -68,7 +68,7 @@ Namespace Editors
             Get
                 Return CH_TEMP.CheckState
             End Get
-            Set(ByVal s As CheckState)
+            Set(s As CheckState)
                 CH_TEMP.CheckState = s
             End Set
         End Property
@@ -78,7 +78,7 @@ Namespace Editors
             Get
                 Return CH_IMG.CheckState
             End Get
-            Set(ByVal s As CheckState)
+            Set(s As CheckState)
                 CH_IMG.CheckState = s
             End Set
         End Property
@@ -88,7 +88,7 @@ Namespace Editors
             Get
                 Return CH_VID.CheckState
             End Get
-            Set(ByVal s As CheckState)
+            Set(s As CheckState)
                 CH_VID.CheckState = s
             End Set
         End Property
@@ -101,7 +101,7 @@ Namespace Editors
             SetChecker(CH.MyImagesDown, h.DownloadImages)
             SetChecker(CH.MyVideosDown, h.DownloadVideos)
         End Sub
-        Private Overloads Shared Sub SetChecker(ByRef State As CheckState, ByVal Prop As XML.Base.XMLValue(Of Boolean))
+        Private Overloads Shared Sub SetChecker(ByRef State As CheckState, Prop As XML.Base.XMLValue(Of Boolean))
             If Prop.ValueF.Exists Then
                 State = If(Prop.Value, CheckState.Checked, CheckState.Unchecked)
             Else
@@ -113,7 +113,7 @@ Namespace Editors
             SetPropByChecker(CH.MyImagesDown, h.DownloadImages)
             SetPropByChecker(CH.MyVideosDown, h.DownloadVideos)
         End Sub
-        Private Overloads Shared Sub SetPropByChecker(ByVal State As CheckState, ByRef Prop As XML.Base.XMLValue(Of Boolean))
+        Private Overloads Shared Sub SetPropByChecker(State As CheckState, ByRef Prop As XML.Base.XMLValue(Of Boolean))
             Select Case State
                 Case CheckState.Checked : Prop.Value = True
                 Case CheckState.Unchecked : Prop.Value = False

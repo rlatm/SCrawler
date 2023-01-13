@@ -18,14 +18,14 @@ Namespace Plugin
         ReadOnly Property Image As Image
         ReadOnly Property Site As String
         Property Logger As ILogProvider
-        Function GetUserUrl(ByVal User As IPluginContentProvider, ByVal Channel As Boolean) As String
-        Function IsMyUser(ByVal UserURL As String) As ExchangeOptions
-        Function IsMyImageVideo(ByVal URL As String) As ExchangeOptions
-        Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
-        Function GetInstance(ByVal What As Download) As IPluginContentProvider
-        Function GetUserPostUrl(ByVal User As IPluginContentProvider, ByVal Media As IUserMedia) As String
+        Function GetUserUrl(User As IPluginContentProvider, Channel As Boolean) As String
+        Function IsMyUser(UserURL As String) As ExchangeOptions
+        Function IsMyImageVideo(URL As String) As ExchangeOptions
+        Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
+        Function GetInstance(What As Download) As IPluginContentProvider
+        Function GetUserPostUrl(User As IPluginContentProvider, Media As IUserMedia) As String
 #Region "XML Support"
-        Sub Load(ByVal XMLValues As IEnumerable(Of KeyValuePair(Of String, String)))
+        Sub Load(XMLValues As IEnumerable(Of KeyValuePair(Of String, String)))
 #End Region
 #Region "Initialization"
         Sub BeginInit()
@@ -36,18 +36,18 @@ Namespace Plugin
         Sub EndEdit()
 #End Region
 #Region "Site availability"
-        Function Available(ByVal What As Download, ByVal Silent As Boolean) As Boolean
-        Function ReadyToDownload(ByVal What As Download) As Boolean
+        Function Available(What As Download, Silent As Boolean) As Boolean
+        Function ReadyToDownload(What As Download) As Boolean
 #End Region
 #Region "Downloading"
-        Sub DownloadStarted(ByVal What As Download)
-        Sub BeforeStartDownload(ByVal User As Object, ByVal What As Download)
-        Sub AfterDownload(ByVal User As Object, ByVal What As Download)
-        Sub DownloadDone(ByVal What As Download)
+        Sub DownloadStarted(What As Download)
+        Sub BeforeStartDownload(User As Object, What As Download)
+        Sub AfterDownload(User As Object, What As Download)
+        Sub DownloadDone(What As Download)
 #End Region
         Sub Update()
         Sub Reset()
         Sub OpenSettingsForm()
-        Sub UserOptions(ByRef Options As Object, ByVal OpenForm As Boolean)
+        Sub UserOptions(ByRef Options As Object, OpenForm As Boolean)
     End Interface
 End Namespace

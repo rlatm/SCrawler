@@ -74,7 +74,7 @@
     - `TaskGroup` attribute
     - `IUserMedia` interface
   - Changed
-    - `GetUserUrl` and `GetUserPostUrl` functions: `String UserName` and `String UserID` changed to ` IPluginContentProvider User`
+    - `GetUserUrl` and `GetUserPostUrl` functions: `String UserName` and `String UserID` changed to `IPluginContentProvider User`
 - Fixed
   - Collections editor: new added collections are still not added to the top of the collections list
   - Users search form doesn't remember last size

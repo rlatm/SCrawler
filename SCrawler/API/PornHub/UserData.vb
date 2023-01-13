@@ -13,26 +13,40 @@ Imports PersonalUtilities.Functions.RegularExpressions
 Imports PersonalUtilities.Tools.Web.Clients
 Imports PersonalUtilities.Tools.Web.Documents.JSON
 Imports UTypes = SCrawler.API.Base.UserMedia.Types
+
 Namespace API.PornHub
+
     Friend Class UserData : Inherits UserDataBase
         Private Const UrlPattern As String = "https://www.pornhub.com/{0}"
+
 #Region "Declarations"
+
 #Region "XML names"
-        Private Const Name_PersonType As String = "PersonType"
-        Private Const Name_NameTrue As String = "NameTrue"
-        Private Const Name_VideoPageModel As String = "VideoPageModel"
-        Private Const Name_PhotoPageModel As String = "PhotoPageModel"
+
         Private Const Name_DownloadGifs As String = "DownloadGifs"
         Private Const Name_DownloadPhotoOnlyFromModelHub As String = "DownloadPhotoOnlyFromModelHub"
+        Private Const Name_NameTrue As String = "NameTrue"
+        Private Const Name_PersonType As String = "PersonType"
+        Private Const Name_PhotoPageModel As String = "PhotoPageModel"
+        Private Const Name_VideoPageModel As String = "VideoPageModel"
+
 #End Region
+
 #Region "Structures"
+
         Private Structure FlashVar : Implements IRegExCreator
             Friend Name As String
             Friend Value As String
-            Public Shared Widening Operator CType(ByVal Name As String) As FlashVar
+
+            Public Shared Widening Operator CType(Name As String) As FlashVar
                 Return New FlashVar With {.Name = Name}
             End Operator
-            Private Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+
+            Public Overrides Function Equals(Obj As Object) As Boolean
+                Return CType(Obj, FlashVar).Name = Name
+            End Function
+
+            Private Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
                 If ParamsArray.ListExists(2) Then
                     Name = ParamsArray(0)
                     Value = ParamsArray(1)
@@ -40,21 +54,40 @@ Namespace API.PornHub
                 End If
                 Return Me
             End Function
-            Public Overrides Function Equals(ByVal Obj As Object) As Boolean
-                Return CType(Obj, FlashVar).Name = Name
-            End Function
+
         End Structure
+
+        Private Structure PhotoBlock : Implements IRegExCreator
+            Friend AlbumID As String
+            Friend Data As String
+
+            Private Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+                If ParamsArray.ListExists(2) Then
+                    AlbumID = ParamsArray(0)
+                    Data = ParamsArray(1).StringTrim
+                End If
+                Return Me
+            End Function
+
+        End Structure
+
         Private Structure UserVideo : Implements IRegExCreator
-            Friend URL As String
             Friend ID As String
             Friend Title As String
+            Friend URL As String
+
+            Public Overrides Function Equals(Obj As Object) As Boolean
+                Return DirectCast(Obj, UserVideo).URL = URL
+            End Function
+
             Friend Function ToUserMedia() As UserMedia
                 Return New UserMedia(URL, UTypes.VideoPre) With {
                     .File = If(Title.IsEmptyString, .File, New SFile($"{Title}.mp4")),
                     .Post = ID
                 }
             End Function
-            Private Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+
+            Private Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
                 If ParamsArray.ListExists Then
                     URL = ParamsArray(0)
                     ID = RegexReplace(URL, RegexVideo_Video_VideoKey)
@@ -63,82 +96,94 @@ Namespace API.PornHub
                 End If
                 Return Me
             End Function
-            Public Overrides Function Equals(ByVal Obj As Object) As Boolean
-                Return DirectCast(Obj, UserVideo).URL = URL
-            End Function
+
         End Structure
-        Private Structure PhotoBlock : Implements IRegExCreator
-            Friend AlbumID As String
-            Friend Data As String
-            Private Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
-                If ParamsArray.ListExists(2) Then
-                    AlbumID = ParamsArray(0)
-                    Data = ParamsArray(1).StringTrim
-                End If
-                Return Me
-            End Function
-        End Structure
+
 #End Region
+
 #Region "Enums"
+
         Friend Enum VideoPageModels As Integer
             [Default] = 0
             ConcatPage = 1
             Favorite = 2
             Undefined = -1
         End Enum
+
         Private Enum PhotoPageModels As Integer
             Undefined = 0
             PornHubPage = 1
             ModelHubPage = 2
         End Enum
+
 #End Region
+
 #Region "Constants"
-        Private Const PersonTypeModel As String = "model"
+
         Friend Const PersonTypeUser As String = "users"
+        Private Const PersonTypeModel As String = "model"
+
 #End Region
+
 #Region "Person"
-        Friend Property PersonType As String
-        Friend Property NameTrue As String
+
         Private _FriendlyName As String = String.Empty
+
         Friend Overrides Property FriendlyName As String
             Get
                 If _FriendlyName.IsEmptyString Then Return NameTrue Else Return _FriendlyName
             End Get
-            Set(ByVal n As String)
+            Set(n As String)
                 _FriendlyName = n
             End Set
         End Property
+
+        Friend Property NameTrue As String
+        Friend Property PersonType As String
+
 #End Region
+
 #Region "Advanced fields"
-        Friend Property VideoPageModel As VideoPageModels = VideoPageModels.Undefined
-        Private Property PhotoPageModel As PhotoPageModels = PhotoPageModels.Undefined
+
         Friend Property DownloadGifs As Boolean
         Friend Property DownloadPhotoOnlyFromModelHub As Boolean = True
+        Friend Property VideoPageModel As VideoPageModels = VideoPageModels.Undefined
+        Private Property PhotoPageModel As PhotoPageModels = PhotoPageModels.Undefined
+
 #End Region
+
 #Region "ExchangeOptions"
+
         Friend Overrides Function ExchangeOptionsGet() As Object
             Return New UserExchangeOptions(Me)
         End Function
-        Friend Overrides Sub ExchangeOptionsSet(ByVal Obj As Object)
-            If Not Obj Is Nothing AndAlso TypeOf Obj Is UserExchangeOptions Then
+
+        Friend Overrides Sub ExchangeOptionsSet(Obj As Object)
+            If Obj IsNot Nothing AndAlso TypeOf Obj Is UserExchangeOptions Then
                 With DirectCast(Obj, UserExchangeOptions)
                     DownloadGifs = .DownloadGifs
                     DownloadPhotoOnlyFromModelHub = .DownloadPhotoOnlyFromModelHub
                 End With
             End If
         End Sub
+
 #End Region
+
         Private ReadOnly Property MySettings As SiteSettings
             Get
                 Return DirectCast(HOST.Source, SiteSettings)
             End Get
         End Property
+
 #End Region
+
 #Region "Initializer, loader"
+
         Friend Sub New()
             UseInternalM3U8Function = True
         End Sub
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
             With Container
                 Dim SetNames As Action = Sub()
                                              If Not Name.IsEmptyString And NameTrue.IsEmptyString Then
@@ -170,12 +215,17 @@ Namespace API.PornHub
                 End If
             End With
         End Sub
+
 #End Region
+
 #Region "Downloading"
+
 #Region "Download override"
+
         Private Const DataDownloaded As Integer = -10
         Private Const DataDownloaded_NotFound As Integer = -20
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             Try
                 Responser.ResetStatus()
                 If PersonType = PersonTypeUser Then Responser.Mode = Responser.Modes.Curl
@@ -210,7 +260,7 @@ Namespace API.PornHub
                     If __continue And Not __videoDone Then
                         Do While DownloadUserVideos(page, Token) = DataDownloaded And page < 100 : page += 1 : Loop
                     End If
-                    If _TempMediaList.Count > 0 Then _TempMediaList.RemoveAll(Function(m) Not m.Type = UTypes.m3u8 And Not m.Type = UTypes.VideoPre)
+                    If _TempMediaList.Count > 0 Then _TempMediaList.RemoveAll(Function(m) Not m.Type = UTypes.m3u8 AndAlso Not m.Type = UTypes.VideoPre)
                 End If
 
                 Responser.Method = "GET"
@@ -221,8 +271,17 @@ Namespace API.PornHub
                 Responser.Method = "GET"
             End Try
         End Sub
+
 #End Region
+
 #Region "Download video"
+
+        Private ReadOnly Property VideoPageAppender As String
+            Get
+                Return If(PersonType = PersonTypeUser, "ajax?o=newest&page=", String.Empty)
+            End Get
+        End Property
+
         Private ReadOnly Property VideoPageType As String
             Get
                 Select Case VideoPageModel
@@ -232,12 +291,8 @@ Namespace API.PornHub
                 End Select
             End Get
         End Property
-        Private ReadOnly Property VideoPageAppender As String
-            Get
-                Return If(PersonType = PersonTypeUser, "ajax?o=newest&page=", String.Empty)
-            End Get
-        End Property
-        Private Overloads Function DownloadUserVideos(ByVal Page As Integer, ByVal Token As CancellationToken) As Integer
+
+        Private Overloads Function DownloadUserVideos(Page As Integer, Token As CancellationToken) As Integer
             Const VideoUrlPattern$ = "https://www.pornhub.com/{0}/{1}{2}{3}"
             Const HtmlPageNotFoundVideo$ = "<span>Error Page Not Found</span>"
             Dim URL$ = String.Empty
@@ -262,7 +317,7 @@ Namespace API.PornHub
                         If lw.ListExists Then l.ListWithRemove(lw)
                         If l.Count > 0 Then
                             Dim lBefore% = l.Count
-                            l.RemoveAll(Function(ByVal uv As UserVideo) As Boolean
+                            l.RemoveAll(Function(uv As UserVideo) As Boolean
                                             If Not _TempPostsList.Contains(uv.ID) Then
                                                 _TempPostsList.Add(uv.ID)
                                                 Return False
@@ -286,9 +341,12 @@ Namespace API.PornHub
                 Return ProcessException(ex, Token, $"videos downloading error [{URL}]")
             End Try
         End Function
+
 #End Region
+
 #Region "Download GIF"
-        Private Sub DownloadUserGifs(ByVal Token As CancellationToken)
+
+        Private Sub DownloadUserGifs(Token As CancellationToken)
             Dim URL$ = $"https://www.pornhub.com/{PersonType}/{NameTrue}/gifs"
             Try
                 ThrowAny(Token)
@@ -335,11 +393,15 @@ Namespace API.PornHub
                 ProcessException(ex, Token, $"gifs downloading error [{URL}]")
             End Try
         End Sub
+
 #End Region
+
 #Region "Download photo"
+
         Private Const PhotoUrlPattern_ModelHub As String = "https://www.modelhub.com/{0}/photos"
         Private Const PhotoUrlPattern_PornHub As String = "https://www.pornhub.com/{0}/{1}/photos"
-        Private Sub DownloadUserPhotos(ByVal Token As CancellationToken)
+
+        Private Sub DownloadUserPhotos(Token As CancellationToken)
             Try
                 If IsSavedPosts Then
                     DownloadUserPhotos_SavedPosts(Token)
@@ -363,7 +425,8 @@ Namespace API.PornHub
                 ProcessException(ex, Token, "photos downloading error")
             End Try
         End Sub
-        Private Function DownloadUserPhotos_ModelHub(ByVal Token As CancellationToken) As Boolean
+
+        Private Function DownloadUserPhotos_ModelHub(Token As CancellationToken) As Boolean
             Dim URL$ = String.Empty
             Try
                 Dim jErr As New ErrorsDescriber(EDP.SendInLog + EDP.ReturnValue)
@@ -382,12 +445,10 @@ Namespace API.PornHub
                                 albumName = StringTrim(RegexReplace(r, albumRegex))
                                 If albumName.IsEmptyString Then albumName = block.AlbumID
                                 Using j As EContainer = JsonDocument.Parse("{" & block.Data & "}", jErr)
-                                    If Not j Is Nothing Then
-                                        If If(j("urls")?.Count, 0) > 0 Then
-                                            _TempMediaList.ListAddList(j("urls").Select(Function(jj) _
-                                                                       New UserMedia(jj.ItemF({0}).XmlIfNothingValue, UTypes.Picture) With {
-                                                                                     .SpecialFolder = $"Albums\{albumName}\"}), LNC)
-                                        End If
+                                    If j IsNot Nothing AndAlso If(j("urls")?.Count, 0) > 0 Then
+                                        _TempMediaList.ListAddList(j("urls").Select(Function(jj) _
+                                                                   New UserMedia(jj.ItemF({0}).XmlIfNothingValue, UTypes.Picture) With {
+                                                                                 .SpecialFolder = $"Albums\{albumName}\"}), LNC)
                                     End If
                                 End Using
                             Next
@@ -401,7 +462,8 @@ Namespace API.PornHub
                 Return False
             End Try
         End Function
-        Private Overloads Function DownloadUserPhotos_PornHub(ByVal Token As CancellationToken) As Boolean
+
+        Private Overloads Function DownloadUserPhotos_PornHub(Token As CancellationToken) As Boolean
             Try
                 Dim albumName$
                 Dim page%
@@ -430,8 +492,9 @@ Namespace API.PornHub
                 Return False
             End Try
         End Function
-        Private Overloads Function DownloadUserPhotos_PornHub(ByVal Page As Integer, ByVal AlbumID As String, ByVal AlbumName As String,
-                                                              ByVal Token As CancellationToken) As Boolean
+
+        Private Overloads Function DownloadUserPhotos_PornHub(Page As Integer, AlbumID As String, AlbumName As String,
+Token As CancellationToken) As Boolean
             Try
                 Dim r$ = Responser.GetResponse($"https://www.pornhub.com{AlbumID}{IIf(Page = 1, String.Empty, $"?page={Page}")}")
                 If Not r.IsEmptyString Then
@@ -460,7 +523,8 @@ Namespace API.PornHub
                 Return False
             End Try
         End Function
-        Private Function DownloadUserPhotos_SavedPosts(ByVal Token As CancellationToken) As Boolean
+
+        Private Function DownloadUserPhotos_SavedPosts(Token As CancellationToken) As Boolean
             Const HtmlPageNotFoundPhoto$ = "Page Not Found"
             Dim URL$ = $"https://www.pornhub.com/{PersonType}/{NameTrue}/photos/favorites"
             Try
@@ -509,10 +573,14 @@ Namespace API.PornHub
                 Return ProcessException(ex, Token, $"photos downloading error [{URL}]")
             End Try
         End Function
+
 #End Region
+
 #End Region
+
 #Region "ReparseVideo"
-        Protected Overrides Sub ReparseVideo(ByVal Token As CancellationToken)
+
+        Protected Overrides Sub ReparseVideo(Token As CancellationToken)
             Const ERR_NEW_URL$ = "ERR_NEW_URL"
             Dim URL$ = String.Empty
             Try
@@ -553,9 +621,12 @@ Namespace API.PornHub
                 ProcessException(ex, Token, "video reparsing error", False)
             End Try
         End Sub
+
 #End Region
+
 #Region "ReparseMissing"
-        Protected Overrides Sub ReparseMissing(ByVal Token As CancellationToken)
+
+        Protected Overrides Sub ReparseMissing(Token As CancellationToken)
             Dim rList As New List(Of Integer)
             Try
                 If ContentMissingExists Then
@@ -587,17 +658,24 @@ Namespace API.PornHub
                 End If
             End Try
         End Sub
+
 #End Region
+
 #Region "Download content"
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             DownloadContentDefault(Token)
         End Sub
-        Protected Overrides Function DownloadM3U8(ByVal URL As String, ByVal Media As UserMedia, ByVal DestinationFile As SFile) As SFile
+
+        Protected Overrides Function DownloadM3U8(URL As String, Media As UserMedia, DestinationFile As SFile) As SFile
             Return M3U8.Download(URL, Responser, DestinationFile)
         End Function
+
 #End Region
+
 #Region "CreateVideoURL"
-        Private Shared Function CreateVideoURL(ByVal r As String) As String
+
+        Private Shared Function CreateVideoURL(r As String) As String
             Try
                 Dim OutStr$ = String.Empty
                 If Not r.IsEmptyString Then
@@ -623,9 +701,12 @@ Namespace API.PornHub
                 Return ErrorsDescriber.Execute(EDP.SendInLog, ex, "[API.PornHub.UserData.CreateVideoURL]", String.Empty)
             End Try
         End Function
+
 #End Region
+
 #Region "Standalone downloader"
-        Friend Shared Function GetVideoInfo(ByVal URL As String, ByVal Responser As Responser, ByVal Destination As SFile) As UserMedia
+
+        Friend Shared Function GetVideoInfo(URL As String, Responser As Responser, Destination As SFile) As UserMedia
             Try
                 Dim r$ = Responser.Curl(URL)
                 If Not r.IsEmptyString Then
@@ -640,10 +721,13 @@ Namespace API.PornHub
                 Return ErrorsDescriber.Execute(EDP.SendInLog + EDP.ReturnValue, ex, $"PornHub standalone download error: [{URL}]", New UserMedia)
             End Try
         End Function
+
 #End Region
+
 #Region "Exceptions"
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String,
-                                                          Optional ByVal FromPE As Boolean = False, Optional ByVal EObj As Object = Nothing) As Integer
+
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String,
+                                                          Optional FromPE As Boolean = False, Optional EObj As Object = Nothing) As Integer
             If Responser.Status = Net.WebExceptionStatus.ConnectionClosed Then
                 Return 1
             ElseIf Responser.StatusCode = Net.HttpStatusCode.ServiceUnavailable Then
@@ -652,6 +736,9 @@ Namespace API.PornHub
                 Return 0
             End If
         End Function
+
 #End Region
+
     End Class
+
 End Namespace

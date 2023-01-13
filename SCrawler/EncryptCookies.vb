@@ -11,10 +11,10 @@ Namespace EncryptCookies
     Friend Module EncryptFunction
         Friend CookiesEncrypted As Boolean = False
         Friend Sub ValidateCookiesEncrypt(ByRef Responser As Responser)
-            If Not Responser Is Nothing Then
+            If Responser IsNot Nothing Then
                 Dim b As Boolean = False
                 With Responser
-                    If Not .Cookies Is Nothing Then
+                    If .Cookies IsNot Nothing Then
                         With .Cookies
                             If .EncryptKey.IsEmptyString Then .EncryptKey = SettingsCLS.CookieEncryptKey : b = .Count > 0
                         End With

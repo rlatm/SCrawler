@@ -112,14 +112,14 @@ Namespace DownloadObjects
         End Sub
 #End Region
 #Region "Refill"
-        Friend Sub Downloader_FilesChanged(ByVal Added As Boolean)
+        Friend Sub Downloader_FilesChanged(Added As Boolean)
             ControlInvokeFast(ToolbarTOP, BTT_REFRESH, Sub() BTT_REFRESH.ToolTipText = If(Added, "New files found", "Some files have been removed"))
             BTT_REFRESH.ControlChangeColor(ToolbarTOP, Added, False)
         End Sub
         Private Sub BTT_REFRESH_Click(sender As Object, e As EventArgs) Handles BTT_REFRESH.Click
             RefillList()
         End Sub
-        Private Sub RefillList(Optional ByVal RefillDataList As Boolean = True)
+        Private Sub RefillList(Optional RefillDataList As Boolean = True)
             DataPopulated = False
             If RefillDataList Then
                 Try : Downloader.Files.RemoveAll(FileNotExist) : Catch : End Try
@@ -145,7 +145,7 @@ Namespace DownloadObjects
         Private Sub BTT_LOAD_SESSION_CHOOSE_Click(sender As Object, e As EventArgs) Handles BTT_LOAD_SESSION_CHOOSE.Click
             SessionChooser(False)
         End Sub
-        Private Sub SessionChooser(ByVal GetLast As Boolean)
+        Private Sub SessionChooser(GetLast As Boolean)
             Try
                 Dim f As SFile = TDownloader.SessionsPath.CSFileP
                 Dim fList As List(Of SFile) = Nothing
@@ -239,7 +239,7 @@ Namespace DownloadObjects
                 ErrorsDescriber.Execute(EDP.LogMessageValue, ex, MsgTitle)
             End Try
         End Sub
-        Private Sub FeedMedia_MediaDeleted(ByVal Sender As FeedMedia)
+        Private Sub FeedMedia_MediaDeleted(Sender As FeedMedia)
             Try
                 ControlInvoke(TP_DATA, Sub() TPRemoveControl(Sender, True))
                 DataList.RemoveAll(Function(dd) dd.Data.File = Sender.File)
@@ -247,7 +247,7 @@ Namespace DownloadObjects
             Catch
             End Try
         End Sub
-        Private Sub TPRemoveControl(ByVal CNT As FeedMedia, ByVal Suspend As Boolean)
+        Private Sub TPRemoveControl(CNT As FeedMedia, Suspend As Boolean)
             Dim HeightChanged As Boolean = False
             Try
                 If Suspend Then TP_DATA.SuspendLayout() : LatestScrollValueDisabled = True
@@ -269,7 +269,7 @@ Namespace DownloadObjects
                     If p.Row.ValueBetween(0, TP_DATA.RowStyles.Count - 1) And p.Column.ValueBetween(0, TP_DATA.ColumnStyles.Count - 1) Then
                         Dim found As Boolean = False
                         For i% = 0 To TP_DATA.ColumnStyles.Count - 1
-                            If Not TP_DATA.GetControlFromPosition(i, p.Row) Is Nothing Then found = True : Exit For
+                            If TP_DATA.GetControlFromPosition(i, p.Row) IsNot Nothing Then found = True : Exit For
                         Next
                         If Not found Then DropHeight.Invoke
                     End If
@@ -327,13 +327,13 @@ Namespace DownloadObjects
             Private ReadOnly ColumnsCount As Integer
             Friend ReadOnly Row As Integer
             Friend ReadOnly Column As Integer
-            Friend Sub New(ByVal RowsCount As Integer, ByVal ColumnsCount As Integer)
+            Friend Sub New(RowsCount As Integer, ColumnsCount As Integer)
                 Me.RowsCount = RowsCount
                 Me.ColumnsCount = ColumnsCount
                 Row = 0
                 Column = 0
             End Sub
-            Private Sub New(ByVal RowsCount As Integer, ByVal ColumnsCount As Integer, ByVal Row As Integer, ByVal Column As Integer)
+            Private Sub New(RowsCount As Integer, ColumnsCount As Integer, Row As Integer, Column As Integer)
                 Me.New(RowsCount, ColumnsCount)
                 Me.Row = Row
                 Me.Column = Column
@@ -346,7 +346,7 @@ Namespace DownloadObjects
             End Function
         End Structure
         Private RefillInProgress As Boolean = False
-        Private Sub MyRange_IndexChanged(ByVal Sender As IRangeSwitcherProvider, ByVal e As EventArgs) Handles MyRange.IndexChanged
+        Private Sub MyRange_IndexChanged(Sender As IRangeSwitcherProvider, e As EventArgs) Handles MyRange.IndexChanged
             Try
                 If Not RefillInProgress AndAlso Sender.CurrentIndex >= 0 Then
                     RefillInProgress = True

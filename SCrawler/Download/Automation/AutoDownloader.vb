@@ -59,14 +59,14 @@ Namespace DownloadObjects
             Private Sub New()
                 Images = New Dictionary(Of String, SFile)
             End Sub
-            Private Sub New(ByVal _Key As String)
+            Private Sub New(_Key As String)
                 Me.New
                 Key = _Key
                 KeyFolder = $"{Key}{KeyOpenFolder}"
                 KeySite = $"{Key}{KeyOpenSite}"
                 KeyDismiss = $"{Key}{KeyBttDismiss}"
             End Sub
-            Friend Sub New(ByVal _Key As String, ByRef _User As IUserData, ByRef Source As AutoDownloader)
+            Friend Sub New(_Key As String, ByRef _User As IUserData, ByRef Source As AutoDownloader)
                 Me.New(_Key)
                 User = _User
                 IUserDataKey = _User.Key
@@ -77,14 +77,14 @@ Namespace DownloadObjects
                     If i >= 0 Then IUserDataKey = Settings.Users(i).Key
                 End If
             End Sub
-            Public Shared Widening Operator CType(ByVal Key As String) As NotifiedUser
+            Public Shared Widening Operator CType(Key As String) As NotifiedUser
                 Return New NotifiedUser(Key)
             End Operator
             Friend Sub ShowNotification()
                 Try
-                    If Not AutoDownloaderSource Is Nothing And Settings.ProcessNotification(SettingsCLS.NotificationObjects.AutoDownloader) Then
+                    If AutoDownloaderSource IsNot Nothing And Settings.ProcessNotification(SettingsCLS.NotificationObjects.AutoDownloader) Then
                         If AutoDownloaderSource.ShowNotifications Then
-                            If Not User Is Nothing Then
+                            If User IsNot Nothing Then
                                 Dim Text$ = $"{User.Site} - {User.Name}{vbNewLine}" &
                                             $"Downloaded: {User.DownloadedPictures(False)} images, {User.DownloadedVideos(False)} videos"
                                 Dim Title$
@@ -132,7 +132,7 @@ Namespace DownloadObjects
                     End If
                 Catch ex As Exception
                     ErrorsDescriber.Execute(EDP.SendInLog, ex, "[AutoDownloader.NotifiedUser.ShowNotification]")
-                    If Not User Is Nothing Then
+                    If User IsNot Nothing Then
                         MainFrameObj.ShowNotification(SettingsCLS.NotificationObjects.AutoDownloader,
                                                       User.ToString & vbNewLine &
                                                       $"Downloaded: {User.DownloadedPictures(False)} images, {User.DownloadedVideos(False)} videos" &
@@ -141,8 +141,8 @@ Namespace DownloadObjects
                 End Try
             End Sub
             ''' <returns>True to activate</returns>
-            Friend Function Open(ByVal _Key As String) As Boolean
-                If Not User Is Nothing Then
+            Friend Function Open(_Key As String) As Boolean
+                If User IsNot Nothing Then
                     If KeyDismiss = _Key Then
                     ElseIf Key = _Key Then
                         Return True
@@ -158,14 +158,14 @@ Namespace DownloadObjects
                 End If
                 Return False
             End Function
-            Public Overrides Function Equals(ByVal Obj As Object) As Boolean
+            Public Overrides Function Equals(Obj As Object) As Boolean
                 With CType(Obj, NotifiedUser)
                     Return .Key = Key Or .Key = KeyFolder Or .Key = KeySite Or .Key = KeyDismiss Or Images.ContainsKey(.Key)
                 End With
             End Function
 #Region "IDisposable Support"
             Private disposedValue As Boolean = False
-            Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+            Protected Overridable Overloads Sub Dispose(disposing As Boolean)
                 If Not disposedValue Then
                     If disposing Then Images.Clear()
                     disposedValue = True
@@ -200,7 +200,7 @@ Namespace DownloadObjects
             Get
                 Return _Mode
             End Get
-            Set(ByVal m As Modes)
+            Set(m As Modes)
                 _Mode = m
                 If _Mode = Modes.None Then [Stop]()
             End Set
@@ -213,7 +213,7 @@ Namespace DownloadObjects
         Friend Property ShowPictureUser As Boolean = True
         Friend Property ShowSimpleNotification As Boolean = False
         Private Property Index As Integer = -1 Implements IIndexable.Index
-        Private Function SetIndex(ByVal Obj As Object, ByVal Index As Integer) As Object Implements IIndexable.SetIndex
+        Private Function SetIndex(Obj As Object, Index As Integer) As Object Implements IIndexable.SetIndex
             DirectCast(Obj, AutoDownloader).Index = Index
             Return Obj
         End Function
@@ -225,7 +225,7 @@ Namespace DownloadObjects
             Get
                 Return _LastDownloadDate
             End Get
-            Set(ByVal d As Date)
+            Set(d As Date)
                 _LastDownloadDate = d
                 If Not Initialization Then _LastDownloadDateChanged = True
             End Set
@@ -292,12 +292,12 @@ Namespace DownloadObjects
                 Return _IsNewPlan
             End Get
         End Property
-        Friend Sub New(Optional ByVal IsNewPlan As Boolean = False)
+        Friend Sub New(Optional IsNewPlan As Boolean = False)
             Groups = New List(Of String)
             UserKeys = New List(Of NotifiedUser)
             _IsNewPlan = IsNewPlan
         End Sub
-        Friend Sub New(ByVal x As EContainer)
+        Friend Sub New(x As EContainer)
             Me.New
             Mode = x.Value(Name_Mode).FromXML(Of Integer)(Modes.None)
             Import(x)
@@ -322,13 +322,13 @@ Namespace DownloadObjects
         End Sub
 #End Region
 #Region "Groups Support"
-        Friend Sub GROUPS_Updated(ByVal Sender As DownloadGroup)
+        Friend Sub GROUPS_Updated(Sender As DownloadGroup)
             If Groups.Count > 0 Then
                 Dim i% = Groups.IndexOf(Sender.NameBefore)
                 If i >= 0 Then Groups(i) = Sender.Name : Update()
             End If
         End Sub
-        Friend Sub GROUPS_Deleted(ByVal Sender As DownloadGroup)
+        Friend Sub GROUPS_Deleted(Sender As DownloadGroup)
             If Groups.Count > 0 Then
                 Dim i% = Groups.IndexOf(Sender.Name)
                 If i >= 0 Then Groups.RemoveAt(i) : Update()
@@ -337,9 +337,9 @@ Namespace DownloadObjects
 #End Region
 #Region "Update"
         Friend Sub Update()
-            If Not Source Is Nothing Then Source.Update()
+            If Source IsNot Nothing Then Source.Update()
         End Sub
-        Private Function ToEContainer(Optional ByVal e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
+        Private Function ToEContainer(Optional e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
             Return Export(New EContainer(Scheduler.Name_Plan, String.Empty) From {
                                          New EContainer(Name_Mode, CInt(Mode)),
                                          New EContainer(Name_Groups, Groups.ListToString("|")),
@@ -362,7 +362,7 @@ Namespace DownloadObjects
             End Get
         End Property
         Private _StartTime As Date = Now
-        Friend Sub Start(ByVal Init As Boolean)
+        Friend Sub Start(Init As Boolean)
             If Init Then _StartTime = Now
             _IsNewPlan = False
             If Not Working And Not Mode = Modes.None Then
@@ -374,11 +374,11 @@ Namespace DownloadObjects
         Private _StopRequested As Boolean = False
         Private _Pause As PauseModes = PauseModes.Disabled
         Private _PauseValue As Date? = Nothing
-        Friend Property Pause(Optional ByVal DateLimit As Date? = Nothing) As PauseModes
+        Friend Property Pause(Optional DateLimit As Date? = Nothing) As PauseModes
             Get
                 Return _Pause
             End Get
-            Set(ByVal p As PauseModes)
+            Set(p As PauseModes)
                 _Pause = p
                 Select Case p
                     Case PauseModes.Disabled, PauseModes.Unlimited : _PauseValue = Nothing
@@ -496,7 +496,7 @@ Namespace DownloadObjects
                                        End Sub
                 Select Case Mode
                     Case Modes.All
-                        Dim CheckLabels As Predicate(Of IUserData) = Function(ByVal u As IUserData) As Boolean
+                        Dim CheckLabels As Predicate(Of IUserData) = Function(u As IUserData) As Boolean
                                                                          If LabelsExcluded.Count = 0 Then
                                                                              Return True
                                                                          ElseIf u.Labels.Count = 0 Then
@@ -541,7 +541,7 @@ Namespace DownloadObjects
                 _Downloading = False
             End Try
         End Sub
-        Private Sub ShowNotification(ByVal u As IUserData)
+        Private Sub ShowNotification(u As IUserData)
             Dim k$ = $"{Name}_{u.Key}"
             Dim i% = UserKeys.IndexOf(k)
             If i >= 0 Then
@@ -551,7 +551,7 @@ Namespace DownloadObjects
                 UserKeys.Last.ShowNotification()
             End If
         End Sub
-        Friend Function NotificationClicked(ByVal Key As String, ByRef Found As Boolean, ByRef ActivateForm As Boolean) As Boolean
+        Friend Function NotificationClicked(Key As String, ByRef Found As Boolean, ByRef ActivateForm As Boolean) As Boolean
             Dim i% = UserKeys.IndexOf(Key)
             If i >= 0 Then
                 Found = True
@@ -564,7 +564,7 @@ Namespace DownloadObjects
         End Function
 #End Region
 #Region "IDisposable Support"
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then
                 [Stop]()
                 UserKeys.ListClearDispose()

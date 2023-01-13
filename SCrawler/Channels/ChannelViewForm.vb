@@ -20,7 +20,7 @@ Imports ADB = PersonalUtilities.Forms.Controls.Base.ActionButton.DefaultButtons
 Imports RButton = PersonalUtilities.Forms.Toolbars.RangeSwitcherToolbar.ControlItem
 Friend Class ChannelViewForm : Implements IChannelLimits
 #Region "Events"
-    Friend Event OnUsersAdded(ByVal StartIndex As Integer)
+    Friend Event OnUsersAdded(StartIndex As Integer)
     Friend Event OnDownloadDone As NotificationEventHandler
 #End Region
 #Region "Appended user structure"
@@ -28,24 +28,24 @@ Friend Class ChannelViewForm : Implements IChannelLimits
         Friend ID As String
         Friend File As SFile
         Friend Channel As Channel
-        Friend Sub New(ByVal _ID As String, ByRef _Channel As Channel, Optional ByVal _File As SFile = Nothing)
+        Friend Sub New(_ID As String, ByRef _Channel As Channel, Optional _File As SFile = Nothing)
             ID = _ID
             Channel = _Channel
             If Settings.FromChannelCopyImageToUser Then File = _File
         End Sub
-        Public Shared Widening Operator CType(ByVal _ID As String) As PendingUser
+        Public Shared Widening Operator CType(_ID As String) As PendingUser
             Return New PendingUser(_ID, Nothing)
         End Operator
-        Public Shared Widening Operator CType(ByVal u As PendingUser) As String
+        Public Shared Widening Operator CType(u As PendingUser) As String
             Return u.ToString
         End Operator
-        Friend Sub ChannelUserAdded(Optional ByVal IsAdded As Boolean = True)
-            If Not Channel Is Nothing Then Channel.UserAdded(ID, IsAdded)
+        Friend Sub ChannelUserAdded(Optional IsAdded As Boolean = True)
+            If Channel IsNot Nothing Then Channel.UserAdded(ID, IsAdded)
         End Sub
         Public Overrides Function ToString() As String
             Return ID
         End Function
-        Public Overrides Function Equals(ByVal Obj As Object) As Boolean
+        Public Overrides Function Equals(Obj As Object) As Boolean
             Return Obj.ToString = ID
         End Function
     End Structure
@@ -82,7 +82,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
         Get
             Return OPT_LIMITS_DEFAULT.Checked
         End Get
-        Set(ByVal NewLimit As Boolean)
+        Set(NewLimit As Boolean)
         End Set
     End Property
     Private Property DownloadLimitCount As Integer? Implements IChannelLimits.DownloadLimitCount
@@ -93,7 +93,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
                 Return Nothing
             End If
         End Get
-        Set(ByVal NewLimit As Integer?)
+        Set(NewLimit As Integer?)
         End Set
     End Property
     Private Property DownloadLimitPost As String Implements IChannelLimits.DownloadLimitPost
@@ -104,7 +104,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
                 Return String.Empty
             End If
         End Get
-        Set(ByVal NewLimit As String)
+        Set(NewLimit As String)
         End Set
     End Property
     Private Property DownloadLimitDate As Date? Implements IChannelLimits.DownloadLimitDate
@@ -115,20 +115,20 @@ Friend Class ChannelViewForm : Implements IChannelLimits
                 Return Nothing
             End If
         End Get
-        Set(ByVal NewDate As Date?)
+        Set(NewDate As Date?)
         End Set
     End Property
-    Private Sub SetLimit(Optional ByVal Post As String = "", Optional ByVal Count As Integer? = Nothing,
-                         Optional ByVal [Date] As Date? = Nothing) Implements IChannelLimits.SetLimit
+    Private Sub SetLimit(Optional Post As String = "", Optional Count As Integer? = Nothing,
+                         Optional [Date] As Date? = Nothing) Implements IChannelLimits.SetLimit
     End Sub
-    Private Sub SetLimit(ByVal Source As IChannelLimits) Implements IChannelLimits.SetLimit
+    Private Sub SetLimit(Source As IChannelLimits) Implements IChannelLimits.SetLimit
     End Sub
 #End Region
     Private ReadOnly HOST As SettingsHost
     Private ReadOnly PendingUsers As List(Of PendingUser)
     Private ReadOnly LNC As New ListAddParams(LAP.NotContainsOnly)
     Private WithEvents MyRange As RangeSwitcherToolbar(Of UserPost)
-    Private ReadOnly SelectorExpression As Predicate(Of UserPost) = Function(ByVal Post As UserPost) As Boolean
+    Private ReadOnly SelectorExpression As Predicate(Of UserPost) = Function(Post As UserPost) As Boolean
                                                                         If Post.UserID.ToLower = "[deleted]" Or Settings.BlackList.Contains(Post.UserID) Then
                                                                             Return False
                                                                         Else
@@ -270,7 +270,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
     End Sub
 #End Region
 #Region "Refill"
-    Private Sub RefillChannels(Optional ByVal SelectedChannel As String = Nothing)
+    Private Sub RefillChannels(Optional SelectedChannel As String = Nothing)
         CMB_CHANNELS.BeginUpdate()
         Dim indx%? = Nothing
         Dim t$ = If(SelectedChannel.IsEmptyString, CMB_CHANNELS.Text, SelectedChannel)
@@ -292,7 +292,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
     Private Sub AppendPendingUsers()
         If LIST_POSTS.CheckedIndices.Count > 0 Then
             Dim c As Channel = GetCurrentChannel(False)
-            Dim lp As New ListAddParams(LAP.NotContainsOnly) With {.OnProcessAction = Sub(ByVal u As PendingUser) u.ChannelUserAdded()}
+            Dim lp As New ListAddParams(LAP.NotContainsOnly) With {.OnProcessAction = Sub(u As PendingUser) u.ChannelUserAdded()}
             PendingUsers.ListAddList((From p As ListViewItem In LIST_POSTS.Items
                                       Where p.Checked
                                       Select New PendingUser(p.Text, c, GetPostBySelected(CStr(p.Tag)).CachedFile)), lp)
@@ -357,7 +357,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             MsgBoxE("No user has been selected to add to the collection")
         End If
     End Sub
-    Private Sub CopyFile(ByVal Source As IEnumerable(Of ChannelsCollection.ChannelImage), ByVal Destination As SFile)
+    Private Sub CopyFile(Source As IEnumerable(Of ChannelsCollection.ChannelImage), Destination As SFile)
         Try
             If Source.ListExists And Not Destination.IsEmptyString Then
                 Destination = Destination.CutPath.PathWithSeparator & "ChannelImage\"
@@ -398,7 +398,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
         End With
         Return s
     End Function
-    Private Sub ImagesCountChanged(ByVal Sender As Object, ByVal _Name As String, ByVal _Value As Object)
+    Private Sub ImagesCountChanged(Sender As Object, _Name As String, _Value As Object)
         AppendPendingUsers()
         MyRange.Limit = ImagesInRow * ImagesRows
         MyRange.GoTo(0)
@@ -409,7 +409,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
     Private Token As CancellationToken
     Friend ReadOnly Property Working As Boolean
         Get
-            Return Not TokenSource Is Nothing
+            Return TokenSource IsNot Nothing
         End Get
     End Property
     Private _ShowCancelNotification As Boolean = True
@@ -417,7 +417,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
     Private Async Sub BTT_DOWNLOAD_Click(sender As Object, e As EventArgs) Handles BTT_DOWNLOAD.Click
         Try
             AppendPendingUsers()
-            If Not TokenSource Is Nothing OrElse Not HOST.Source.Available(Plugin.ISiteSettings.Download.Channel, False) Then Exit Sub
+            If TokenSource IsNot Nothing OrElse Not HOST.Source.Available(Plugin.ISiteSettings.Download.Channel, False) Then Exit Sub
             Dim InvokeToken As Action = Sub()
                                             If TokenSource Is Nothing Then
                                                 CProgress.Maximum = 0
@@ -452,7 +452,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
                     c = GetCurrentChannel()
                 Else
                     c = GetCurrentChannel()
-                    If Not c Is Nothing Then
+                    If c IsNot Nothing Then
                         InvokeToken.Invoke()
                         c.SetLimit(Me)
                         Await Task.Run(Sub() c.DownloadData(Token, CH_HIDE_EXISTS_USERS.Checked, CProgress))
@@ -461,7 +461,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
                         Token.ThrowIfCancellationRequested()
                     End If
                 End If
-                If Not c Is Nothing Then
+                If c IsNot Nothing Then
                     SetLimitsByChannel(c)
                     MyRange.Source = c
                 End If
@@ -477,7 +477,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
         Catch ex As Exception
             ErrorsDescriber.Execute(EDP.LogMessageValue, ex, "Channels downloading error")
         Finally
-            If Not TokenSource Is Nothing AndAlso Not Settings.Channels.Downloading Then
+            If TokenSource IsNot Nothing AndAlso Not Settings.Channels.Downloading Then
                 TokenSource = Nothing
                 CProgress.Visible = False
                 BTT_DOWNLOAD.Enabled = True
@@ -497,7 +497,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             End If
         End Try
     End Sub
-    Private Function GetCurrentChannel(Optional ByVal ShowExclamation As Boolean = True) As Channel
+    Private Function GetCurrentChannel(Optional ShowExclamation As Boolean = True) As Channel
         If CMB_CHANNELS.SelectedIndex >= 0 Then
             Dim ChannelID$ = CMB_CHANNELS.Value
             If Not ChannelID.IsEmptyString Then Return Settings.Channels.Find(ChannelID)
@@ -509,9 +509,9 @@ Friend Class ChannelViewForm : Implements IChannelLimits
     Private Sub BTT_STOP_Click(sender As Object, e As EventArgs) Handles BTT_STOP.Click
         [Stop]()
     End Sub
-    Friend Sub [Stop](Optional ByVal ShowCancelNotification As Boolean = True)
+    Friend Sub [Stop](Optional ShowCancelNotification As Boolean = True)
         _ShowCancelNotification = ShowCancelNotification
-        If Not TokenSource Is Nothing Then TokenSource.Cancel() : BTT_STOP.Enabled = False
+        If TokenSource IsNot Nothing Then TokenSource.Cancel() : BTT_STOP.Enabled = False
     End Sub
 #End Region
 #Region "Limits changer"
@@ -544,16 +544,16 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             ChangeLimitMode(TextBoxExtended.ControlModes.DateTimePicker)
         End If
     End Sub
-    Private Sub ChangeLimitMode(ByVal Mode As TextBoxExtended.ControlModes)
+    Private Sub ChangeLimitMode(Mode As TextBoxExtended.ControlModes)
         If Not TXT_LIMIT.ControlMode = Mode Then TXT_LIMIT.ControlMode = Mode
     End Sub
 #End Region
 #Region "CMB_CHANNELS"
-    Private Sub SetLimitsByChannel(Optional ByVal SelectedChannel As Channel = Nothing, Optional ByVal ShowExclamation As Boolean = True)
+    Private Sub SetLimitsByChannel(Optional SelectedChannel As Channel = Nothing, Optional ShowExclamation As Boolean = True)
         LBL_STATUS.Text = String.Empty
         Dim c As Channel = If(SelectedChannel, GetCurrentChannel(ShowExclamation))
         LBL_LIMIT_TEXT.Text = String.Empty
-        If Not c Is Nothing Then
+        If c IsNot Nothing Then
             Settings.LatestSelectedChannel.Value = c.ID
             Dim d As Date?
             If c.ViewMode = IRedditView.View.New Then
@@ -581,12 +581,12 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             End If
         End If
     End Sub
-    Private Sub CMB_CHANNELS_ActionSelectedItemChanged(ByVal Sender As Object, ByVal e As EventArgs, ByVal Item As ListViewItem) Handles CMB_CHANNELS.ActionSelectedItemChanged
+    Private Sub CMB_CHANNELS_ActionSelectedItemChanged(Sender As Object, e As EventArgs, Item As ListViewItem) Handles CMB_CHANNELS.ActionSelectedItemChanged
         SetLimitsByChannel()
         Dim c As Channel = GetCurrentChannel()
-        If Not c Is Nothing Then MyRange.Source = c
+        If c IsNot Nothing Then MyRange.Source = c
     End Sub
-    Private Sub CMB_CHANNELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles CMB_CHANNELS.ActionOnButtonClick
+    Private Sub CMB_CHANNELS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles CMB_CHANNELS.ActionOnButtonClick
         Dim c As Channel
         Select Case Sender.DefaultButton
             Case ADB.Refresh : RefillChannels()
@@ -594,7 +594,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             Case ADB.Delete
                 Try
                     c = GetCurrentChannel()
-                    If Not c Is Nothing AndAlso MsgBoxE($"Are you sure you want to delete the channel [{c}]?", vbExclamation + vbYesNo) = vbYes Then
+                    If c IsNot Nothing AndAlso MsgBoxE($"Are you sure you want to delete the channel [{c}]?", vbExclamation + vbYesNo) = vbYes Then
                         Settings.Channels.Remove(c)
                         RefillChannels()
                     End If
@@ -606,7 +606,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             Case ADB.Edit
                 Try
                     c = GetCurrentChannel()
-                    If Not c Is Nothing Then
+                    If c IsNot Nothing Then
                         Using f As New RedditViewSettingsForm(c)
                             f.ShowDialog()
                             If f.DialogResult = DialogResult.OK Then c.Save()
@@ -618,13 +618,13 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             Case ADB.Info
                 Try
                     c = GetCurrentChannel()
-                    If Not c Is Nothing Then MsgBoxE({c.GetChannelStats(True), "Channel statistics"})
+                    If c IsNot Nothing Then MsgBoxE({c.GetChannelStats(True), "Channel statistics"})
                 Catch info_ex As Exception
                     ErrorsDescriber.Execute(EDP.LogMessageValue, info_ex, "An error occurred while trying to display channel information")
                 End Try
         End Select
     End Sub
-    Private Sub CMB_CHANNELS_ActionOnCheckedChange(ByVal Sender As Object, ByVal e As EventArgs, ByVal Checked As Boolean) Handles CMB_CHANNELS.ActionOnCheckedChange
+    Private Sub CMB_CHANNELS_ActionOnCheckedChange(Sender As Object, e As EventArgs, Checked As Boolean) Handles CMB_CHANNELS.ActionOnCheckedChange
         Dim OneChannel As Boolean = Not CMB_CHANNELS.Checked
         CMB_CHANNELS.Enabled(False) = OneChannel
         If OneChannel Then
@@ -654,7 +654,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             MsgBoxE({"You didn't enter a channel name. Operation canceled.", MsgTitle}, MsgBoxStyle.Exclamation)
         End If
     End Sub
-    Private Sub ChangeComboIndex(ByVal Appender As Integer)
+    Private Sub ChangeComboIndex(Appender As Integer)
         Try
             AppendPendingUsers()
             Dim _ComboUpEnabled As Boolean = False
@@ -791,7 +791,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
         Dim f As SFile = GetPostBySelected().CachedFile
         If f.Exists Then f.Open() Else MsgBoxE($"Picture file [{f}] not found", MsgBoxStyle.Critical)
     End Sub
-    Private Function GetPostBySelected(Optional ByVal SpecificTag As String = Nothing) As UserPost
+    Private Function GetPostBySelected(Optional SpecificTag As String = Nothing) As UserPost
         Dim p As UserPost = Nothing
         Try
             If LIST_POSTS.SelectedItems.Count > 0 Or Not SpecificTag.IsEmptyString Then
@@ -815,14 +815,14 @@ Friend Class ChannelViewForm : Implements IChannelLimits
 #End Region
 #Region "MyRange"
     Private ReadOnly GetListImage_Error As New ErrorsDescriber(EDP.ReturnValue)
-    Private Function GetListImage(ByVal Post As UserPost, ByVal s As Size, ByVal NullArg As Image) As Image
+    Private Function GetListImage(Post As UserPost, s As Size, NullArg As Image) As Image
         If Not Post.CachedFile.IsEmptyString Then
             Return If(ImageRenderer.GetImage(SFile.GetBytes(Post.CachedFile), s, GetListImage_Error), NullArg.Clone)
         Else
             Return NullArg.Clone
         End If
     End Function
-    Private Sub MyRange_IndexChanged(ByVal Sender As Object, ByVal e As EventArgs) Handles MyRange.IndexChanged
+    Private Sub MyRange_IndexChanged(Sender As Object, e As EventArgs) Handles MyRange.IndexChanged
         Try
             If MyDefs.Initializing Then Exit Sub
             AppendPendingUsers()
@@ -851,7 +851,7 @@ Friend Class ChannelViewForm : Implements IChannelLimits
             ErrorsDescriber.Execute(EDP.LogMessageValue, ex)
         End Try
     End Sub
-    Private Sub MyRange_RangesChanged(ByVal Sender As IRangeSwitcherProvider, ByVal e As EventArgs) Handles MyRange.RangesChanged
+    Private Sub MyRange_RangesChanged(Sender As IRangeSwitcherProvider, e As EventArgs) Handles MyRange.RangesChanged
         If Sender.Count > 0 Then Sender.CurrentIndex = 0
     End Sub
 #End Region

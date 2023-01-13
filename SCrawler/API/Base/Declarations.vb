@@ -6,6 +6,8 @@
 '
 ' This program is distributed in the hope that it will be useful,
 ' but WITHOUT ANY WARRANTY
+Imports PersonalUtilities.Functions.UniversalFunctions
+
 Namespace API.Base
     Friend Module Declarations
         Friend ReadOnly LNC As New ListAddParams(LAP.NotContainsOnly)

@@ -16,15 +16,15 @@ Namespace DownloadObjects
         Protected UseResponserClient As Boolean
         Friend Sub New()
         End Sub
-        Friend Sub New(ByVal Responser As Responser)
-            If Not Responser Is Nothing Then
+        Friend Sub New(Responser As Responser)
+            If Responser IsNot Nothing Then
                 RC = Responser
                 UseResponserClient = True
             Else
                 WC = New WebClient
             End If
         End Sub
-        Friend Sub DownloadFile(ByVal URL As String, ByVal File As String)
+        Friend Sub DownloadFile(URL As String, File As String)
             If UseResponserClient Then
                 RC.DownloadFile(URL, File, RCERROR)
             Else
@@ -33,8 +33,8 @@ Namespace DownloadObjects
         End Sub
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Sub Dispose(ByVal disposing As Boolean)
-            If Not disposedValue And disposing And Not WC Is Nothing Then WC.Dispose()
+        Protected Overridable Sub Dispose(disposing As Boolean)
+            If Not disposedValue And disposing And WC IsNot Nothing Then WC.Dispose()
             disposedValue = True
         End Sub
         Protected Overrides Sub Finalize()

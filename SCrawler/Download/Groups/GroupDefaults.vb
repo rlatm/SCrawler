@@ -49,7 +49,7 @@ Namespace DownloadObjects.Groups
             TP_2 = New TableLayoutPanel With {.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single, .Margin = New Padding(0), .Dock = DockStyle.Fill}
             FillTP(TP_2, CH_READY_FOR_DOWN, CH_READY_FOR_DOWN_IGNORE)
         End Sub
-        Private Sub InitTextBox(ByRef TXT As TextBoxExtended, ByVal Caption As String, ByVal Buttons As ActionButton())
+        Private Sub InitTextBox(ByRef TXT As TextBoxExtended, Caption As String, Buttons As ActionButton())
             TXT = New TextBoxExtended
             With TXT
                 .BeginInit()
@@ -60,7 +60,7 @@ Namespace DownloadObjects.Groups
                 .EndInit()
             End With
         End Sub
-        Private Sub FillTP(ByRef TP As TableLayoutPanel, ByVal CNT1 As Control, ByVal CNT2 As Control)
+        Private Sub FillTP(ByRef TP As TableLayoutPanel, CNT1 As Control, CNT2 As Control)
             With TP
                 .ColumnCount = 2
                 .ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 50))
@@ -113,7 +113,7 @@ Namespace DownloadObjects.Groups
             Controls.Add(TXT_LABELS, 0, 4)
             Controls.Add(TXT_SITES, 0, 5)
         End Sub
-        Private Sub TXT_LABELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As ActionButtonEventArgs) Handles TXT_LABELS.ActionOnButtonClick
+        Private Sub TXT_LABELS_ActionOnButtonClick(Sender As ActionButton, e As ActionButtonEventArgs) Handles TXT_LABELS.ActionOnButtonClick
             Select Case Sender.DefaultButton
                 Case ADB.Edit, ADB.Delete
                     With If(Sender.DefaultButton = ADB.Edit, Labels, LabelsExcluded)
@@ -129,7 +129,7 @@ Namespace DownloadObjects.Groups
                 Case ADB.Clear : Labels.Clear() : LabelsExcluded.Clear() : TXT_LABELS.Clear() : UpdateLabelsText()
             End Select
         End Sub
-        Private Sub TXT_SITES_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As ActionButtonEventArgs) Handles TXT_SITES.ActionOnButtonClick
+        Private Sub TXT_SITES_ActionOnButtonClick(Sender As ActionButton, e As ActionButtonEventArgs) Handles TXT_SITES.ActionOnButtonClick
             Select Case Sender.DefaultButton
                 Case ADB.Edit, ADB.Delete
                     With If(Sender.DefaultButton = ADB.Edit, Sites, SitesExcluded)
@@ -156,7 +156,7 @@ Namespace DownloadObjects.Groups
             If SitesExcluded.Count > 0 Then TXT_SITES.Text.StringAppend($"EXCLUDED: {SitesExcluded.ListToString}", "; ")
         End Sub
         Friend Sub [Get](ByRef Instance As IGroup)
-            If Not Instance Is Nothing Then
+            If Instance IsNot Nothing Then
                 With Instance
                     .Name = TXT_NAME.Text
                     .Temporary = CH_TEMPORARY.CheckState
@@ -174,8 +174,8 @@ Namespace DownloadObjects.Groups
                 End With
             End If
         End Sub
-        Friend Sub [Set](ByVal Instance As IGroup)
-            If Not Instance Is Nothing Then
+        Friend Sub [Set](Instance As IGroup)
+            If Instance IsNot Nothing Then
                 With Instance
                     TXT_NAME.Text = .Name
                     CH_TEMPORARY.CheckState = .Temporary
@@ -195,11 +195,11 @@ Namespace DownloadObjects.Groups
         End Sub
         Private _Enabled As Boolean = True
         Private _JustExcludeOptions As Boolean = False
-        Friend Overloads Property Enabled(Optional ByVal LeaveExcludeOptions As Boolean = False) As Boolean
+        Friend Overloads Property Enabled(Optional LeaveExcludeOptions As Boolean = False) As Boolean
             Get
                 Return _Enabled
             End Get
-            Set(ByVal e As Boolean)
+            Set(e As Boolean)
                 _Enabled = e
                 _JustExcludeOptions = False
                 TP_1.Enabled = e

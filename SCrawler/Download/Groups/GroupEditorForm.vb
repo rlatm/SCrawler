@@ -23,13 +23,13 @@ Namespace DownloadObjects.Groups
             Private ReadOnly ExistingGroupName As String
             Private ReadOnly Property Source As IEnumerable(Of IGroup)
             Private ReadOnly ParamName As String
-            Friend Sub New(ByVal _ExistingGroupName As String, ByRef _Source As IEnumerable(Of IGroup), ByVal Param As String)
+            Friend Sub New(_ExistingGroupName As String, ByRef _Source As IEnumerable(Of IGroup), Param As String)
                 ExistingGroupName = _ExistingGroupName
                 Source = _Source
                 ParamName = Param
             End Sub
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 If Not ACheck(Value) Then
                     ErrorMessage = $"{ParamName} name cannot be empty"
                 ElseIf Not ExistingGroupName.IsEmptyString AndAlso CStr(Value) = ExistingGroupName Then
@@ -41,7 +41,7 @@ Namespace DownloadObjects.Groups
                 End If
                 Return Nothing
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in this context")
             End Function
         End Class
@@ -49,7 +49,7 @@ Namespace DownloadObjects.Groups
             With MyDefs
                 .MyViewInitialize(True)
                 .AddOkCancelToolbar()
-                If Not MyGroup Is Nothing Then
+                If MyGroup IsNot Nothing Then
                     With MyGroup
                         DEFS_GROUP.Set(MyGroup)
                         Text &= $" { .Name}"
@@ -64,7 +64,7 @@ Namespace DownloadObjects.Groups
                 .EndLoaderOperations()
             End With
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             If MyDefs.MyFieldsChecker.AllParamsOK Then
                 If MyGroup Is Nothing Then MyGroup = New DownloadGroup
                 With MyGroup

@@ -84,14 +84,14 @@ Namespace API.XVIDEOS
         End Sub
 #End Region
 #Region "Download"
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             If What = ISiteSettings.Download.SavedPosts Then
                 Return New UserData With {.IsSavedPosts = True, .User = New UserInfo With {.Name = "XVIDEOS"}}
             Else
                 Return New UserData
             End If
         End Function
-        Friend Overrides Function Available(ByVal What As ISiteSettings.Download, ByVal Silent As Boolean) As Boolean
+        Friend Overrides Function Available(What As ISiteSettings.Download, Silent As Boolean) As Boolean
             If Settings.UseM3U8 Then
                 If What = ISiteSettings.Download.SavedPosts Then
                     Return ACheck(SavedVideosPlaylist.Value) And If(Responser.Cookies?.Count, 0) > 0
@@ -104,17 +104,17 @@ Namespace API.XVIDEOS
         End Function
 #End Region
 #Region "User: get, check"
-        Friend Function GetUserUrlPart(ByVal User As UserData) As String
+        Friend Function GetUserUrlPart(User As UserData) As String
             Dim __user$ = User.Name.Split("_").FirstOrDefault
             __user &= $"/{User.Name.Replace($"{__user}_", String.Empty)}"
             Return __user
         End Function
-        Friend Overrides Function GetUserUrl(ByVal User As IPluginContentProvider, ByVal Channel As Boolean) As String
+        Friend Overrides Function GetUserUrl(User As IPluginContentProvider, Channel As Boolean) As String
             Return String.Format(UrlPatternUser, GetUserUrlPart(User))
         End Function
         Private Const UserRegexDefault As String = "/(profiles|[\w]*?[-]{0,1}channels)/([^/]+)(\Z|.*?)"
         Private Const URD As String = ".*?{0}{1}"
-        Friend Overrides Function IsMyUser(ByVal UserURL As String) As ExchangeOptions
+        Friend Overrides Function IsMyUser(UserURL As String) As ExchangeOptions
             If Not UserURL.IsEmptyString Then
                 If Domains.Count > 0 Then
                     Dim uName$, uOpt$, fStr$
@@ -133,13 +133,13 @@ Namespace API.XVIDEOS
         End Function
 #End Region
 #Region "Get special data"
-        Friend Overrides Function IsMyImageVideo(ByVal URL As String) As ExchangeOptions
+        Friend Overrides Function IsMyImageVideo(URL As String) As ExchangeOptions
             If Not URL.IsEmptyString And Domains.Count > 0 Then
                 If Domains.Exists(Function(d) URL.Contains(d)) Then Return New ExchangeOptions With {.UserName = URL, .Exists = True}
             End If
             Return Nothing
         End Function
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             If Not URL.IsEmptyString And Settings.UseM3U8 Then
                 Dim spf$ = String.Empty
                 Dim f As SFile = GetSpecialDataFile(Path, AskForPath, spf)

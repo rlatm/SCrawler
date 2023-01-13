@@ -31,14 +31,14 @@ Namespace API.Reddit
         Friend Structure ChannelImage : Implements IEquatable(Of ChannelImage)
             Friend File As SFile
             Friend Channel As String
-            Friend Sub New(ByVal ChannelName As String, ByVal f As SFile)
+            Friend Sub New(ChannelName As String, f As SFile)
                 Channel = ChannelName
                 File = f
             End Sub
-            Friend Overloads Function Equals(ByVal Other As ChannelImage) As Boolean Implements IEquatable(Of ChannelImage).Equals
+            Friend Overloads Function Equals(Other As ChannelImage) As Boolean Implements IEquatable(Of ChannelImage).Equals
                 Return Channel = Other.Channel And File.File = Other.File.File
             End Function
-            Public Overloads Overrides Function Equals(ByVal Obj As Object) As Boolean
+            Public Overloads Overrides Function Equals(Obj As Object) As Boolean
                 Return Equals(DirectCast(Obj, ChannelImage))
             End Function
         End Structure
@@ -47,7 +47,7 @@ Namespace API.Reddit
                 Return Count > 0 AndAlso Channels.Exists(Function(c) c.Downloading)
             End Get
         End Property
-        Friend Function GetUserFiles(ByVal UserName As String) As IEnumerable(Of ChannelImage)
+        Friend Function GetUserFiles(UserName As String) As IEnumerable(Of ChannelImage)
             Try
                 If Settings.ChannelsAddUserImagesFromAllChannels.Value And Count > 0 Then
                     Return Channels.SelectMany(Function(c) From p As UserPost In c.Posts Where p.UserID = UserName Select New ChannelImage(c.Name, p.CachedFile))
@@ -65,13 +65,13 @@ Namespace API.Reddit
         Friend Property DownloadLimitCount As Integer? Implements IChannelLimits.DownloadLimitCount
         <Obsolete("This property cannot be used in collections", True)> Private Property DownloadLimitPost As String Implements IChannelLimits.DownloadLimitPost
         Friend Property DownloadLimitDate As Date? Implements IChannelLimits.DownloadLimitDate
-        Friend Overloads Sub SetLimit(Optional ByVal MaxPost As String = "", Optional ByVal MaxCount As Integer? = Nothing,
-                                      Optional ByVal MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Optional MaxPost As String = "", Optional MaxCount As Integer? = Nothing,
+                                      Optional MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
             'DownloadLimitPost = MaxPost
             DownloadLimitCount = MaxCount
             DownloadLimitDate = MinDate
         End Sub
-        Friend Overloads Sub SetLimit(ByVal Source As IChannelLimits) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Source As IChannelLimits) Implements IChannelLimits.SetLimit
             With Source
                 DownloadLimitCount = .DownloadLimitCount
                 DownloadLimitDate = .DownloadLimitDate
@@ -97,24 +97,24 @@ Namespace API.Reddit
                 Return Channels.Count
             End Get
         End Property
-        Default Friend ReadOnly Property Item(ByVal Index As Integer) As Channel Implements IMyEnumerator(Of Channel).MyEnumeratorObject
+        Default Friend ReadOnly Property Item(Index As Integer) As Channel Implements IMyEnumerator(Of Channel).MyEnumeratorObject
             Get
                 Return Channels(Index)
             End Get
         End Property
         ''' <exception cref="ArgumentException"></exception>
-        Friend ReadOnly Property Find(ByVal ChannelID As String) As Channel
+        Friend ReadOnly Property Find(ChannelID As String) As Channel
             Get
                 If Count > 0 Then
                     For i% = 0 To Count - 1
                         If Item(i).ID = ChannelID Then Return Item(i)
                     Next
                 End If
-                Throw New ArgumentException($"Channel ID [{ChannelID}] not found in channel collection", "ChannelID") With {.HelpLink = 1}
+                Throw New ArgumentException($"Channel ID [{ChannelID}] not found in channel collection", NameOf(ChannelID)) With {.HelpLink = 1}
             End Get
         End Property
-        Friend Sub DownloadData(ByVal Token As CancellationToken, Optional ByVal SkipExists As Boolean = True,
-                                Optional ByVal p As MyProgress = Nothing)
+        Friend Sub DownloadData(Token As CancellationToken, Optional SkipExists As Boolean = True,
+                                Optional p As MyProgress = Nothing)
             Try
                 Dim m% = Settings.ChannelsMaxJobsCount
                 If Count > 0 Then
@@ -134,20 +134,20 @@ Namespace API.Reddit
         End Sub
 #Region "ICollection Support"
         Private ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of Channel).IsReadOnly
-        Friend Sub Add(ByVal _Item As Channel) Implements ICollection(Of Channel).Add
+        Friend Sub Add(_Item As Channel) Implements ICollection(Of Channel).Add
             If Not Contains(_Item) Then Channels.Add(_Item)
         End Sub
         Friend Sub Clear() Implements ICollection(Of Channel).Clear
             Channels.ListClearDispose
         End Sub
-        Private Sub CopyTo(ByVal _Array() As Channel, ByVal ArrayIndex As Integer) Implements ICollection(Of Channel).CopyTo
+        Private Sub CopyTo(_Array() As Channel, ArrayIndex As Integer) Implements ICollection(Of Channel).CopyTo
             Throw New NotImplementedException()
         End Sub
-        Friend Function Contains(ByVal _Item As Channel) As Boolean Implements ICollection(Of Channel).Contains
+        Friend Function Contains(_Item As Channel) As Boolean Implements ICollection(Of Channel).Contains
             Return Count > 0 AndAlso Channels.Contains(_Item)
         End Function
-        Friend Function Remove(ByVal _Item As Channel) As Boolean Implements ICollection(Of Channel).Remove
-            If Count > 0 And Not _Item Is Nothing Then
+        Friend Function Remove(_Item As Channel) As Boolean Implements ICollection(Of Channel).Remove
+            If Count > 0 And _Item IsNot Nothing Then
                 Dim i% = Channels.IndexOf(_Item)
                 If i >= 0 Then
                     With Channels(i) : .Delete() : .Dispose() : End With
@@ -168,7 +168,7 @@ Namespace API.Reddit
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then Update() : Clear()
                 disposedValue = True

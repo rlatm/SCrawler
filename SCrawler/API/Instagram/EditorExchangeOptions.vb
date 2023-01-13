@@ -12,7 +12,7 @@ Namespace API.Instagram
         Friend Property GetTimeline As Boolean
         Friend Property GetStories As Boolean
         Friend Property GetTagged As Boolean
-        Friend Sub New(ByVal h As ISiteSettings)
+        Friend Sub New(h As ISiteSettings)
             With DirectCast(h, SiteSettings)
                 GetTimeline = CBool(.GetTimeline.Value)
                 GetStories = CBool(.GetStories.Value)

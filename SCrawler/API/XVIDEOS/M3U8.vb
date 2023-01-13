@@ -11,7 +11,7 @@ Namespace API.XVIDEOS
     Friend NotInheritable Class M3U8
         Private Sub New()
         End Sub
-        Friend Shared Function Download(ByVal URL As String, ByVal Appender As String, ByVal f As SFile) As SFile
+        Friend Shared Function Download(URL As String, Appender As String, f As SFile) As SFile
             Try
                 If Not URL.IsEmptyString Then
                     Using w As New WebClient

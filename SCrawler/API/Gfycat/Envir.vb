@@ -13,7 +13,7 @@ Namespace API.Gfycat
     Friend NotInheritable Class Envir
         Private Sub New()
         End Sub
-        Friend Shared Function GetVideo(ByVal URL As String) As String
+        Friend Shared Function GetVideo(URL As String) As String
             Try
                 Dim r$
                 Using w As New WebClient : r = w.DownloadString(URL) : End Using
@@ -27,7 +27,7 @@ Namespace API.Gfycat
                 Return ErrorsDescriber.Execute(e, ex, $"[API.Gfycat.Envir.GetVideo({URL})]", String.Empty)
             End Try
         End Function
-        Friend Shared Function GetVideoInfo(ByVal URL As String) As IEnumerable(Of UserMedia)
+        Friend Shared Function GetVideoInfo(URL As String) As IEnumerable(Of UserMedia)
             Dim u$ = GetVideo(URL)
             Return If(u.IsEmptyString, Nothing, {New UserMedia(u, UserMedia.Types.Video)})
         End Function

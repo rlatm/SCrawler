@@ -12,7 +12,7 @@ Imports PersonalUtilities.Functions.XML.Base
 Namespace DownloadObjects.Groups
     Friend Class DownloadGroup : Inherits GroupParameters : Implements IIndexable, IEContainerProvider
 #Region "Events"
-        Friend Delegate Sub GroupEventHandler(ByVal Sender As DownloadGroup)
+        Friend Delegate Sub GroupEventHandler(Sender As DownloadGroup)
         Friend Event Deleted As GroupEventHandler
         Friend Event Updated As GroupEventHandler
 #End Region
@@ -38,13 +38,13 @@ Namespace DownloadObjects.Groups
             Get
                 Return _Index
             End Get
-            Set(ByVal NewIndex As Integer)
+            Set(NewIndex As Integer)
                 Dim b As Boolean = Not _Index = NewIndex
                 _Index = NewIndex
                 If b Then RaiseEvent Updated(Me)
             End Set
         End Property
-        Private Function SetIndex(ByVal Obj As Object, ByVal _Index As Integer) As Object Implements IIndexable.SetIndex
+        Private Function SetIndex(Obj As Object, _Index As Integer) As Object Implements IIndexable.SetIndex
             DirectCast(Obj, DownloadGroup).Index = _Index
             Return Obj
         End Function
@@ -88,7 +88,7 @@ Namespace DownloadObjects.Groups
             }
             BTT_MENU.DropDownItems.AddRange({BTT_EDIT, BTT_DELETE, SEP_1, BTT_DOWNLOAD, BTT_DOWNLOAD_FULL})
         End Sub
-        Friend Sub New(ByVal e As EContainer)
+        Friend Sub New(e As EContainer)
             Me.New
             If e.Attributes.Contains(New EAttribute(Name_Name)) Then
                 'TODELETE: 2022.10.18.0
@@ -147,7 +147,7 @@ Namespace DownloadObjects.Groups
         Friend Overloads Function GetUsers() As IEnumerable(Of IUserData)
             Return GetUsers(Me, True)
         End Function
-        Friend Overloads Shared Function GetUsers(ByVal Instance As IGroup, ByVal UseReadyOption As Boolean) As IEnumerable(Of IUserData)
+        Friend Overloads Shared Function GetUsers(Instance As IGroup, UseReadyOption As Boolean) As IEnumerable(Of IUserData)
             Try
                 If Settings.Users.Count > 0 Then
                     With Instance
@@ -155,7 +155,7 @@ Namespace DownloadObjects.Groups
                             (.Temporary = CheckState.Indeterminate Or user.Temporary = CBool(.Temporary)) And
                             (.Favorite = CheckState.Indeterminate Or (user.Favorite = CBool(.Favorite))) And
                             (Not UseReadyOption Or .ReadyForDownloadIgnore Or user.ReadyForDownload = .ReadyForDownload) And user.Exists
-                        Dim CheckLabelsExcluded As Predicate(Of IUserData) = Function(ByVal user As IUserData) As Boolean
+                        Dim CheckLabelsExcluded As Predicate(Of IUserData) = Function(user As IUserData) As Boolean
                                                                                  If .LabelsExcluded.Count = 0 Then
                                                                                      Return True
                                                                                  ElseIf user.Labels.Count = 0 Then
@@ -164,7 +164,7 @@ Namespace DownloadObjects.Groups
                                                                                      Return Not user.Labels.ListContains(.LabelsExcluded)
                                                                                  End If
                                                                              End Function
-                        Dim CheckLabels As Predicate(Of IUserData) = Function(ByVal user As IUserData) As Boolean
+                        Dim CheckLabels As Predicate(Of IUserData) = Function(user As IUserData) As Boolean
                                                                          If .Labels.Count = 0 Then
                                                                              Return CheckLabelsExcluded.Invoke(user)
                                                                          ElseIf user.Labels.Count = 0 Then
@@ -187,7 +187,7 @@ Namespace DownloadObjects.Groups
         End Function
 #End Region
 #Region "Download users"
-        Friend Sub DownloadUsers(ByVal UseReadyOption As Boolean)
+        Friend Sub DownloadUsers(UseReadyOption As Boolean)
             Try
                 If Settings.Users.Count > 0 Then
                     Dim u As IEnumerable(Of IUserData) = GetUsers(Me, UseReadyOption)
@@ -203,12 +203,12 @@ Namespace DownloadObjects.Groups
         End Sub
 #End Region
 #Region "IEContainerProvider Support"
-        Private Function ToEContainer(Optional ByVal e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
+        Private Function ToEContainer(Optional e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
             Return Export(New EContainer("Group"))
         End Function
 #End Region
 #Region "IDisposable Support"
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then
                 BTT_DELETE.Dispose()
                 BTT_EDIT.Dispose()

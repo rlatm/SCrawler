@@ -32,7 +32,7 @@ Friend Class ChannelsStatsForm
             CMB_CHANNELS.EndUpdate()
         End If
     End Sub
-    Private Sub MyDefs_ButtonDeleteClickOC(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonDeleteClickOC
+    Private Sub MyDefs_ButtonDeleteClickOC(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonDeleteClickOC
         Const MsgTitle$ = "Deleting channels"
         Try
             Dim c As List(Of String) = CMB_CHANNELS.Items.CheckedItems.Select(Function(cc) CStr(cc.Value(1))).ListIfNothing
@@ -55,10 +55,10 @@ Friend Class ChannelsStatsForm
             ErrorsDescriber.Execute(EDP.LogMessageValue, ex, MsgTitle)
         End Try
     End Sub
-    Private Sub CMB_CHANNELS_ActionOnChangeDetected(ByVal c As Boolean) Handles CMB_CHANNELS.ActionOnChangeDetected
+    Private Sub CMB_CHANNELS_ActionOnChangeDetected(c As Boolean) Handles CMB_CHANNELS.ActionOnChangeDetected
         If Not MyDefs.Initializing Then MyDefs.MyOkCancel.EnableDelete = CMB_CHANNELS.ListCheckedIndexes.Count > 0
     End Sub
-    Private Sub CMB_CHANNELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles CMB_CHANNELS.ActionOnButtonClick
+    Private Sub CMB_CHANNELS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles CMB_CHANNELS.ActionOnButtonClick
         If Sender.DefaultButton = ActionButton.DefaultButtons.Clear Then CMB_CHANNELS.ListCheckedIndexes = Nothing
     End Sub
 End Class

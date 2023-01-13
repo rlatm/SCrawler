@@ -12,7 +12,7 @@ Public Class ToolStripKeyMenuItem : Inherits ToolStripMenuItemKeyClick
     Public Sub New()
         MyEventArgs = New MyKeyEventArgs
     End Sub
-    Public Sub New(ByVal Text As String, ByVal Image As Image)
+    Public Sub New(Text As String, Image As Image)
         MyBase.New(Text, Image)
         MyEventArgs = New MyKeyEventArgs
     End Sub
@@ -22,7 +22,7 @@ Public Class ToolStripKeyMenuItem : Inherits ToolStripMenuItemKeyClick
         Get
             Return _AddFeedText
         End Get
-        Set(ByVal _AddFeedText As Boolean)
+        Set(_AddFeedText As Boolean)
             Me._AddFeedText = _AddFeedText
             ToolTipText = _ToolTipTextOriginal
         End Set
@@ -32,7 +32,7 @@ Public Class ToolStripKeyMenuItem : Inherits ToolStripMenuItemKeyClick
         Get
             Return _ToolTipTextOriginal
         End Get
-        Set(ByVal t As String)
+        Set(t As String)
             _ToolTipTextOriginal = t
             If AddFeedText Then
                 If _ToolTipTextOriginal.IsEmptyString Then
@@ -51,14 +51,14 @@ Public Class MyKeyEventArgs : Inherits KeyClickEventArgs
         Get
             Return Not _Control
         End Get
-        Set(ByVal Included As Boolean)
+        Set(Included As Boolean)
             _Control = Not Included
         End Set
     End Property
     Public Sub New()
         MyBase.New()
     End Sub
-    Public Sub New(ByVal e As KeyEventArgs)
+    Public Sub New(e As KeyEventArgs)
         MyBase.New(e)
     End Sub
 End Class

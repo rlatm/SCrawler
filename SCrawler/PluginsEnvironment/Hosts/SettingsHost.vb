@@ -21,11 +21,11 @@ Namespace Plugin.Hosts
         Private ReadOnly SpecialFormAttribute As SpecialForm = Nothing
         Friend Function GetSettingsButton() As ToolStripItem
             BTT_SETTINGS = New ToolStripMenuItem With {.Text = Source.Site}
-            If Not Source.Image Is Nothing Then BTT_SETTINGS.Image = Source.Image
+            If Source.Image IsNot Nothing Then BTT_SETTINGS.Image = Source.Image
             Return BTT_SETTINGS
         End Function
         Friend Function GetSettingsButtonInternal() As Button
-            If Not SpecialFormAttribute Is Nothing AndAlso SpecialFormAttribute.SettingsForm Then
+            If SpecialFormAttribute IsNot Nothing AndAlso SpecialFormAttribute.SettingsForm Then
                 BTT_SETTINGS_INTERNAL = New Button With {.Text = "Other settings", .Dock = DockStyle.Right, .Width = 150}
                 Return BTT_SETTINGS_INTERNAL
             Else
@@ -41,7 +41,7 @@ Namespace Plugin.Hosts
         End Sub
         Private Sub BTT_SETTINGS_INTERNAL_Click(sender As Object, e As EventArgs) Handles BTT_SETTINGS_INTERNAL.Click
             Try
-                If Not SpecialFormAttribute Is Nothing AndAlso SpecialFormAttribute.SettingsForm Then Source.OpenSettingsForm()
+                If SpecialFormAttribute IsNot Nothing AndAlso SpecialFormAttribute.SettingsForm Then Source.OpenSettingsForm()
             Catch ex As Exception
                 ErrorsDescriber.Execute(EDP.LogMessageValue, ex, "[Plugin.Hosts.SettingsHost.OpenSettingsForm(Button)]")
             End Try
@@ -82,7 +82,7 @@ Namespace Plugin.Hosts
         Private ReadOnly _ResponserIsContainer As Boolean = False
         Friend ReadOnly Property Responser As Responser
             Get
-                If Not _ResponserGetMethod Is Nothing Then
+                If _ResponserGetMethod IsNot Nothing Then
                     Return _ResponserGetMethod.Invoke(Source, Nothing)
                 ElseIf _ResponserIsContainer Then
                     Return DirectCast(Source, IResponserContainer).Responser
@@ -98,7 +98,7 @@ Namespace Plugin.Hosts
         Friend ReadOnly Property DownloadImages As XMLValue(Of Boolean)
         Friend ReadOnly Property DownloadVideos As XMLValue(Of Boolean)
         Private ReadOnly _Path As XMLValue(Of SFile)
-        Friend Property Path(Optional ByVal SetProp As Boolean = True) As SFile
+        Friend Property Path(Optional SetProp As Boolean = True) As SFile
             Get
                 If _Path.IsEmptyString Then
                     Dim tmpPath As SFile = SFile.GetPath($"{Settings.GlobalPath.Value.PathWithSeparator}{Source.Site}")
@@ -106,12 +106,12 @@ Namespace Plugin.Hosts
                 End If
                 Return _Path.Value
             End Get
-            Set(ByVal NewPath As SFile)
+            Set(NewPath As SFile)
                 _Path.Value = NewPath
             End Set
         End Property
         Private ReadOnly _SavedPostsPath As XMLValue(Of SFile)
-        Friend Property SavedPostsPath(Optional ByVal GetAny As Boolean = True) As SFile
+        Friend Property SavedPostsPath(Optional GetAny As Boolean = True) As SFile
             Get
                 If Not _SavedPostsPath.Value.IsEmptyString Then
                     Return _SavedPostsPath.Value
@@ -123,14 +123,14 @@ Namespace Plugin.Hosts
                     End If
                 End If
             End Get
-            Set(ByVal NewPath As SFile)
+            Set(NewPath As SFile)
                 _SavedPostsPath.Value = NewPath
             End Set
         End Property
         Friend ReadOnly Property GetUserMediaOnly As XMLValue(Of Boolean)
 #End Region
 #Region "Host internal functions"
-        Private Sub PropHost_OnPropertyUpdateRequested(ByVal Sender As PropertyValueHost)
+        Private Sub PropHost_OnPropertyUpdateRequested(Sender As PropertyValueHost)
             If Sender.UpdateDependencies.ListExists Then
                 Settings.BeginUpdate()
                 For Each p As PropertyValueHost In PropList
@@ -140,7 +140,7 @@ Namespace Plugin.Hosts
             End If
         End Sub
 #End Region
-        Friend Sub New(ByVal Plugin As ISiteSettings, ByRef _XML As XmlFile, ByVal GlobalPath As SFile,
+        Friend Sub New(Plugin As ISiteSettings, ByRef _XML As XmlFile, GlobalPath As SFile,
                        ByRef _Temp As XMLValue(Of Boolean), ByRef _Imgs As XMLValue(Of Boolean), ByRef _Vids As XMLValue(Of Boolean))
             Source = Plugin
             Source.Logger = LogConnector
@@ -204,7 +204,7 @@ Namespace Plugin.Hosts
                                     End If
                                 Next
                             ElseIf m.MemberType = MemberTypes.Property Then
-                                If Not m.GetCustomAttribute(Of Provider)() Is Nothing Then Providers.Add(m)
+                                If m.GetCustomAttribute(Of Provider)() IsNot Nothing Then Providers.Add(m)
                             End If
                         End If
                     End With
@@ -279,19 +279,19 @@ Namespace Plugin.Hosts
             Source.EndInit()
         End Sub
 #Region "Forks"
-        Friend Function IsMyUser(ByVal UserURL As String) As ExchangeOptions
+        Friend Function IsMyUser(UserURL As String) As ExchangeOptions
             Dim s As ExchangeOptions = Source.IsMyUser(UserURL)
             If Not s.UserName.IsEmptyString Then s.HostKey = Key
             Return s
         End Function
-        Friend Function IsMyImageVideo(ByVal URL As String) As ExchangeOptions
+        Friend Function IsMyImageVideo(URL As String) As ExchangeOptions
             Dim s As ExchangeOptions = Source.IsMyImageVideo(URL)
             If s.Exists Then s.SiteName = Name : s.HostKey = Key
             Return s
         End Function
-        Friend Function GetSpecialData(ByVal URL As String, ByVal Path As SFile, ByVal AskForPath As Boolean) As IEnumerable(Of UserMedia)
+        Friend Function GetSpecialData(URL As String, Path As SFile, AskForPath As Boolean) As IEnumerable(Of UserMedia)
             Dim um As IEnumerable = Source.GetSpecialData(URL, Path, AskForPath)
-            If Not um Is Nothing Then
+            If um IsNot Nothing Then
                 If TypeOf um Is IEnumerable(Of UserMedia) Then
                     Return um
                 ElseIf TypeOf um Is IEnumerable(Of IUserMedia) Then
@@ -300,10 +300,10 @@ Namespace Plugin.Hosts
             End If
             Return Nothing
         End Function
-        Friend Function GetInstance(ByVal What As Download, ByVal u As UserInfo, Optional ByVal _LoadUserInformation As Boolean = True,
-                                    Optional ByVal AttachUserInfo As Boolean = True) As IUserData
+        Friend Function GetInstance(What As Download, u As UserInfo, Optional _LoadUserInformation As Boolean = True,
+                                    Optional AttachUserInfo As Boolean = True) As IUserData
             Dim p As IPluginContentProvider = Source.GetInstance(What)
-            If Not p Is Nothing Then
+            If p IsNot Nothing Then
                 Dim pp As IUserData
                 If TypeOf p Is IUserData Then pp = p Else pp = New UserDataHost(p)
                 pp.SetEnvironment(Me, u, _LoadUserInformation, AttachUserInfo)
@@ -312,13 +312,13 @@ Namespace Plugin.Hosts
                 Throw New ArgumentNullException("IPluginContentProvider", $"Plugin [{Key}] does not provide user instance")
             End If
         End Function
-        Friend Function GetUserPostUrl(ByVal User As IPluginContentProvider, ByVal Media As IUserMedia) As String
+        Friend Function GetUserPostUrl(User As IPluginContentProvider, Media As IUserMedia) As String
             Return Source.GetUserPostUrl(User, Media)
         End Function
         Private _AvailableValue As Boolean = True
         Private _AvailableAsked As Boolean = False
         Private _ActiveTaskCount As Integer = 0
-        Friend Function Available(ByVal What As Download, ByVal Silent As Boolean) As Boolean
+        Friend Function Available(What As Download, Silent As Boolean) As Boolean
             If DownloadSiteData Then
                 If Not _AvailableAsked Then
                     _AvailableValue = Source.Available(What, Silent)
@@ -329,22 +329,22 @@ Namespace Plugin.Hosts
                 Return False
             End If
         End Function
-        Friend Sub DownloadStarted(ByVal What As Download)
+        Friend Sub DownloadStarted(What As Download)
             _ActiveTaskCount += 1
             Source.DownloadStarted(What)
         End Sub
-        Friend Sub BeforeStartDownload(ByVal User As IUserData, ByVal What As Download)
+        Friend Sub BeforeStartDownload(User As IUserData, What As Download)
             Source.BeforeStartDownload(ConvertUser(User), What)
         End Sub
-        Friend Sub AfterDownload(ByVal User As IUserData, ByVal What As Download)
+        Friend Sub AfterDownload(User As IUserData, What As Download)
             Source.AfterDownload(ConvertUser(User), What)
         End Sub
-        Friend Sub DownloadDone(ByVal What As Download)
+        Friend Sub DownloadDone(What As Download)
             _ActiveTaskCount -= 1
             If _ActiveTaskCount = 0 Then _AvailableAsked = False
             Source.DownloadDone(What)
         End Sub
-        Private Function ConvertUser(ByVal User As IUserData) As Object
+        Private Function ConvertUser(User As IUserData) As Object
             Return If(DirectCast(User, UserDataBase).ExternalPlugin, User)
         End Function
 #End Region

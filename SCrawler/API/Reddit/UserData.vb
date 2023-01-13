@@ -27,7 +27,7 @@ Namespace API.Reddit
                 Return DirectCast(HOST.Source, SiteSettings)
             End Get
         End Property
-        Private Shared ReadOnly Property DateTrueProvider(ByVal IsChannel As Boolean) As IFormatProvider
+        Private Shared ReadOnly Property DateTrueProvider(IsChannel As Boolean) As IFormatProvider
             Get
                 Return If(IsChannel, DateProviderChannel, DateProvider)
             End Get
@@ -42,13 +42,13 @@ Namespace API.Reddit
         Friend Property DownloadLimitCount As Integer? Implements IChannelLimits.DownloadLimitCount
         Friend Property DownloadLimitPost As String Implements IChannelLimits.DownloadLimitPost
         Friend Property DownloadLimitDate As Date? Implements IChannelLimits.DownloadLimitDate
-        Friend Overloads Sub SetLimit(Optional ByVal MaxPost As String = "", Optional ByVal MaxCount As Integer? = Nothing,
-                                      Optional ByVal MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Optional MaxPost As String = "", Optional MaxCount As Integer? = Nothing,
+                                      Optional MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
             DownloadLimitPost = MaxPost
             DownloadLimitCount = MaxCount
             DownloadLimitDate = MinDate
         End Sub
-        Friend Overloads Sub SetLimit(ByVal Source As IChannelLimits) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Source As IChannelLimits) Implements IChannelLimits.SetLimit
             With Source
                 DownloadLimitCount = .DownloadLimitCount
                 DownloadLimitPost = .DownloadLimitPost
@@ -72,8 +72,8 @@ Namespace API.Reddit
 #Region "IRedditView Support"
         Friend Property ViewMode As CView Implements IRedditView.ViewMode
         Friend Property ViewPeriod As CPeriod Implements IRedditView.ViewPeriod
-        Friend Sub SetView(ByVal Options As IRedditView) Implements IRedditView.SetView
-            If Not Options Is Nothing Then
+        Friend Sub SetView(Options As IRedditView) Implements IRedditView.SetView
+            If Options IsNot Nothing Then
                 ViewMode = Options.ViewMode
                 ViewPeriod = Options.ViewPeriod
             End If
@@ -112,7 +112,7 @@ Namespace API.Reddit
         End Sub
 #End Region
 #Region "Load and Update user info"
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
             With Container
                 If Loading Then
                     ViewMode = .Value(Name_ViewMode).FromXML(Of Integer)(CInt(CView.New))
@@ -126,16 +126,16 @@ Namespace API.Reddit
         Friend Overrides Function ExchangeOptionsGet() As Object
             Return New RedditViewExchange With {.ViewMode = ViewMode, .ViewPeriod = ViewPeriod}
         End Function
-        Friend Overrides Sub ExchangeOptionsSet(ByVal Obj As Object)
-            If Not Obj Is Nothing AndAlso TypeOf Obj Is IRedditView Then SetView(DirectCast(Obj, IRedditView))
+        Friend Overrides Sub ExchangeOptionsSet(Obj As Object)
+            If Obj IsNot Nothing AndAlso TypeOf Obj Is IRedditView Then SetView(DirectCast(Obj, IRedditView))
         End Sub
 #End Region
 #Region "Download Overrides"
-        Friend Overrides Sub DownloadData(ByVal Token As CancellationToken)
+        Friend Overrides Sub DownloadData(Token As CancellationToken)
             UserDescriptionReset()
             _CrossPosts.Clear()
-            If Not IsSavedPosts AndAlso (IsChannel AndAlso Not ChannelInfo Is Nothing) Then
-                If Not Responser Is Nothing Then Responser.Dispose()
+            If Not IsSavedPosts AndAlso (IsChannel AndAlso ChannelInfo IsNot Nothing) Then
+                If Responser IsNot Nothing Then Responser.Dispose()
                 Responser = New Responser
                 Responser.Copy(MySiteSettings.Responser)
                 ChannelPostsNames.ListAddList(ChannelInfo.PostsAll.Select(Function(p) p.ID), LNC)
@@ -149,7 +149,7 @@ Namespace API.Reddit
                 MyBase.DownloadData(Token)
             End If
         End Sub
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             _TotalPostsDownloaded = 0
             If IsSavedPosts Then
                 'TODO: Reddit saved posts: remove Unicode converter?
@@ -180,7 +180,7 @@ Namespace API.Reddit
         Private ReadOnly _CrossPosts As List(Of String)
         Private Const SiteGfycatKey As String = "gfycat"
         Private Const SiteRedGifsKey As String = "redgifs"
-        Private Sub DownloadDataUser(ByVal POST As String, ByVal Token As CancellationToken)
+        Private Sub DownloadDataUser(POST As String, Token As CancellationToken)
             Const CPRI$ = "crosspostRootId"
             Const CPPI$ = "crosspostParentId"
             Dim URL$ = String.Empty
@@ -207,7 +207,7 @@ Namespace API.Reddit
                         If w.Count > 0 Then
                             If UserDescriptionNeedToUpdate() Then UserDescriptionUpdate(w.ItemF({"subredditAboutInfo", 0, "publicDescription"}).XmlIfNothingValue)
                             n = w.GetNode(JsonNodesJson)
-                            If Not n Is Nothing AndAlso n.Count > 0 Then
+                            If n IsNot Nothing AndAlso n.Count > 0 Then
                                 For Each nn In n
                                     ThrowAny(Token)
                                     If nn.Count > 0 Then
@@ -299,7 +299,7 @@ Namespace API.Reddit
                 ProcessException(ex, Token, $"data downloading error [{URL}]")
             End Try
         End Sub
-        Private Sub DownloadDataChannel(ByVal POST As String, ByVal Token As CancellationToken)
+        Private Sub DownloadDataChannel(POST As String, Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Dim PostID$ = String.Empty
@@ -322,11 +322,11 @@ Namespace API.Reddit
                     Using w As EContainer = JsonDocument.Parse(r).XmlIfNothing
                         If w.Count > 0 Then
                             n = w.GetNode(ChannelJsonNodes)
-                            If Not n Is Nothing AndAlso n.Count > 0 Then
+                            If n IsNot Nothing AndAlso n.Count > 0 Then
                                 For Each nn In n
                                     ThrowAny(Token)
                                     s = nn.ItemF({eCount})
-                                    If Not s Is Nothing AndAlso s.Count > 0 Then
+                                    If s IsNot Nothing AndAlso s.Count > 0 Then
                                         PostID = s.Value("name")
                                         If PostID.IsEmptyString AndAlso s.Contains("id") Then PostID = s("id").Value
 
@@ -360,7 +360,7 @@ Namespace API.Reddit
 
                                         If Not IsSavedPosts AndAlso SkipExistsUsers AndAlso _ExistsUsersNames.Count > 0 AndAlso
                                            Not _UserID.IsEmptyString AndAlso _ExistsUsersNames.Contains(_UserID) Then
-                                            If Not IsSavedPosts AndAlso Not ChannelInfo Is Nothing Then _
+                                            If Not IsSavedPosts AndAlso ChannelInfo IsNot Nothing Then _
                                                ChannelInfo.ChannelExistentUserNames.ListAddValue(_UserID, LNC)
                                             Continue For
                                         End If
@@ -418,8 +418,8 @@ Namespace API.Reddit
         End Sub
 #End Region
 #Region "Download Base Functions"
-        Private Function CreateImgurMedia(ByVal _URL As String, ByVal PostID As String, ByVal PostDate As String,
-                                          Optional ByVal _UserID As String = "", Optional ByVal IsChannel As Boolean = False) As Boolean
+        Private Function CreateImgurMedia(_URL As String, PostID As String, PostDate As String,
+                                          Optional _UserID As String = "", Optional IsChannel As Boolean = False) As Boolean
             If Not _URL.IsEmptyString AndAlso _URL.Contains("imgur") Then
                 If _URL.StringContains({".jpg", ".png", ".jpeg"}) Then
                     _TempMediaList.ListAddValue(MediaFromData(UTypes.Picture, _URL, PostID, PostDate, _UserID, IsChannel), LNC)
@@ -469,16 +469,16 @@ Namespace API.Reddit
                 Return False
             End If
         End Function
-        Private Function DownloadGallery(ByVal w As EContainer, ByVal PostID As String, ByVal PostDate As String,
-                                         Optional ByVal _UserID As String = Nothing, Optional ByVal FirstOnly As Boolean = False) As Boolean
+        Private Function DownloadGallery(w As EContainer, PostID As String, PostDate As String,
+                                         Optional _UserID As String = Nothing, Optional FirstOnly As Boolean = False) As Boolean
             Try
                 Dim added As Boolean = False
                 Dim cn$ = IIf(IsChannel, "media_metadata", "mediaMetadata")
-                If Not w Is Nothing AndAlso w(cn).XmlIfNothing.Count > 0 Then
+                If w IsNot Nothing AndAlso w(cn).XmlIfNothing.Count > 0 Then
                     Dim t As EContainer
                     For Each n As EContainer In w(cn)
                         t = n.ItemF({"s", "u"})
-                        If Not t Is Nothing AndAlso Not t.Value.IsEmptyString Then
+                        If t IsNot Nothing AndAlso Not t.Value.IsEmptyString Then
                             _TempMediaList.ListAddValue(MediaFromData(UTypes.Picture, t.Value, PostID, PostDate, _UserID, IsChannel), LNC)
                             added = True
                             If FirstOnly Then Exit For
@@ -491,9 +491,9 @@ Namespace API.Reddit
                 Return False
             End Try
         End Function
-        Private Function GetVideoRedditPreview(ByVal Node As EContainer) As String
+        Private Function GetVideoRedditPreview(Node As EContainer) As String
             Try
-                If Not Node Is Nothing Then
+                If Node IsNot Nothing Then
                     Dim n As EContainer = Node.ItemF({"preview", "images", 0})
                     Dim DestNode$() = Nothing
                     If If(n?.Count, 0) > 0 Then
@@ -502,7 +502,7 @@ Namespace API.Reddit
                         ElseIf If(n({"variants", "nsfw", "resolutions"})?.Count, 0) > 0 Then
                             DestNode = {"variants", "nsfw", "resolutions"}
                         End If
-                        If Not DestNode Is Nothing Then
+                        If DestNode IsNot Nothing Then
                             With n(DestNode)
                                 Dim sl As List(Of Sizes) = .Select(Function(e) New Sizes(e.Value("width"), e.Value("url"))).
                                                             ListWithRemove(Function(ss) ss.HasError Or ss.Data.IsEmptyString)
@@ -523,7 +523,7 @@ Namespace API.Reddit
                 Return String.Empty
             End Try
         End Function
-        Protected Overrides Sub ReparseVideo(ByVal Token As CancellationToken)
+        Protected Overrides Sub ReparseVideo(Token As CancellationToken)
             Dim RedGifsResponser As Responser = Nothing
             Try
                 ThrowAny(Token)
@@ -576,14 +576,14 @@ Namespace API.Reddit
             Catch ex As Exception
                 ProcessException(ex, Token, "video reparsing error", False)
             Finally
-                If Not RedGifsResponser Is Nothing Then RedGifsResponser.Dispose()
+                If RedGifsResponser IsNot Nothing Then RedGifsResponser.Dispose()
             End Try
         End Sub
-        Protected Overrides Sub ReparseMissing(ByVal Token As CancellationToken)
+        Protected Overrides Sub ReparseMissing(Token As CancellationToken)
             Dim rList As New List(Of Integer)
             Dim RedGifsResponser As Responser = Nothing
             Try
-                If Not ChannelInfo Is Nothing Or SaveToCache Then Exit Sub
+                If ChannelInfo IsNot Nothing Or SaveToCache Then Exit Sub
                 If ContentMissingExists Then
                     Dim RedGifsHost As SettingsHost = Settings(RedGifs.RedGifsSiteKey)
                     RedGifsResponser = RedGifsHost.Responser.Copy
@@ -611,14 +611,14 @@ Namespace API.Reddit
             Catch ex As Exception
                 ProcessException(ex, Token, "missing data downloading error")
             Finally
-                If Not RedGifsResponser Is Nothing Then RedGifsResponser.Dispose()
+                If RedGifsResponser IsNot Nothing Then RedGifsResponser.Dispose()
                 If rList.Count > 0 Then
                     For i% = rList.Count - 1 To 0 Step -1 : _ContentList.RemoveAt(rList(i)) : Next
                     rList.Clear()
                 End If
             End Try
         End Sub
-        Private Sub ParsePost(ByVal URL As String)
+        Private Sub ParsePost(URL As String)
             Try
                 If Not URL.IsEmptyString Then
                     Dim __id$ = RegexReplace(URL, RParams.DMS("comments/([^/]+)", 1, EDP.ReturnValue))
@@ -655,10 +655,10 @@ Namespace API.Reddit
             End Try
         End Sub
         Private Class AbsProgress : Inherits PersonalUtilities.Forms.Toolbars.MyProgress
-            Public Overrides Sub Perform(Optional ByVal Value As Double = 1)
+            Public Overrides Sub Perform(Optional Value As Double = 1)
             End Sub
         End Class
-        Friend Shared Function GetVideoInfo(ByVal URL As String, ByVal resp As Responser, ByVal f As SFile, ByVal SpecialFolder As String) As IEnumerable(Of UserMedia)
+        Friend Shared Function GetVideoInfo(URL As String, resp As Responser, f As SFile, SpecialFolder As String) As IEnumerable(Of UserMedia)
             Try
                 If Not URL.IsEmptyString Then
                     Using r As New UserData
@@ -687,9 +687,9 @@ Namespace API.Reddit
         End Function
 #End Region
 #Region "Structure creator"
-        Protected Shared Function MediaFromData(ByVal t As UTypes, ByVal _URL As String, ByVal PostID As String, ByVal PostDate As String,
-                                                Optional ByVal _UserID As String = "", Optional ByVal IsChannel As Boolean = False,
-                                                Optional ByVal ReplacePreview As Boolean = True) As UserMedia
+        Protected Shared Function MediaFromData(t As UTypes, _URL As String, PostID As String, PostDate As String,
+                                                Optional _UserID As String = "", Optional IsChannel As Boolean = False,
+                                                Optional ReplacePreview As Boolean = True) As UserMedia
             If _URL.IsEmptyString And t = UTypes.Picture Then Return Nothing
             _URL = LinkFormatterSecure(RegexReplace(_URL.Replace("\", String.Empty), LinkPattern))
             Dim m As New UserMedia(_URL, t) With {.Post = New UserPost With {.ID = PostID, .UserID = _UserID}}
@@ -698,7 +698,7 @@ Namespace API.Reddit
             If Not PostDate.IsEmptyString Then m.Post.Date = AConvert(Of Date)(PostDate, DateTrueProvider(IsChannel), Nothing) Else m.Post.Date = Nothing
             Return m
         End Function
-        Private Function TryFile(ByVal URL As String) As Boolean
+        Private Function TryFile(URL As String) As Boolean
             Try
                 If Not URL.IsEmptyString AndAlso URL.StringContains({".jpg", ".png", ".jpeg"}) Then
                     Dim f As SFile = CStr(RegexReplace(URL, FilesPattern))
@@ -709,11 +709,11 @@ Namespace API.Reddit
                 Return False
             End Try
         End Function
-        Private Shared Function UrlToFile(ByVal URL As String) As SFile
+        Private Shared Function UrlToFile(URL As String) As SFile
             Return CStr(RegexReplace(URL, FilesPattern))
         End Function
 #End Region
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             Dim RedGifsResponser As Responser = Nothing
             Try
                 Const _RFN$ = "RedditVideo"
@@ -729,7 +729,7 @@ Namespace API.Reddit
                         Dim MissingErrorsAdd As Boolean = Settings.AddMissingErrorsToLog
                         Dim IsImgurStuff As Boolean
                         Dim MyDir$
-                        If Not IsSavedPosts AndAlso (IsChannel And SaveToCache And Not ChannelInfo Is Nothing) Then
+                        If Not IsSavedPosts AndAlso (IsChannel And SaveToCache And ChannelInfo IsNot Nothing) Then
                             MyDir = ChannelInfo.CachePath.PathNoSeparator
                         Else
                             MyDir = MyFile.CutPath.PathNoSeparator
@@ -749,7 +749,7 @@ Namespace API.Reddit
                         Dim RGRERROR As New ErrorsDescriber(EDP.ThrowException)
                         Dim ImgurUrls As New List(Of String)
                         Dim TryBytes As Func(Of String, Imaging.ImageFormat, String) =
-                            Function(ByVal __URL As String, ByVal ImgFormat As Imaging.ImageFormat) As String
+                            Function(__URL As String, ImgFormat As Imaging.ImageFormat) As String
                                 Try
                                     Return ByteArrayToString(GetMD5(SFile.GetBytesFromNet(__URL, bDP), ImgFormat))
                                 Catch hash_ex As Exception
@@ -757,8 +757,8 @@ Namespace API.Reddit
                                 End Try
                             End Function
                         Dim MD5BS As Func(Of String, UTypes,
-                                             SFile, Boolean, String) = Function(ByVal __URL As String, ByVal __MT As UTypes,
-                                                                                ByVal __File As SFile, ByVal __IsBase As Boolean) As String
+                                             SFile, Boolean, String) = Function(__URL As String, __MT As UTypes,
+__File As SFile, __IsBase As Boolean) As String
                                                                            Try
                                                                                ImgurUrls.Clear()
                                                                                Dim ImgFormat As Imaging.ImageFormat
@@ -898,8 +898,8 @@ Namespace API.Reddit
                 HasError = True
             End Try
         End Sub
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             With Responser
                 If .StatusCode = HttpStatusCode.NotFound Then
                     UserExists = False
@@ -916,7 +916,7 @@ Namespace API.Reddit
             End With
             Return 1
         End Function
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then ChannelPostsNames.Clear() : _ExistsUsersNames.Clear() : _CrossPosts.Clear()
             MyBase.Dispose(disposing)
         End Sub

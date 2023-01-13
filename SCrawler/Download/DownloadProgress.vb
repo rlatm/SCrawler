@@ -29,7 +29,7 @@ Namespace DownloadObjects
         Friend ReadOnly Property Job As TDJob
 #End Region
 #Region "Initializer"
-        Friend Sub New(ByVal _Job As TDJob)
+        Friend Sub New(_Job As TDJob)
             Job = _Job
 
             TP_MAIN = New TableLayoutPanel With {.Margin = New Padding(0), .Dock = DockStyle.Fill}
@@ -102,10 +102,10 @@ Namespace DownloadObjects
                 End With
             End With
 
-            If Job.Type = Download.SavedPosts And Not Job.Progress Is Nothing Then Job.Progress.InformationTemporary = Job.Host.Name
+            If Job.Type = Download.SavedPosts And Job.Progress IsNot Nothing Then Job.Progress.InformationTemporary = Job.Host.Name
             Instance = New API.Base.ProfileSaved(Job.Host, Job.Progress)
         End Sub
-        Private Sub CreateButton(ByRef BTT As Button, ByVal Img As Image)
+        Private Sub CreateButton(ByRef BTT As Button, Img As Image)
             BTT = New Button With {
                 .BackgroundImage = Img,
                 .BackgroundImageLayout = ImageLayout.Zoom,
@@ -158,21 +158,21 @@ Namespace DownloadObjects
         End Sub
 #End Region
 #Region "Progress, Jobs count"
-        Private Sub JobProgress_MaximumChanged(ByVal Sender As Object, ByVal e As ProgressEventArgs)
+        Private Sub JobProgress_MaximumChanged(Sender As Object, e As ProgressEventArgs)
             RaiseEvent ProgressMaximumChanged()
         End Sub
-        Private Sub JobProgress_ProgressChanged(ByVal Sender As Object, ByVal e As ProgressEventArgs)
+        Private Sub JobProgress_ProgressChanged(Sender As Object, e As ProgressEventArgs)
             If Not Job.Type = Download.SavedPosts Then MainProgress.Perform()
         End Sub
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
-                    If Not BTT_START Is Nothing Then BTT_START.Dispose()
-                    If Not BTT_STOP Is Nothing Then BTT_STOP.Dispose()
-                    If Not BTT_OPEN Is Nothing Then BTT_OPEN.Dispose()
+                    If BTT_START IsNot Nothing Then BTT_START.Dispose()
+                    If BTT_STOP IsNot Nothing Then BTT_STOP.Dispose()
+                    If BTT_OPEN IsNot Nothing Then BTT_OPEN.Dispose()
                     PR_MAIN.Dispose()
                     LBL_INFO.Dispose()
                     TP_CONTROLS.Controls.Clear()

@@ -10,147 +10,98 @@ Imports SCrawler.Plugin
 Imports PersonalUtilities.Functions.XML
 Imports PersonalUtilities.Functions.XML.Base
 Imports PersonalUtilities.Functions.RegularExpressions
+Imports PersonalUtilities.Functions.UniversalFunctions
+
 Namespace API.Base
     Friend Module Structures
+
+        Friend Structure Sizes : Implements IRegExCreator, IComparable(Of Sizes)
+            Friend ReadOnly HasError As Boolean
+            Friend Data As String
+            Friend Value As Integer
+
+            Friend Sub New(_Value As String, _Data As String)
+                Try
+                    Value = _Value
+                    Data = _Data
+                Catch ex As Exception
+                    HasError = True
+                End Try
+            End Sub
+
+            Friend Function CompareTo(Other As Sizes) As Integer Implements IComparable(Of Sizes).CompareTo
+                Return Value.CompareTo(Other.Value) * -1
+            End Function
+
+            Private Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+                If ParamsArray.ListExists(2) Then
+                    Return New Sizes With {
+                        .Value = AConvert(Of Integer)(ParamsArray(0), 0),
+                        .Data = ParamsArray(1)
+                    }
+                Else
+                    Return New Sizes
+                End If
+            End Function
+
+        End Structure
+
         Friend Structure UserMedia : Implements IUserMedia, IEquatable(Of UserMedia), IEContainerProvider
+
 #Region "XML Names"
+
             Friend Const Name_MediaNode As String = "MediaData"
-            Private Const Name_MediaType As String = "Type"
-            Private Const Name_MediaState As String = "State"
             Private Const Name_MediaAttempts As String = "Attempts"
-            Private Const Name_MediaURL As String = "URL"
-            Private Const Name_MediaHash As String = "Hash"
             Private Const Name_MediaFile As String = "File"
-            Private Const Name_MediaPostID As String = "ID"
+            Private Const Name_MediaHash As String = "Hash"
             Private Const Name_MediaPostDate As String = "Date"
+            Private Const Name_MediaPostID As String = "ID"
+            Private Const Name_MediaState As String = "State"
+            Private Const Name_MediaType As String = "Type"
+            Private Const Name_MediaURL As String = "URL"
             Private Const Name_SpecialFolder As String = "SpecialFolder"
+
 #End Region
-            Friend Enum Types As Integer
-                Undefined = 0
-                [Picture] = 1
-                [Video] = 2
-                [Text] = 3
-                VideoPre = 10
-                GIF = 50
-                m3u8 = 100
-            End Enum
-            Friend Enum States As Integer : Unknown = 0 : Tried = 1 : Downloaded = 2 : Skipped = 3 : Missing = 4 : End Enum
-            Friend [Type] As Types
-            Friend URL_BASE As String
-            Friend URL As String
-            Friend MD5 As String
+
             Friend [File] As SFile
-            Friend Post As UserPost
-            Friend PictureOption As String
-            Friend State As States
+
+            Friend [Object] As Object
+
+            Friend [Type] As Types
+
             Friend Attempts As Integer
+
+            Friend MD5 As String
+
+            Friend PictureOption As String
+
+            Friend Post As UserPost
+
             ''' <summary>
             ''' SomeFolder<br/>
             ''' SomeFolder\SomeFolder2
             ''' </summary>
             Friend SpecialFolder As String
-            Friend [Object] As Object
-#Region "Interface Support"
-            Private Property IUserMedia_Type As Integer Implements IUserMedia.ContentType
-                Get
-                    Return Type
-                End Get
-                Set(ByVal Type As Integer)
-                    Me.Type = Type
-                End Set
-            End Property
-            Private Property IUserMedia_URL_BASE As String Implements IUserMedia.URL_BASE
-                Get
-                    Return URL_BASE
-                End Get
-                Set(ByVal URL_BASE As String)
-                    Me.URL_BASE = URL_BASE
-                End Set
-            End Property
-            Private Property IUserMedia_URL As String Implements IUserMedia.URL
-                Get
-                    Return URL
-                End Get
-                Set(ByVal URL As String)
-                    Me.URL = URL
-                End Set
-            End Property
-            Private Property IUserMedia_MD5 As String Implements IUserMedia.MD5
-                Get
-                    Return MD5
-                End Get
-                Set(ByVal MD5 As String)
-                    Me.MD5 = MD5
-                End Set
-            End Property
-            Private Property IUserMedia_File As String Implements IUserMedia.File
-                Get
-                    Return File
-                End Get
-                Set(ByVal File As String)
-                    Me.File = File
-                End Set
-            End Property
-            Private Property IUserMedia_State As Integer Implements IUserMedia.DownloadState
-                Get
-                    Return State
-                End Get
-                Set(ByVal State As Integer)
-                    Me.State = State
-                End Set
-            End Property
-            Private Property IUserMedia_PostID As String Implements IUserMedia.PostID
-                Get
-                    Return Post.ID
-                End Get
-                Set(ByVal PostID As String)
-                    Post = New UserPost(PostID, Post.Date)
-                End Set
-            End Property
-            Private Property IUserMedia_PostDate As Date? Implements IUserMedia.PostDate
-                Get
-                    Return Post.Date
-                End Get
-                Set(ByVal PostDate As Date?)
-                    Post = New UserPost(Post.ID, PostDate)
-                End Set
-            End Property
-            Private Property IUserMedia_SpecialFolder As String Implements IUserMedia.SpecialFolder
-                Get
-                    Return SpecialFolder
-                End Get
-                Set(ByVal SpecialFolder As String)
-                    Me.SpecialFolder = SpecialFolder
-                End Set
-            End Property
-            Private Property IUserMedia_Attempts As Integer Implements IUserMedia.Attempts
-                Get
-                    Return Attempts
-                End Get
-                Set(ByVal Attempts As Integer)
-                    Me.Attempts = Attempts
-                End Set
-            End Property
-            Private Property IUserMedia_Object As Object Implements IUserMedia.Object
-                Get
-                    Return Me.Object
-                End Get
-                Set(ByVal Obj As Object)
-                    Me.Object = Obj
-                End Set
-            End Property
-#End Region
-            Friend Sub New(ByVal URL As String)
+
+            Friend State As States
+
+            Friend URL As String
+
+            Friend URL_BASE As String
+
+            Friend Sub New(URL As String)
                 Me.URL = URL
                 URL_BASE = URL
                 File = URL
                 Type = Types.Undefined
             End Sub
-            Friend Sub New(ByVal URL As String, ByVal Type As Types)
+
+            Friend Sub New(URL As String, Type As Types)
                 Me.New(URL)
                 Me.Type = Type
             End Sub
-            Friend Sub New(ByVal m As IUserMedia)
+
+            Friend Sub New(m As IUserMedia)
                 [Type] = m.ContentType
                 URL = m.URL
                 URL_BASE = m.URL_BASE
@@ -162,7 +113,8 @@ Namespace API.Base
                 Attempts = m.Attempts
                 Me.Object = m.Object
             End Sub
-            Friend Sub New(ByVal e As EContainer, ByVal UserInstance As IUserData)
+
+            Friend Sub New(e As EContainer, UserInstance As IUserData)
                 Type = e.Attribute(Name_MediaType).Value.FromXML(Of Integer)(CInt(Types.Undefined))
                 State = e.Attribute(Name_MediaState).Value.FromXML(Of Integer)(CInt(States.Downloaded))
                 Attempts = e.Attribute(Name_MediaAttempts).Value.FromXML(Of Integer)(0)
@@ -173,7 +125,7 @@ Namespace API.Base
 
                 Dim vp As Boolean? = Nothing
                 Dim upath$ = String.Empty
-                If Not UserInstance Is Nothing Then
+                If UserInstance IsNot Nothing Then
                     With DirectCast(UserInstance, UserDataBase)
                         vp = .SeparateVideoFolder
                         upath = .MyFile.CutPath.PathWithSeparator
@@ -190,12 +142,134 @@ Namespace API.Base
                     .[Date] = AConvert(Of Date)(e.Attribute(Name_MediaPostDate).Value, ParsersDataDateProvider, Nothing)
                 }
             End Sub
-            Public Shared Widening Operator CType(ByVal _URL As String) As UserMedia
+
+            Friend Enum States As Integer : Unknown = 0 : Tried = 1 : Downloaded = 2 : Skipped = 3 : Missing = 4 : End Enum
+
+            Friend Enum Types As Integer
+                Undefined = 0
+                [Picture] = 1
+                [Video] = 2
+                [Text] = 3
+                VideoPre = 10
+                GIF = 50
+                m3u8 = 100
+            End Enum
+
+#Region "Interface Support"
+
+            Private Property IUserMedia_Attempts As Integer Implements IUserMedia.Attempts
+                Get
+                    Return Attempts
+                End Get
+                Set(Attempts As Integer)
+                    Me.Attempts = Attempts
+                End Set
+            End Property
+
+            Private Property IUserMedia_File As String Implements IUserMedia.File
+                Get
+                    Return File
+                End Get
+                Set(File As String)
+                    Me.File = File
+                End Set
+            End Property
+
+            Private Property IUserMedia_MD5 As String Implements IUserMedia.MD5
+                Get
+                    Return MD5
+                End Get
+                Set(MD5 As String)
+                    Me.MD5 = MD5
+                End Set
+            End Property
+
+            Private Property IUserMedia_Object As Object Implements IUserMedia.Object
+                Get
+                    Return Me.Object
+                End Get
+                Set(Obj As Object)
+                    Me.Object = Obj
+                End Set
+            End Property
+
+            Private Property IUserMedia_PostDate As Date? Implements IUserMedia.PostDate
+                Get
+                    Return Post.Date
+                End Get
+                Set(PostDate As Date?)
+                    Post = New UserPost(Post.ID, PostDate)
+                End Set
+            End Property
+
+            Private Property IUserMedia_PostID As String Implements IUserMedia.PostID
+                Get
+                    Return Post.ID
+                End Get
+                Set(PostID As String)
+                    Post = New UserPost(PostID, Post.Date)
+                End Set
+            End Property
+
+            Private Property IUserMedia_SpecialFolder As String Implements IUserMedia.SpecialFolder
+                Get
+                    Return SpecialFolder
+                End Get
+                Set(SpecialFolder As String)
+                    Me.SpecialFolder = SpecialFolder
+                End Set
+            End Property
+
+            Private Property IUserMedia_State As Integer Implements IUserMedia.DownloadState
+                Get
+                    Return State
+                End Get
+                Set(State As Integer)
+                    Me.State = State
+                End Set
+            End Property
+
+            Private Property IUserMedia_Type As Integer Implements IUserMedia.ContentType
+                Get
+                    Return Type
+                End Get
+                Set(Type As Integer)
+                    Me.Type = Type
+                End Set
+            End Property
+
+            Private Property IUserMedia_URL As String Implements IUserMedia.URL
+                Get
+                    Return URL
+                End Get
+                Set(URL As String)
+                    Me.URL = URL
+                End Set
+            End Property
+
+            Private Property IUserMedia_URL_BASE As String Implements IUserMedia.URL_BASE
+                Get
+                    Return URL_BASE
+                End Get
+                Set(URL_BASE As String)
+                    Me.URL_BASE = URL_BASE
+                End Set
+            End Property
+
+#End Region
+
+            Public Shared Widening Operator CType(_URL As String) As UserMedia
                 Return New UserMedia(_URL)
             End Operator
-            Public Shared Widening Operator CType(ByVal m As UserMedia) As String
+
+            Public Shared Widening Operator CType(m As UserMedia) As String
                 Return m.URL
             End Operator
+
+            Public Overrides Function Equals(Obj As Object) As Boolean
+                Return Equals(CType(Obj, UserMedia))
+            End Function
+
             Public Overrides Function GetHashCode() As Integer
                 If Not File.IsEmptyString Then
                     Return File.GetHashCode
@@ -207,16 +281,16 @@ Namespace API.Base
                     Return 0
                 End If
             End Function
+
             Public Overrides Function ToString() As String
                 Return URL
             End Function
-            Friend Overloads Function Equals(ByVal Other As UserMedia) As Boolean Implements IEquatable(Of UserMedia).Equals
+
+            Friend Overloads Function Equals(Other As UserMedia) As Boolean Implements IEquatable(Of UserMedia).Equals
                 Return URL = Other.URL
             End Function
-            Public Overrides Function Equals(ByVal Obj As Object) As Boolean
-                Return Equals(CType(Obj, UserMedia))
-            End Function
-            Friend Function ToEContainer(Optional ByVal e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
+
+            Friend Function ToEContainer(Optional e As ErrorsDescriber = Nothing) As EContainer Implements IEContainerProvider.ToEContainer
                 Return New EContainer(Name_MediaNode, URL_BASE, {New EAttribute(Name_MediaType, CInt(Type)),
                                                                  New EAttribute(Name_MediaState, CInt(State)),
                                                                  New EAttribute(Name_MediaAttempts, Attempts),
@@ -229,78 +303,75 @@ Namespace API.Base
                                                                 }
                                      )
             End Function
+
         End Structure
+
         Friend Structure UserPost : Implements IEquatable(Of UserPost), IComparable(Of UserPost)
+            Friend [Date] As Date?
+
+            Friend CachedFile As SFile
+
             ''' <summary>Post ID</summary>
             Friend ID As String
-            Friend [Date] As Date?
+
             Friend UserID As String
-            Friend CachedFile As SFile
+
 #Region "Initializers"
-            Public Sub New(ByVal ID As String)
+
+            Public Sub New(ID As String)
                 Me.ID = ID
             End Sub
-            Public Sub New(ByVal [Date] As Date?)
+
+            Public Sub New([Date] As Date?)
                 Me.Date = [Date]
             End Sub
-            Public Sub New(ByVal ID As String, ByVal [Date] As Date?)
+
+            Public Sub New(ID As String, [Date] As Date?)
                 Me.ID = ID
                 Me.Date = [Date]
             End Sub
-            Public Shared Widening Operator CType(ByVal ID As String) As UserPost
+
+            Public Shared Widening Operator CType(ID As String) As UserPost
                 Return New UserPost(ID)
             End Operator
-            Public Shared Widening Operator CType(ByVal Post As UserPost) As String
+
+            Public Shared Widening Operator CType(Post As UserPost) As String
                 Return Post.ID
             End Operator
+
 #End Region
+
 #Region "ToString"
+
             Public Overrides Function ToString() As String
                 Return ID
             End Function
+
 #End Region
+
 #Region "IEquatable, IComparable Support"
-            Friend Overloads Function Equals(ByVal Other As UserPost) As Boolean Implements IEquatable(Of UserPost).Equals
-                Return ID = Other.ID
-            End Function
-            Public Overloads Overrides Function Equals(ByVal Obj As Object) As Boolean
+
+            Public Overloads Overrides Function Equals(Obj As Object) As Boolean
                 Return Equals(DirectCast(Obj, UserPost))
             End Function
-            Friend Function CompareTo(ByVal Other As UserPost) As Integer Implements IComparable(Of UserPost).CompareTo
+
+            Friend Function CompareTo(Other As UserPost) As Integer Implements IComparable(Of UserPost).CompareTo
                 Return GetCompareValue(Me).CompareTo(GetCompareValue(Other))
             End Function
-            Private Function GetCompareValue(ByVal Post As UserPost) As Long
+
+            Friend Overloads Function Equals(Other As UserPost) As Boolean Implements IEquatable(Of UserPost).Equals
+                Return ID = Other.ID
+            End Function
+
+            Private Function GetCompareValue(Post As UserPost) As Long
                 Dim v& = 0
                 If Post.Date.HasValue Then v = Post.Date.Value.Ticks * -1
                 Return v
             End Function
+
 #End Region
+
         End Structure
-        Friend Structure Sizes : Implements IRegExCreator, IComparable(Of Sizes)
-            Friend Value As Integer
-            Friend Data As String
-            Friend ReadOnly HasError As Boolean
-            Friend Sub New(ByVal _Value As String, ByVal _Data As String)
-                Try
-                    Value = _Value
-                    Data = _Data
-                Catch ex As Exception
-                    HasError = True
-                End Try
-            End Sub
-            Private Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
-                If ParamsArray.ListExists(2) Then
-                    Return New Sizes With {
-                        .Value = AConvert(Of Integer)(ParamsArray(0), 0),
-                        .Data = ParamsArray(1)
-                    }
-                Else
-                    Return New Sizes
-                End If
-            End Function
-            Friend Function CompareTo(ByVal Other As Sizes) As Integer Implements IComparable(Of Sizes).CompareTo
-                Return Value.CompareTo(Other.Value) * -1
-            End Function
-        End Structure
+
     End Module
 End Namespace

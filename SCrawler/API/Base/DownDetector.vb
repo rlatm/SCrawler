@@ -16,7 +16,7 @@ Namespace API.Base
         Friend Structure Data : Implements IRegExCreator, IComparable(Of Data)
             Friend [Date] As Date
             Friend Value As Integer
-            Private Function CreateFromArray(ByVal ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
+            Private Function CreateFromArray(ParamsArray() As String) As Object Implements IRegExCreator.CreateFromArray
                 If ParamsArray.ListExists Then
                     Try : [Date] = Date.Parse(ParamsArray(0)) : Catch : End Try
                     If ParamsArray.Length > 1 Then Value = AConvert(Of Integer)(ParamsArray(1), 0)
@@ -26,11 +26,11 @@ Namespace API.Base
             Public Overrides Function ToString() As String
                 Return $"{AConvert(Of String)([Date], ADateTime.Formats.BaseDateTime, String.Empty)} [{Value}]"
             End Function
-            Private Function CompareTo(ByVal Other As Data) As Integer Implements IComparable(Of Data).CompareTo
+            Private Function CompareTo(Other As Data) As Integer Implements IComparable(Of Data).CompareTo
                 Return [Date].CompareTo(Other.Date) * -1
             End Function
         End Structure
-        Friend Shared Function GetData(ByVal Site As String) As List(Of Data)
+        Friend Shared Function GetData(Site As String) As List(Of Data)
             Try
                 Dim l As List(Of Data) = Nothing
                 Dim l2 As List(Of Data) = Nothing

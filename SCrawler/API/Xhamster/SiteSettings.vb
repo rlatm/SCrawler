@@ -75,7 +75,7 @@ Namespace API.Xhamster
         Friend Overloads Sub UpdateDomains() Implements IDomainContainer.UpdateDomains
             DomainContainer.UpdateDomains(Me)
         End Sub
-        Friend Overloads Sub UpdateDomains(ByVal NewDomains As IEnumerable(Of String), ByVal Internal As Boolean)
+        Friend Overloads Sub UpdateDomains(NewDomains As IEnumerable(Of String), Internal As Boolean)
             DomainContainer.UpdateDomains(Me, NewDomains, Internal)
         End Sub
 #End Region
@@ -93,14 +93,14 @@ Namespace API.Xhamster
             DomainContainer.OpenSettingsForm(Me)
         End Sub
 #End Region
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             If What = ISiteSettings.Download.SavedPosts Then
                 Return New UserData With {.IsSavedPosts = True, .User = New UserInfo With {.Name = "xhamster"}}
             Else
                 Return New UserData
             End If
         End Function
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             If Available(ISiteSettings.Download.Main, True) Then
                 Using resp As Responser = Responser.Copy
                     Dim spf$ = String.Empty
@@ -114,7 +114,7 @@ Namespace API.Xhamster
             End If
             Return Nothing
         End Function
-        Friend Overrides Function Available(ByVal What As ISiteSettings.Download, ByVal Silent As Boolean) As Boolean
+        Friend Overrides Function Available(What As ISiteSettings.Download, Silent As Boolean) As Boolean
             If Settings.UseM3U8 AndAlso MyBase.Available(What, Silent) Then
                 If What = ISiteSettings.Download.SavedPosts Then
                     Return Responser.CookiesExists
@@ -125,12 +125,12 @@ Namespace API.Xhamster
                 Return False
             End If
         End Function
-        Friend Overrides Function GetUserPostUrl(ByVal User As UserDataBase, ByVal Media As UserMedia) As String
+        Friend Overrides Function GetUserPostUrl(User As UserDataBase, Media As UserMedia) As String
             Return Media.URL_BASE
         End Function
 #Region "Is my user/data"
         Private Const UserRegexDefault As String = "{0}/users/([^/]+).*?"
-        Friend Overrides Function IsMyUser(ByVal UserURL As String) As ExchangeOptions
+        Friend Overrides Function IsMyUser(UserURL As String) As ExchangeOptions
             Dim b As ExchangeOptions = MyBase.IsMyUser(UserURL)
             If b.Exists Then Return b
             If Not UserURL.IsEmptyString And Domains.Count > 0 Then
@@ -144,7 +144,7 @@ Namespace API.Xhamster
             End If
             Return Nothing
         End Function
-        Friend Overrides Function IsMyImageVideo(ByVal URL As String) As ExchangeOptions
+        Friend Overrides Function IsMyImageVideo(URL As String) As ExchangeOptions
             If Not URL.IsEmptyString And Domains.Count > 0 Then
                 If Domains.Exists(Function(d) URL.Contains(d)) Then Return New ExchangeOptions With {.UserName = URL, .Exists = True}
             End If

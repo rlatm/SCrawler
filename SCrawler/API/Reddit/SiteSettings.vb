@@ -42,7 +42,7 @@ Namespace API.Reddit
             ImageVideoContains = "reddit.com"
             UserRegex = RParams.DM("[htps:/]{7,8}.*?reddit.com/([user]{1,4})/([^/]+)", 0, RegexReturn.ListByMatch, EDP.ReturnValue)
         End Sub
-        Friend Overrides Function GetInstance(ByVal What As Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As Download) As IPluginContentProvider
             Select Case What
                 Case Download.Main : Return New UserData
                 Case Download.Channel : Return New UserData With {.SaveToCache = False, .SkipExistsUsers = False, .AutoGetLimits = True}
@@ -56,11 +56,11 @@ Namespace API.Reddit
             End Select
             Return Nothing
         End Function
-        Friend Overrides Function IsMyUser(ByVal UserURL As String) As ExchangeOptions
+        Friend Overrides Function IsMyUser(UserURL As String) As ExchangeOptions
             Dim l As List(Of String) = RegexReplace(UserURL, UserRegex)
             If l.ListExists(3) Then Return New ExchangeOptions(Site, l(2), l(1) = "r") Else Return Nothing
         End Function
-        Friend Overrides Function Available(ByVal What As Download, ByVal Silent As Boolean) As Boolean
+        Friend Overrides Function Available(What As Download, Silent As Boolean) As Boolean
             Try
                 Dim dl As List(Of DownDetector.Data) = DownDetector.GetData("reddit")
                 If dl.ListExists Then
@@ -91,19 +91,19 @@ Namespace API.Reddit
         Private Sub UpdateRedGifsToken()
             DirectCast(Settings(RedGifs.RedGifsSiteKey).Source, RedGifs.SiteSettings).UpdateTokenIfRequired()
         End Sub
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             Dim spf$ = String.Empty
             Dim f As SFile = GetSpecialDataFile(Path, AskForPath, spf)
             f = $"{f.PathWithSeparator}OptionalPath\"
             Return UserData.GetVideoInfo(URL, Responser, f, spf)
         End Function
-        Friend Overrides Sub UserOptions(ByRef Options As Object, ByVal OpenForm As Boolean)
-            If Options Is Nothing OrElse Not TypeOf Options Is RedditViewExchange Then Options = New RedditViewExchange
+        Friend Overrides Sub UserOptions(ByRef Options As Object, OpenForm As Boolean)
+            If Options Is Nothing OrElse TypeOf Options IsNot RedditViewExchange Then Options = New RedditViewExchange
             If OpenForm Then
                 Using f As New RedditViewSettingsForm(Options) : f.ShowDialog() : End Using
             End If
         End Sub
-        Friend Overrides Function GetUserPostUrl(ByVal User As UserDataBase, ByVal Media As UserMedia) As String
+        Friend Overrides Function GetUserPostUrl(User As UserDataBase, Media As UserMedia) As String
             Return $"https://www.reddit.com/comments/{Media.Post.ID.Split("_").LastOrDefault}/"
         End Function
     End Class

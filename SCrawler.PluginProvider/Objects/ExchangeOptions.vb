@@ -13,11 +13,11 @@ Namespace Plugin
         Public HostKey As String
         Public IsChannel As Boolean
         Public Exists As Boolean
-        Public Sub New(ByVal Site As String, ByVal Name As String)
+        Public Sub New(Site As String, Name As String)
             UserName = Name
             SiteName = Site
         End Sub
-        Public Sub New(ByVal Site As String, ByVal Name As String, ByVal IsChannel As Boolean)
+        Public Sub New(Site As String, Name As String, IsChannel As Boolean)
             Me.New(Site, Name)
             Me.IsChannel = IsChannel
         End Sub

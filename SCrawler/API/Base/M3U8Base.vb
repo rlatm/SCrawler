@@ -6,19 +6,26 @@
 '
 ' This program is distributed in the hope that it will be useful,
 ' but WITHOUT ANY WARRANTY
-Imports PersonalUtilities.Functions.RegularExpressions
-Imports PersonalUtilities.Tools.Web
+Imports System.Text
+Imports PersonalUtilities.Functions.ArgConverter
+Imports PersonalUtilities.Functions.RegularExpressions.RegexFunctions
+Imports PersonalUtilities.Functions.UniversalFunctions
 Imports PersonalUtilities.Tools.Web.Clients
+
 Namespace API.Base
+
     Namespace M3U8Declarations
         Friend Module M3U8Defaults
             Friend ReadOnly TsFilesRegEx As RParams = RParams.DM(".+?\.ts[^\r\n]*", 0, RegexReturn.List)
         End Module
     End Namespace
+
     Friend NotInheritable Class M3U8Base
+
         Private Sub New()
         End Sub
-        Friend Shared Function CreateUrl(ByVal Appender As String, ByVal File As String) As String
+
+        Friend Shared Function CreateUrl(Appender As String, File As String) As String
             File = File.StringTrimStart("/")
             If File.StartsWith("http") Then
                 Return File
@@ -28,7 +35,8 @@ Namespace API.Base
                 Return $"{Appender.StringTrimEnd("/")}/{File}"
             End If
         End Function
-        Friend Shared Function Download(ByVal URLs As List(Of String), ByVal DestinationFile As SFile, Optional ByVal Responser As Responser = Nothing) As SFile
+
+        Friend Shared Function Download(URLs As List(Of String), DestinationFile As SFile, Optional Responser As Responser = Nothing) As SFile
             Dim CachePath As SFile = Nothing
             Try
                 If URLs.ListExists Then
@@ -50,7 +58,18 @@ Namespace API.Base
                                 eFiles.Add(dFile)
                             Next
                         End Using
-                        DestinationFile = FFMPEG.ConcatenateFiles(eFiles, Settings.FfmpegFile, ConcatFile, p, EDP.ThrowException)
+
+                        Dim inputArgument = New StringBuilder(eFiles(0).File)
+                        For inputFileCounter = 1 To eFiles.Count - 1
+                            inputArgument.Append($"|{eFiles(inputFileCounter).File}")
+                        Next
+
+                        Process.Start(
+                            New ProcessStartInfo(
+                                Settings.FfmpegFile,
+                                $"-i ""concat:{inputArgument}"" -c copy ""{ConcatFile}"""
+                             ) With {.WorkingDirectory = CachePath}).WaitForExit()
+
                         eFiles.Clear()
                         Return DestinationFile
                     End If
@@ -60,5 +79,7 @@ Namespace API.Base
                 CachePath.Delete(SFO.Path, SFODelete.None, EDP.None)
             End Try
         End Function
+
     End Class
+
 End Namespace

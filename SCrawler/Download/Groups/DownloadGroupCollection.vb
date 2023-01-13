@@ -24,7 +24,7 @@ Namespace DownloadObjects.Groups
                 End Using
                 With GroupsList
                     If .Count > 0 Then
-                        .ForEach(Sub(ByVal g As DownloadGroup)
+                        .ForEach(Sub(g As DownloadGroup)
                                      AddHandler g.Deleted, AddressOf OnGroupDeleted
                                      AddHandler g.Updated, AddressOf OnGroupUpdated
                                  End Sub)
@@ -34,7 +34,7 @@ Namespace DownloadObjects.Groups
             End If
             GroupsList.ListReindex
         End Sub
-        Default Friend ReadOnly Property Item(ByVal Index As Integer) As DownloadGroup Implements IMyEnumerator(Of DownloadGroup).MyEnumeratorObject
+        Default Friend ReadOnly Property Item(Index As Integer) As DownloadGroup Implements IMyEnumerator(Of DownloadGroup).MyEnumeratorObject
             Get
                 Return GroupsList(Index)
             End Get
@@ -52,10 +52,10 @@ Namespace DownloadObjects.Groups
             End If
         End Sub
         Private _GroupAddInProgress As Boolean = False
-        Private Sub OnGroupUpdated(ByVal Sender As DownloadGroup)
+        Private Sub OnGroupUpdated(Sender As DownloadGroup)
             If Not _GroupAddInProgress Then Update() : RaiseEvent Updated(Sender)
         End Sub
-        Private Sub OnGroupDeleted(ByVal Sender As DownloadGroup)
+        Private Sub OnGroupDeleted(Sender As DownloadGroup)
             RaiseEvent Deleted(Sender)
             Dim i% = GroupsList.FindIndex(Function(g) g.Key = Sender.Key)
             If i >= 0 Then
@@ -82,10 +82,10 @@ Namespace DownloadObjects.Groups
                 End If
             End Using
         End Sub
-        Friend Function DownloadGroupIfExists(ByVal Index As Integer) As Boolean
+        Friend Function DownloadGroupIfExists(Index As Integer) As Boolean
             If Index.ValueBetween(0, Count - 1) Then Item(Index).DownloadUsers(True) : Return True Else Return False
         End Function
-        Friend Function IndexOf(ByVal Name As String) As Integer
+        Friend Function IndexOf(Name As String) As Integer
             If Count > 0 Then
                 Return GroupsList.FindIndex(Function(g) g.Name = Name)
             Else

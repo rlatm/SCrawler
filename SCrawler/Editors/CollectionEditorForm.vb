@@ -53,10 +53,10 @@ Namespace Editors
                 MsgBoxE("Collection not selected", MsgBoxStyle.Exclamation)
             End If
         End Sub
-        Private Sub CMB_COLLECTIONS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles CMB_COLLECTIONS.ActionOnButtonClick
+        Private Sub CMB_COLLECTIONS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles CMB_COLLECTIONS.ActionOnButtonClick
             If Sender.DefaultButton = ActionButton.DefaultButtons.Add Then AddNewCollection()
         End Sub
-        Private Sub CMB_COLLECTIONS_ActionOnListDoubleClick(ByVal Sender As Object, ByVal e As EventArgs, ByVal Item As ListViewItem) Handles CMB_COLLECTIONS.ActionOnListDoubleClick
+        Private Sub CMB_COLLECTIONS_ActionOnListDoubleClick(Sender As Object, e As EventArgs, Item As ListViewItem) Handles CMB_COLLECTIONS.ActionOnListDoubleClick
             Item.Selected = True
             MyDefs_ButtonOkClick()
         End Sub

@@ -28,7 +28,7 @@ Namespace API.Instagram
                 .EndLoaderOperations()
             End With
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             With MyExchangeOptions
                 .GetTimeline = CH_GET_TIMELINE.Checked
                 .GetStories = CH_GET_STORIES.Checked

@@ -19,7 +19,7 @@ Namespace API.Twitter
         Private Const SinglePostUrl As String = "https://api.twitter.com/1.1/statuses/show.json?id={0}&tweet_mode=extended"
 #Region "Declarations"
         Private ReadOnly _DataNames As List(Of String)
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
         End Sub
 #End Region
 #Region "Initializer"
@@ -28,7 +28,7 @@ Namespace API.Twitter
         End Sub
 #End Region
 #Region "Download functions"
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             If IsSavedPosts Then
                 If _ContentList.Count > 0 Then _DataNames.ListAddList(_ContentList.Select(Function(c) c.Post.ID), LAP.ClearBeforeAdd, LAP.NotContainsOnly)
                 DownloadData(String.Empty, Token)
@@ -37,7 +37,7 @@ Namespace API.Twitter
                 DownloadData(String.Empty, Token)
             End If
         End Sub
-        Private Overloads Sub DownloadData(ByVal POST As String, ByVal Token As CancellationToken)
+        Private Overloads Sub DownloadData(POST As String, Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Dim NextCursor$ = String.Empty
@@ -128,7 +128,7 @@ Namespace API.Twitter
         End Sub
 #End Region
 #Region "Obtain media"
-        Private Sub ObtainMedia(ByVal e As EContainer, ByVal PostID As String, ByVal PostDate As String, Optional ByVal State As UStates = UStates.Unknown)
+        Private Sub ObtainMedia(e As EContainer, PostID As String, PostDate As String, Optional State As UStates = UStates.Unknown)
             If Not CheckVideoNode(e, PostID, PostDate, State) Then
                 Dim s As EContainer = e.ItemF({"extended_entities", "media"})
                 If s Is Nothing OrElse s.Count = 0 Then s = e.ItemF({"retweeted_status", "extended_entities", "media"})
@@ -146,8 +146,8 @@ Namespace API.Twitter
                 End If
             End If
         End Sub
-        Private Function CheckVideoNode(ByVal w As EContainer, ByVal PostID As String, ByVal PostDate As String,
-                                        Optional ByVal State As UStates = UStates.Unknown) As Boolean
+        Private Function CheckVideoNode(w As EContainer, PostID As String, PostDate As String,
+                                        Optional State As UStates = UStates.Unknown) As Boolean
             Try
                 If CheckForGif(w, PostID, PostDate, State) Then Return True
                 Dim URL$ = GetVideoNodeURL(w)
@@ -165,8 +165,8 @@ Namespace API.Twitter
                 Return False
             End Try
         End Function
-        Private Function CheckForGif(ByVal w As EContainer, ByVal PostID As String, ByVal PostDate As String,
-                                     Optional ByVal State As UStates = UStates.Unknown) As Boolean
+        Private Function CheckForGif(w As EContainer, PostID As String, PostDate As String,
+                                     Optional State As UStates = UStates.Unknown) As Boolean
             Try
                 Dim gifUrl As Predicate(Of EContainer) = Function(e) Not e.Value("content_type").IsEmptyString AndAlso
                                                                      e.Value("content_type").Contains("mp4") AndAlso
@@ -201,7 +201,7 @@ Namespace API.Twitter
                 Return False
             End Try
         End Function
-        Private Shared Function GetVideoNodeURL(ByVal w As EContainer) As String
+        Private Shared Function GetVideoNodeURL(w As EContainer) As String
             Dim v As EContainer = w.GetNode(VideoNode)
             If v.ListExists Then
                 Dim l As New List(Of Sizes)
@@ -224,7 +224,7 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "ReparseMissing"
-        Protected Overrides Sub ReparseMissing(ByVal Token As CancellationToken)
+        Protected Overrides Sub ReparseMissing(Token As CancellationToken)
             Dim rList As New List(Of Integer)
             Dim URL$ = String.Empty
             Try
@@ -241,7 +241,7 @@ Namespace API.Twitter
                                 r = Responser.GetResponse(URL,, EDP.ReturnValue)
                                 If Not r.IsEmptyString Then
                                     j = JsonDocument.Parse(r)
-                                    If Not j Is Nothing Then
+                                    If j IsNot Nothing Then
                                         PostDate = String.Empty
                                         If j.Contains("created_at") Then PostDate = j("created_at").Value Else PostDate = String.Empty
                                         ObtainMedia(j, m.Post.ID, PostDate, UStates.Missing)
@@ -263,7 +263,7 @@ Namespace API.Twitter
         End Sub
 #End Region
 #Region "Get video static"
-        Friend Shared Function GetVideoInfo(ByVal URL As String, ByVal resp As Responser) As IEnumerable(Of UserMedia)
+        Friend Shared Function GetVideoInfo(URL As String, resp As Responser) As IEnumerable(Of UserMedia)
             Try
                 If URL.Contains("twitter") Then
                     Dim PostID$ = RegexReplace(URL, RParams.DM("(?<=/)\d+", 0))
@@ -287,7 +287,7 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "Picture options"
-        Private Function GetPictureOption(ByVal w As EContainer) As String
+        Private Function GetPictureOption(w As EContainer) As String
             Const P4K As String = "4096x4096"
             Try
                 Dim ww As EContainer = w("sizes")
@@ -323,7 +323,7 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "UrlFile"
-        Private Function UrlFile(ByVal URL As String) As String
+        Private Function UrlFile(URL As String) As String
             Try
                 Dim f As SFile = CStr(RegexReplace(LinkFormatterSecure(RegexReplace(URL.Replace("\", String.Empty), LinkPattern)), FilesPattern))
                 If Not f.IsEmptyString Then Return f.File Else Return String.Empty
@@ -333,9 +333,9 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "Create media"
-        Private Shared Function MediaFromData(ByVal _URL As String, ByVal PostID As String, ByVal PostDate As String,
-                                              Optional ByVal _PictureOption As String = Nothing,
-                                              Optional ByVal State As UStates = UStates.Unknown) As UserMedia
+        Private Shared Function MediaFromData(_URL As String, PostID As String, PostDate As String,
+                                              Optional _PictureOption As String = Nothing,
+                                              Optional State As UStates = UStates.Unknown) As UserMedia
             _URL = LinkFormatterSecure(RegexReplace(_URL.Replace("\", String.Empty), LinkPattern))
             Dim m As New UserMedia(_URL) With {.PictureOption = _PictureOption, .Post = New UserPost With {.ID = PostID}}
             If Not m.URL.IsEmptyString Then m.File = CStr(RegexReplace(m.URL, FilesPattern))
@@ -348,13 +348,13 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "Downloader"
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
             DownloadContentDefault(Token)
         End Sub
 #End Region
 #Region "Exception"
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             With Responser
                 If .StatusCode = HttpStatusCode.NotFound Then
                     UserExists = False
@@ -373,7 +373,7 @@ Namespace API.Twitter
         End Function
 #End Region
 #Region "IDisposable support"
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If Not disposedValue And disposing Then _DataNames.Clear()
             MyBase.Dispose(disposing)
         End Sub

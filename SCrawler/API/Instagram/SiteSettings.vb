@@ -39,11 +39,11 @@ Namespace API.Instagram
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
             Private ReadOnly LVProvider As New ANumbers With {.FormatOptions = ANumbers.Options.GroupIntegral}
             Private ReadOnly _LowestValue As Integer
-            Friend Sub New(ByVal LowestValue As Integer)
+            Friend Sub New(LowestValue As Integer)
                 _LowestValue = LowestValue
             End Sub
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 TypeError = False
                 ErrorMessage = String.Empty
                 If Not ACheck(Of Integer)(Value) Then
@@ -55,7 +55,7 @@ Namespace API.Instagram
                 End If
                 Return Nothing
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the context of [TimersChecker]")
             End Function
         End Class
@@ -63,8 +63,8 @@ Namespace API.Instagram
             Private Property ErrorMessage As String Implements IFieldsCheckerProvider.ErrorMessage
             Private Property Name As String Implements IFieldsCheckerProvider.Name
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 Dim v% = AConvert(Of Integer)(Value, -10)
                 If v > 0 Or v = -1 Then
                     Return Value
@@ -73,7 +73,7 @@ Namespace API.Instagram
                     Return Nothing
                 End If
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the context of [TaggedNotifyLimitChecker]")
             End Function
         End Class
@@ -94,7 +94,7 @@ Namespace API.Instagram
         Friend Const Header_IG_WWW_CLAIM As String = "x-ig-www-claim"
         Friend Const Header_CSRF_TOKEN As String = "x-csrftoken"
         Private _FieldsChangerSuspended As Boolean = False
-        Private Sub ChangeResponserFields(ByVal PropName As String, ByVal Value As Object)
+        Private Sub ChangeResponserFields(PropName As String, Value As Object)
             If Not _FieldsChangerSuspended And Not PropName.IsEmptyString Then
                 Dim f$ = String.Empty
                 Select Case PropName
@@ -174,7 +174,7 @@ Namespace API.Instagram
                 End If
             End With
         End Function
-        Friend Sub TooManyRequests(ByVal Catched As Boolean)
+        Friend Sub TooManyRequests(Catched As Boolean)
             With DownloadingErrorDate
                 If Catched Then
                     If Not .ValueF.Exists Then
@@ -195,7 +195,7 @@ Namespace API.Instagram
 #End Region
 #End Region
 #Region "Initializer"
-        Friend Sub New(ByRef _XML As XmlFile, ByVal GlobalPath As SFile)
+        Friend Sub New(ByRef _XML As XmlFile, GlobalPath As SFile)
             MyBase.New(InstagramSite, "instagram.com")
 
             Dim app_id$ = String.Empty
@@ -251,7 +251,7 @@ Namespace API.Instagram
 #End Region
 #Region "PropertiesDataChecker"
         <PropertiesDataChecker({NameOf(TaggedNotifyLimit)})>
-        Private Function CheckNotifyLimit(ByVal p As IEnumerable(Of PropertyData)) As Boolean
+        Private Function CheckNotifyLimit(p As IEnumerable(Of PropertyData)) As Boolean
             If p.ListExists Then
                 Dim pi% = p.ListIndexOf(Function(pp) pp.Name = NameOf(TaggedNotifyLimit))
                 If pi >= 0 Then
@@ -270,7 +270,7 @@ Namespace API.Instagram
         End Function
 #End Region
 #Region "Plugin functions"
-        Friend Overrides Function GetInstance(ByVal What As Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As Download) As IPluginContentProvider
             Select Case What
                 Case Download.Main : Return New UserData
                 Case Download.SavedPosts
@@ -282,16 +282,16 @@ Namespace API.Instagram
         End Function
 #Region "Downloading"
         Friend Property SkipUntilNextSession As Boolean = False
-        Friend Overrides Function ReadyToDownload(ByVal What As Download) As Boolean
+        Friend Overrides Function ReadyToDownload(What As Download) As Boolean
             Return ActiveJobs < 2 AndAlso Not SkipUntilNextSession AndAlso ReadyForDownload AndAlso BaseAuthExists() AndAlso DownloadTimeline.Value
         End Function
         Private ActiveJobs As Integer = 0
         Private _NextWNM As UserData.WNM = UserData.WNM.Notify
         Private _NextTagged As Boolean = True
-        Friend Overrides Sub DownloadStarted(ByVal What As Download)
+        Friend Overrides Sub DownloadStarted(What As Download)
             ActiveJobs += 1
         End Sub
-        Friend Overrides Sub BeforeStartDownload(ByVal User As Object, ByVal What As Download)
+        Friend Overrides Sub BeforeStartDownload(User As Object, What As Download)
             With DirectCast(User, UserData)
                 If What = Download.Main Then
                     .WaitNotificationMode = _NextWNM
@@ -305,7 +305,7 @@ Namespace API.Instagram
                 End If
             End With
         End Sub
-        Friend Overrides Sub AfterDownload(ByVal User As Object, ByVal What As Download)
+        Friend Overrides Sub AfterDownload(User As Object, What As Download)
             With DirectCast(User, UserData)
                 _NextWNM = .WaitNotificationMode
                 If _NextWNM = UserData.WNM.SkipTemp Or _NextWNM = UserData.WNM.SkipCurrent Then _NextWNM = UserData.WNM.Notify
@@ -318,7 +318,7 @@ Namespace API.Instagram
                 _FieldsChangerSuspended = False
             End With
         End Sub
-        Friend Overrides Sub DownloadDone(ByVal What As Download)
+        Friend Overrides Sub DownloadDone(What As Download)
             _NextWNM = UserData.WNM.Notify
             _NextTagged = True
             LastDownloadDate.Value = Now
@@ -326,16 +326,16 @@ Namespace API.Instagram
             SkipUntilNextSession = False
         End Sub
 #End Region
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             Return UserData.GetVideoInfo(URL, Responser)
         End Function
-        Friend Overrides Sub UserOptions(ByRef Options As Object, ByVal OpenForm As Boolean)
-            If Options Is Nothing OrElse Not TypeOf Options Is EditorExchangeOptions Then Options = New EditorExchangeOptions(Me)
+        Friend Overrides Sub UserOptions(ByRef Options As Object, OpenForm As Boolean)
+            If Options Is Nothing OrElse TypeOf Options IsNot EditorExchangeOptions Then Options = New EditorExchangeOptions(Me)
             If OpenForm Then
                 Using f As New OptionsForm(Options) : f.ShowDialog() : End Using
             End If
         End Sub
-        Friend Overrides Function GetUserPostUrl(ByVal User As UserDataBase, ByVal Media As UserMedia) As String
+        Friend Overrides Function GetUserPostUrl(User As UserDataBase, Media As UserMedia) As String
             Try
                 Dim code$ = DirectCast(User, UserData).GetPostCodeById(Media.Post.ID)
                 If Not code.IsEmptyString Then Return $"https://instagram.com/p/{code}/" Else Return String.Empty

@@ -48,7 +48,7 @@ Namespace API.Reddit
             Get
                 Return Posts
             End Get
-            Set(ByVal s As IEnumerable(Of UserPost))
+            Set(s As IEnumerable(Of UserPost))
             End Set
         End Property
         Friend Property LatestParsedDate As Date? = Nothing
@@ -81,15 +81,15 @@ Namespace API.Reddit
                 Return Posts.Count
             End Get
         End Property
-        Default Friend ReadOnly Property Item(ByVal Index As Integer) As UserPost Implements IMyEnumerator(Of UserPost).MyEnumeratorObject
+        Default Friend ReadOnly Property Item(Index As Integer) As UserPost Implements IMyEnumerator(Of UserPost).MyEnumeratorObject
             Get
                 Return Posts(Index)
             End Get
         End Property
         Friend Property ViewMode As View = View.New Implements IRedditView.ViewMode
         Friend Property ViewPeriod As Period = Period.All Implements IRedditView.ViewPeriod
-        Friend Sub SetView(ByVal Options As IRedditView) Implements IRedditView.SetView
-            If Not Options Is Nothing Then
+        Friend Sub SetView(Options As IRedditView) Implements IRedditView.SetView
+            If Options IsNot Nothing Then
                 ViewMode = Options.ViewMode
                 ViewPeriod = Options.ViewPeriod
             End If
@@ -99,7 +99,7 @@ Namespace API.Reddit
         Private ReadOnly CountOfLoadedPostsPerSession As List(Of Integer)
         Friend ReadOnly Property ChannelExistentUserNames As List(Of String)
         Private _FirstUserAdded As Boolean = False
-        Friend Sub UserAdded(ByVal UserName As String, Optional ByVal IsAdded As Boolean = True)
+        Friend Sub UserAdded(UserName As String, Optional IsAdded As Boolean = True)
             If Not _FirstUserAdded Then CountOfAddedUsers.Add(0) : _FirstUserAdded = True
             Dim v% = CountOfAddedUsers.Last
             v += IIf(IsAdded, 1, -1)
@@ -116,7 +116,7 @@ Namespace API.Reddit
                 ChannelExistentUserNames.RemoveAll(Function(u) Not Settings.UsersList.Exists(Function(uu) uu.Site = Site And uu.Name = u))
             End If
         End Sub
-        Friend Function GetChannelStats(ByVal Extended As Boolean) As String
+        Friend Function GetChannelStats(Extended As Boolean) As String
             UpdateUsersStats()
             Dim s$ = String.Empty
             Dim p As New ANumbers With {.FormatOptions = ANumbers.Options.GroupIntegral}
@@ -155,7 +155,7 @@ Namespace API.Reddit
                     End If
                 End If
             End Get
-            Set(ByVal NewLimit As Integer?)
+            Set(NewLimit As Integer?)
                 _DownloadLimitCount = NewLimit
             End Set
         End Property
@@ -173,7 +173,7 @@ Namespace API.Reddit
                     End If
                 End If
             End Get
-            Set(ByVal NewLimit As String)
+            Set(NewLimit As String)
                 _DownloadLimitPost = NewLimit
             End Set
         End Property
@@ -190,17 +190,17 @@ Namespace API.Reddit
                     End If
                 End If
             End Get
-            Set(ByVal NewLimit As Date?)
+            Set(NewLimit As Date?)
                 _DownloadLimitDate = NewLimit
             End Set
         End Property
-        Friend Overloads Sub SetLimit(Optional ByVal MaxPost As String = "", Optional ByVal MaxCount As Integer? = Nothing,
-                                      Optional ByVal MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Optional MaxPost As String = "", Optional MaxCount As Integer? = Nothing,
+                                      Optional MinDate As Date? = Nothing) Implements IChannelLimits.SetLimit
             DownloadLimitPost = MaxPost
             DownloadLimitCount = MaxCount
             DownloadLimitDate = MinDate
         End Sub
-        Friend Overloads Sub SetLimit(ByVal Source As IChannelLimits) Implements IChannelLimits.SetLimit
+        Friend Overloads Sub SetLimit(Source As IChannelLimits) Implements IChannelLimits.SetLimit
             With Source
                 DownloadLimitCount = .DownloadLimitCount
                 DownloadLimitPost = .DownloadLimitPost
@@ -225,11 +225,11 @@ Namespace API.Reddit
             ChannelExistentUserNames = New List(Of String)
             HOST = Settings(RedditSiteKey)
         End Sub
-        Friend Sub New(ByVal f As SFile)
+        Friend Sub New(f As SFile)
             Me.New
             LoadData(f, False)
         End Sub
-        Public Shared Widening Operator CType(ByVal f As SFile) As Channel
+        Public Shared Widening Operator CType(f As SFile) As Channel
             Return New Channel(f)
         End Operator
         Public Overrides Function ToString() As String
@@ -250,8 +250,8 @@ Namespace API.Reddit
                 .Delete(, SFODelete.DeleteToRecycleBin)
             End With
         End Sub
-        Friend Sub DownloadData(ByVal Token As CancellationToken, Optional ByVal SkipExists As Boolean = True,
-                                Optional ByVal p As MyProgress = Nothing)
+        Friend Sub DownloadData(Token As CancellationToken, Optional SkipExists As Boolean = True,
+                                Optional p As MyProgress = Nothing)
             Try
                 _Downloading = True
                 Using d As New UserData With {
@@ -281,10 +281,10 @@ Namespace API.Reddit
         End Sub
 #Region "ICollection Support"
         Private ReadOnly Property IsReadOnly As Boolean = False Implements ICollection(Of UserPost).IsReadOnly
-        Friend Sub Add(ByVal _Item As UserPost) Implements ICollection(Of UserPost).Add
+        Friend Sub Add(_Item As UserPost) Implements ICollection(Of UserPost).Add
             If Not Contains(_Item) Then Posts.Add(_Item)
         End Sub
-        Friend Sub AddRange(ByVal _Items As IEnumerable(Of UserPost))
+        Friend Sub AddRange(_Items As IEnumerable(Of UserPost))
             If _Items.ListExists Then
                 For Each i As UserPost In _Items : Add(i) : Next
             End If
@@ -292,13 +292,13 @@ Namespace API.Reddit
         Friend Sub Clear() Implements ICollection(Of UserPost).Clear
             Posts.Clear()
         End Sub
-        Friend Function Contains(ByVal _Item As UserPost) As Boolean Implements ICollection(Of UserPost).Contains
+        Friend Function Contains(_Item As UserPost) As Boolean Implements ICollection(Of UserPost).Contains
             Return Count > 0 AndAlso Posts.Contains(_Item)
         End Function
-        Private Sub CopyTo(ByVal _Array() As UserPost, ByVal ArrayIndex As Integer) Implements ICollection(Of UserPost).CopyTo
+        Private Sub CopyTo(_Array() As UserPost, ArrayIndex As Integer) Implements ICollection(Of UserPost).CopyTo
             Throw New NotImplementedException()
         End Sub
-        Friend Function Remove(ByVal _Item As UserPost) As Boolean Implements ICollection(Of UserPost).Remove
+        Friend Function Remove(_Item As UserPost) As Boolean Implements ICollection(Of UserPost).Remove
             Return Posts.Remove(_Item)
         End Function
 #End Region
@@ -311,11 +311,11 @@ Namespace API.Reddit
         End Function
 #End Region
 #Region "IEquatable Support"
-        Friend Overloads Function Equals(ByVal Other As Channel) As Boolean Implements IEquatable(Of Channel).Equals
+        Friend Overloads Function Equals(Other As Channel) As Boolean Implements IEquatable(Of Channel).Equals
             Return ID = Other.ID
         End Function
-        Public Overloads Overrides Function Equals(ByVal Obj As Object) As Boolean
-            If Not Obj Is Nothing Then
+        Public Overloads Overrides Function Equals(Obj As Object) As Boolean
+            If Obj IsNot Nothing Then
                 If TypeOf Obj Is String Then
                     Return ID = CStr(Obj)
                 ElseIf TypeOf Obj Is Channel Then
@@ -326,7 +326,7 @@ Namespace API.Reddit
         End Function
 #End Region
 #Region "IComparable Support"
-        Friend Overloads Function CompareTo(ByVal Other As Channel) As Integer Implements IComparable(Of Channel).CompareTo
+        Friend Overloads Function CompareTo(Other As Channel) As Integer Implements IComparable(Of Channel).CompareTo
             If Not Name.IsEmptyString And Not Other.Name.IsEmptyString Then
                 Return Name.CompareTo(Other.Name)
             Else
@@ -335,10 +335,10 @@ Namespace API.Reddit
         End Function
 #End Region
 #Region "ILoaderSaver Support"
-        Friend Overloads Function LoadData(Optional ByVal f As SFile = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean Implements ILoaderSaver.Load
+        Friend Overloads Function LoadData(Optional f As SFile = Nothing, Optional e As ErrorsDescriber = Nothing) As Boolean Implements ILoaderSaver.Load
             Return LoadData(File, False, e)
         End Function
-        Friend Overloads Function LoadData(ByVal f As SFile, ByVal PartialLoad As Boolean, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean
+        Friend Overloads Function LoadData(f As SFile, PartialLoad As Boolean, Optional e As ErrorsDescriber = Nothing) As Boolean
             If f.Exists Then
                 Using x As New XmlFile(f, Protector.Modes.All, False) With {.XmlReadOnly = True, .AllowSameNames = True}
                     x.LoadData()
@@ -366,7 +366,7 @@ Namespace API.Reddit
             End If
             Return True
         End Function
-        Friend Overloads Function Save(Optional ByVal f As SFile = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean Implements ILoaderSaver.Save
+        Friend Overloads Function Save(Optional f As SFile = Nothing, Optional e As ErrorsDescriber = Nothing) As Boolean Implements ILoaderSaver.Save
             Dim XMLDateProvider As New ADateTime(ADateTime.Formats.BaseDateTime)
             UpdateUsersStats()
             If Not ViewMode = View.New Then
@@ -409,7 +409,7 @@ Namespace API.Reddit
 #End Region
 #Region "IDisposable Support"
         Private disposedValue As Boolean = False
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     Posts.Clear()

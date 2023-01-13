@@ -11,14 +11,43 @@ Imports SCrawler.API.Base
 Imports PersonalUtilities.Functions.XML
 Imports PersonalUtilities.Functions.RegularExpressions
 Imports PersonalUtilities.Tools.Web.Clients
+Imports PersonalUtilities.Functions.UniversalFunctions
+
 Namespace API.TikTok
+
     Friend Class UserData : Inherits UserDataBase
-        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
-        End Sub
+
         Friend Sub New()
             SeparateVideoFolder = False
         End Sub
-        Protected Overrides Sub DownloadDataF(ByVal Token As CancellationToken)
+
+        Friend Shared Function GetVideoInfo(URL As String, Responser As Responser, Optional e As ErrorsDescriber = Nothing) As IEnumerable(Of UserMedia)
+            Try
+                If Not URL.IsEmptyString Then
+                    Dim PostId$ = String.Empty
+                    Dim PostDate As Date? = Nothing
+                    Dim PostURL$ = String.Empty
+                    Dim r$
+                    PostId = RegexEnvir.ExtractPostID(URL)
+                    If Not PostId.IsEmptyString Then
+                        Using resp As Responser = Responser.Copy() : r = resp.GetResponse(URL,, EDP.ThrowException) : End Using
+                        If Not r.IsEmptyString Then
+                            If RegexEnvir.GetVideoData(r, PostId, PostURL, PostDate) Then Return {MediaFromData(PostURL, PostId, PostDate)}
+                        End If
+                    End If
+                End If
+                Return Nothing
+            Catch ex As Exception
+                If Not e.Exists Then e = New ErrorsDescriber(EDP.ShowMainMsg + EDP.SendInLog)
+                Return ErrorsDescriber.Execute(e, ex, $"TikTok standalone downloader: fetch media error ({URL})")
+            End Try
+        End Function
+
+        Protected Overrides Sub DownloadContent(Token As CancellationToken)
+            DownloadContentDefault(Token)
+        End Sub
+
+        Protected Overrides Sub DownloadDataF(Token As CancellationToken)
             Dim URL$ = String.Empty
             Try
                 Dim PostIDs As List(Of String)
@@ -49,39 +78,9 @@ Namespace API.TikTok
                 ProcessException(ex, Token, $"data downloading error [{URL}]")
             End Try
         End Sub
-        Protected Overrides Sub DownloadContent(ByVal Token As CancellationToken)
-            DownloadContentDefault(Token)
-        End Sub
-        Friend Shared Function GetVideoInfo(ByVal URL As String, ByVal Responser As Responser, Optional ByVal e As ErrorsDescriber = Nothing) As IEnumerable(Of UserMedia)
-            Try
-                If Not URL.IsEmptyString Then
-                    Dim PostId$ = String.Empty
-                    Dim PostDate As Date? = Nothing
-                    Dim PostURL$ = String.Empty
-                    Dim r$
-                    PostId = RegexEnvir.ExtractPostID(URL)
-                    If Not PostId.IsEmptyString Then
-                        Using resp As Responser = Responser.Copy() : r = resp.GetResponse(URL,, EDP.ThrowException) : End Using
-                        If Not r.IsEmptyString Then
-                            If RegexEnvir.GetVideoData(r, PostId, PostURL, PostDate) Then Return {MediaFromData(PostURL, PostId, PostDate)}
-                        End If
-                    End If
-                End If
-                Return Nothing
-            Catch ex As Exception
-                If Not e.Exists Then e = New ErrorsDescriber(EDP.ShowMainMsg + EDP.SendInLog)
-                Return ErrorsDescriber.Execute(e, ex, $"TikTok standalone downloader: fetch media error ({URL})")
-            End Try
-        End Function
-        Private Shared Function MediaFromData(ByVal _URL As String, ByVal PostID As String, ByVal PostDate As Date?) As UserMedia
-            _URL = LinkFormatterSecure(RegexReplace(_URL.Replace("\", String.Empty), LinkPattern))
-            Dim m As New UserMedia(_URL, UserMedia.Types.Video) With {.Post = New UserPost With {.ID = PostID}}
-            If Not m.URL.IsEmptyString Then m.File = $"{PostID}.mp4"
-            If PostDate.HasValue Then m.Post.Date = PostDate
-            Return m
-        End Function
-        Protected Overrides Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False,
-                                                          Optional ByVal EObj As Object = Nothing) As Integer
+
+        Protected Overrides Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False,
+                                                          Optional EObj As Object = Nothing) As Integer
             If Responser.Status = Net.WebExceptionStatus.ConnectionClosed Then
                 UserExists = False
                 Return 1
@@ -89,5 +88,18 @@ Namespace API.TikTok
                 Return 0
             End If
         End Function
+
+        Protected Overrides Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
+        End Sub
+
+        Private Shared Function MediaFromData(_URL As String, PostID As String, PostDate As Date?) As UserMedia
+            _URL = LinkFormatterSecure(RegexReplace(_URL.Replace("\", String.Empty), LinkPattern))
+            Dim m As New UserMedia(_URL, UserMedia.Types.Video) With {.Post = New UserPost With {.ID = PostID}}
+            If Not m.URL.IsEmptyString Then m.File = $"{PostID}.mp4"
+            If PostDate.HasValue Then m.Post.Date = PostDate
+            Return m
+        End Function
+
     End Class
+
 End Namespace

@@ -6,23 +6,37 @@
 '
 ' This program is distributed in the hope that it will be useful,
 ' but WITHOUT ANY WARRANTY
+Imports PersonalUtilities.Functions.ArgConverter
 Imports PersonalUtilities.Functions.RegularExpressions
+
 Namespace API.TikTok
     Friend Module Declarations
-        Friend ReadOnly RegexEnvir As New RegexParseEnvir
+
         Friend ReadOnly CheckDateProvider As New CustomProvider(Function(v, d, p, n, e)
                                                                     With DirectCast(v, Date?)
                                                                         If .HasValue Then Return .Value Else Return Nothing
                                                                     End With
                                                                 End Function)
+
+        Friend ReadOnly RegexEnvir As New RegexParseEnvir
+
         Friend Class RegexParseEnvir
-            Private ReadOnly UrlIdRegex As RParams = RParams.DMS("http[s]?://[w\.]{0,4}tiktok.com/[^/]+?/video/(\d+)", 1, EDP.ReturnValue)
-            Private ReadOnly RegexItemsArrPre As RParams = RParams.DMS("ItemList"":\{""user-post"":\{""list"":\[([^\[]+)\]", 1)
-            Private ReadOnly RegexItemsArr As RParams = RParams.DM("\d+", 0, RegexReturn.List)
-            Private ReadOnly VideoPattern As New RParams(String.Empty, Nothing, 1, EDP.ReturnValue)
             Private ReadOnly DatePattern As New RParams(String.Empty, Nothing, 1, EDP.ReturnValue)
+            Private ReadOnly RegexItemsArr As RParams = RParams.DM("\d+", 0, RegexReturn.List)
+            Private ReadOnly RegexItemsArrPre As RParams = RParams.DMS("ItemList"":\{""user-post"":\{""list"":\[([^\[]+)\]", 1)
+            Private ReadOnly UrlIdRegex As RParams = RParams.DMS("http[s]?://[w\.]{0,4}tiktok.com/[^/]+?/video/(\d+)", 1, EDP.ReturnValue)
             Private ReadOnly UserIdFromVideo As RParams = RParams.DMS("/\?a=(\d+)", 1, EDP.ReturnValue)
-            Friend Function GetIDList(ByVal r As String) As List(Of String)
+            Private ReadOnly VideoPattern As New RParams(String.Empty, Nothing, 1, EDP.ReturnValue)
+
+            Friend Function ExtractPostID(URL As String) As String
+                If Not URL.IsEmptyString Then Return RegexReplace(URL, UrlIdRegex) Else Return String.Empty
+            End Function
+
+            Friend Function ExtractUserID(VideoUrl As String) As String
+                If Not VideoUrl.IsEmptyString Then Return RegexReplace(VideoUrl, UserIdFromVideo) Else Return String.Empty
+            End Function
+
+            Friend Function GetIDList(r As String) As List(Of String)
                 Try
                     If Not r.IsEmptyString Then
                         Dim l As List(Of String) = Nothing
@@ -36,7 +50,8 @@ Namespace API.TikTok
                     Return ErrorsDescriber.Execute(EDP.SendInLog, ex, "[API.TikTok.RegexParseEnvir.GetIDList]")
                 End Try
             End Function
-            Friend Function GetVideoData(ByVal r As String, ByVal ID As String, ByRef URL As String, ByRef [Date] As Date?) As Boolean
+
+            Friend Function GetVideoData(r As String, ID As String, ByRef URL As String, ByRef [Date] As Date?) As Boolean
                 Try
                     [Date] = Nothing
                     URL = String.Empty
@@ -54,12 +69,8 @@ Namespace API.TikTok
                     Return ErrorsDescriber.Execute(EDP.SendInLog, ex, "[API.TikTok.RegexParseEnvir.GetVideoData]", False)
                 End Try
             End Function
-            Friend Function ExtractPostID(ByVal URL As String) As String
-                If Not URL.IsEmptyString Then Return RegexReplace(URL, UrlIdRegex) Else Return String.Empty
-            End Function
-            Friend Function ExtractUserID(ByVal VideoUrl As String) As String
-                If Not VideoUrl.IsEmptyString Then Return RegexReplace(VideoUrl, UserIdFromVideo) Else Return String.Empty
-            End Function
+
         End Class
+
     End Module
 End Namespace

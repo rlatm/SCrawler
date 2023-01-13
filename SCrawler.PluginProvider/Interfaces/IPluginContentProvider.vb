@@ -8,8 +8,8 @@
 ' but WITHOUT ANY WARRANTY
 Namespace Plugin
     Public Interface IPluginContentProvider : Inherits IDisposable
-        Event ProgressChanged(ByVal Count As Integer)
-        Event TotalCountChanged(ByVal Count As Integer)
+        Event ProgressChanged(Count As Integer)
+        Event TotalCountChanged(Count As Integer)
         Property Thrower As IThrower
         Property LogProvider As ILogProvider
         Property Settings As ISiteSettings
@@ -29,8 +29,8 @@ Namespace Plugin
         Property DownloadDateFrom As Date?
         Property DownloadDateTo As Date?
         Function ExchangeOptionsGet() As Object
-        Sub ExchangeOptionsSet(ByVal Obj As Object)
-        Sub XmlFieldsSet(ByVal Fields As List(Of KeyValuePair(Of String, String)))
+        Sub ExchangeOptionsSet(Obj As Object)
+        Sub XmlFieldsSet(Fields As List(Of KeyValuePair(Of String, String)))
         Function XmlFieldsGet() As List(Of KeyValuePair(Of String, String))
         Sub GetMedia()
         Sub Download()

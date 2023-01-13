@@ -29,10 +29,10 @@ Namespace API.TikTok
             UserRegex = RParams.DMS("[htps:/]{7,8}.*?tiktok.com/@([^/]+)", 1)
             ImageVideoContains = "tiktok.com"
         End Sub
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             Return New UserData
         End Function
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             Return UserData.GetVideoInfo(URL, Responser)
         End Function
         Friend Overrides Function BaseAuthExists() As Boolean

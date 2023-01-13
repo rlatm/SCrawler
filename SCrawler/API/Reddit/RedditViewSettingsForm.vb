@@ -50,7 +50,7 @@ Namespace API.Reddit
                 MyDefs.InvokeLoaderError(ex)
             End Try
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             With MyOptions
                 Select Case True
                     Case OPT_VIEW_MODE_HOT.Checked : .ViewMode = CView.Hot

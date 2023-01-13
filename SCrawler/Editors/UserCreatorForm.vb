@@ -84,7 +84,7 @@ Namespace Editors
 #Region "Exchange, Path, Labels"
         Friend Property MyExchangeOptions As Object = Nothing
         Private ReadOnly _SpecPathPattern As RParams = RParams.DM("\w:\\.*", 0, EDP.ReturnValue)
-        Private ReadOnly Property SpecialPath(ByVal s As SettingsHost) As SFile
+        Private ReadOnly Property SpecialPath(s As SettingsHost) As SFile
             Get
                 If TXT_SPEC_FOLDER.IsEmptyString Then
                     Return Nothing
@@ -107,9 +107,9 @@ Namespace Editors
             MyDef = New DefaultFormOptions(Me, Settings.Design)
         End Sub
         ''' <summary>Edit exist user</summary>
-        Friend Sub New(ByVal _Instance As IUserData)
+        Friend Sub New(_Instance As IUserData)
             Me.New
-            If Not _Instance Is Nothing Then
+            If _Instance IsNot Nothing Then
                 UserInstance = _Instance
                 User = DirectCast(UserInstance, UserDataBase).User
                 UserIsCollection = TypeOf UserInstance Is UserDataBind
@@ -124,8 +124,8 @@ Namespace Editors
             Private Property ErrorMessage As String Implements IFieldsCheckerProvider.ErrorMessage
             Private Property Name As String Implements IFieldsCheckerProvider.Name
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 If ACheck(Value) Then
                     If Settings.Users.Exists(Function(u) u.IsCollection AndAlso u.CollectionName = CStr(Value) AndAlso
                                                          Not DirectCast(u, UserDataBind).CurrentlyEdited) Then
@@ -138,7 +138,7 @@ Namespace Editors
                     Return Nothing
                 End If
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the 'CollectionNameFieldProvider'")
             End Function
         End Class
@@ -240,7 +240,7 @@ Namespace Editors
                             CH_IS_CHANNEL.Enabled = False
                             CMB_SITE.Enabled = False
                             CH_IS_CHANNEL.Checked = User.IsChannel
-                            If Not UserInstance Is Nothing Then
+                            If UserInstance IsNot Nothing Then
                                 Text = $"User: {UserInstance.Name}"
                                 If Not UserInstance.FriendlyName.IsEmptyString Then Text &= $" ({UserInstance.FriendlyName})"
                                 TXT_USER.Enabled = False
@@ -290,11 +290,11 @@ Namespace Editors
         End Sub
         Private Sub UserCreatorForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
             UserLabels.Clear()
-            If UserIsCollection And Not UserInstance Is Nothing Then DirectCast(UserInstance, UserDataBind).CurrentlyEdited = False
+            If UserIsCollection And UserInstance IsNot Nothing Then DirectCast(UserInstance, UserDataBind).CurrentlyEdited = False
         End Sub
 #End Region
 #Region "Ok, Cancel"
-        Private Sub MyDef_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDef.ButtonOkClick
+        Private Sub MyDef_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDef.ButtonOkClick
             If UserIsCollection Then
                 If MyDef.MyFieldsChecker.AllParamsOK Then
                     With UserInstance
@@ -314,7 +314,7 @@ Namespace Editors
                 If Not CH_ADD_BY_LIST.Checked Then
                     If MyDef.MyFieldsChecker.AllParamsOK Then
                         Dim s As SettingsHost = GetSiteByCheckers()
-                        If Not s Is Nothing Then
+                        If s IsNot Nothing Then
                             Dim tmpUser As UserInfo = User.Clone
                             With tmpUser
                                 .Name = TXT_USER.Text
@@ -328,12 +328,12 @@ Namespace Editors
                             Dim ScriptText$ = TXT_SCRIPT.Text
                             If Not ScriptText.IsEmptyString Then
                                 Dim f As SFile = ScriptText
-                                If Not SFile.IsDirectory(ScriptText) And Not UserInstance Is Nothing Then
+                                If Not SFile.IsDirectory(ScriptText) And UserInstance IsNot Nothing Then
                                     With DirectCast(UserInstance, UserDataBase) : f.Path = .MyFile.Path : End With
                                 End If
                                 TXT_SCRIPT.Text = f
                             End If
-                            If Not UserInstance Is Nothing Then
+                            If UserInstance IsNot Nothing Then
                                 With DirectCast(UserInstance, UserDataBase)
                                     .User = User
                                     .FriendlyName = TXT_USER_FRIENDLY.Text
@@ -343,7 +343,7 @@ Namespace Editors
                                     .DownloadImages = CH_DOWN_IMAGES.Checked
                                     .DownloadVideos = CH_DOWN_VIDEOS.Checked
                                     .UserDescription = TXT_DESCR.Text
-                                    If Not MyExchangeOptions Is Nothing Then .ExchangeOptionsSet(MyExchangeOptions)
+                                    If MyExchangeOptions IsNot Nothing Then .ExchangeOptionsSet(MyExchangeOptions)
                                     Dim l As New ListAddParams(LAP.NotContainsOnly + LAP.ClearBeforeAdd)
                                     If .IsCollection Then
                                         With DirectCast(UserInstance, API.UserDataBind)
@@ -371,13 +371,13 @@ Namespace Editors
 CloseForm:
             MyDef.CloseForm()
         End Sub
-        Private Sub MyDef_ButtonCancelClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDef.ButtonCancelClick
+        Private Sub MyDef_ButtonCancelClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDef.ButtonCancelClick
             MyDef.CloseForm(IIf(StartIndex >= 0, DialogResult.OK, DialogResult.Cancel))
         End Sub
 #End Region
 #Region "Controls handlers"
         Private _TextChangeInvoked As Boolean = False
-        Private Sub TXT_USER_ActionOnTextChanged(ByVal Sender As Object, ByVal e As EventArgs) Handles TXT_USER.ActionOnTextChanged
+        Private Sub TXT_USER_ActionOnTextChanged(Sender As Object, e As EventArgs) Handles TXT_USER.ActionOnTextChanged
             Try
                 If Not _TextChangeInvoked And Not UserIsCollection Then
                     _TextChangeInvoked = True
@@ -404,23 +404,23 @@ CloseForm:
             Catch
             End Try
         End Sub
-        Private Sub TXT_USER_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As ActionButtonEventArgs) Handles TXT_USER.ActionOnButtonClick
+        Private Sub TXT_USER_ActionOnButtonClick(Sender As ActionButton, e As ActionButtonEventArgs) Handles TXT_USER.ActionOnButtonClick
             If UserIsCollection AndAlso Sender.DefaultButton = ADB.Refresh Then TXT_USER.Text = UserInstance.CollectionName
         End Sub
-        Private Sub CMB_SITE_ActionSelectedItemChanged(ByVal Sender As Object, ByVal e As EventArgs, ByVal Item As ListViewItem) Handles CMB_SITE.ActionSelectedItemChanged
+        Private Sub CMB_SITE_ActionSelectedItemChanged(Sender As Object, e As EventArgs, Item As ListViewItem) Handles CMB_SITE.ActionSelectedItemChanged
             CH_IS_CHANNEL.Checked = False
             MyExchangeOptions = Nothing
             SetParamsBySite()
         End Sub
         Private Sub BTT_OTHER_SETTINGS_Click(sender As Object, e As EventArgs) Handles BTT_OTHER_SETTINGS.Click
             Dim s As SettingsHost = GetSiteByCheckers()
-            If Not s Is Nothing Then
+            If s IsNot Nothing Then
                 s.Source.UserOptions(MyExchangeOptions, True)
                 MyDef.ChangesDetected = True
                 MyDef.MyOkCancel.EnableOK = True
             End If
         End Sub
-        Private Sub TXT_SPEC_FOLDER_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_SPEC_FOLDER.ActionOnButtonClick
+        Private Sub TXT_SPEC_FOLDER_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_SPEC_FOLDER.ActionOnButtonClick
             If Sender.DefaultButton = ADB.Open Then
                 Dim f As SFile = Nothing
                 If Not TXT_SPEC_FOLDER.Text.IsEmptyString Then f = $"{TXT_SPEC_FOLDER.Text}\"
@@ -457,13 +457,13 @@ CloseForm:
                 BTT_OTHER_SETTINGS.Enabled = True
             End If
         End Sub
-        Private Sub TXT_LABELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_LABELS.ActionOnButtonClick
+        Private Sub TXT_LABELS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_LABELS.ActionOnButtonClick
             Select Case Sender.DefaultButton
                 Case ADB.Open : ChangeLabels()
                 Case ADB.Clear : UserLabels.Clear()
             End Select
         End Sub
-        Private Sub TXT_SCRIPT_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_SCRIPT.ActionOnButtonClick
+        Private Sub TXT_SCRIPT_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_SCRIPT.ActionOnButtonClick
             SettingsCLS.ScriptTextBoxButtonClick(TXT_SCRIPT, Sender)
         End Sub
 #End Region
@@ -506,7 +506,7 @@ CloseForm:
                                     End If
                                 End If
 
-                                If Not s Is Nothing Then
+                                If s IsNot Nothing Then
                                     tmpUser = New UserInfo(uu, s) With {.SpecialPath = __sf(uu, s), .IsChannel = _IsChannel}
                                     tmpUser.UpdateUserFile()
                                     uid = -1
@@ -587,7 +587,7 @@ CloseForm:
         End Function
         Private Sub SetParamsBySite()
             Dim s As SettingsHost = GetSiteByCheckers()
-            If Not s Is Nothing Then
+            If s IsNot Nothing Then
                 With s
                     CH_TEMP.Checked = .Temporary
                     CH_DOWN_IMAGES.Checked = .DownloadImages

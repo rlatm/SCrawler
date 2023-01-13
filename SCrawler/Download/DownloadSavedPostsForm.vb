@@ -65,7 +65,7 @@ Friend Class DownloadSavedPostsForm
     Friend Sub [Stop]() Handles BTT_STOP_ALL.Click
         If JobsList.Count > 0 Then JobsList.ForEach(Sub(j) j.Stop())
     End Sub
-    Private Sub Jobs_DownloadDone(ByVal Obj As SettingsCLS.NotificationObjects, ByVal Message As String)
+    Private Sub Jobs_DownloadDone(Obj As SettingsCLS.NotificationObjects, Message As String)
         RaiseEvent DownloadDone(SettingsCLS.NotificationObjects.SavedPosts, Message)
     End Sub
 End Class

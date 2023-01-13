@@ -16,14 +16,14 @@ Imports ADB = PersonalUtilities.Forms.Controls.Base.ActionButton.DefaultButtons
 Namespace Plugin.Hosts
     Friend Class PropertyValueHost : Implements IPropertyValue, IComparable(Of PropertyValueHost)
         Friend Const LeftOffsetDefault As Integer = 100
-        Friend Event OnPropertyUpdateRequested(ByVal Sender As PropertyValueHost)
+        Friend Event OnPropertyUpdateRequested(Sender As PropertyValueHost)
         Private Event ValueChanged As IPropertyValue.ValueChangedEventHandler Implements IPropertyValue.ValueChanged
         Private _Type As Type
         Friend Property [Type] As Type Implements IPropertyValue.Type
             Get
                 Return If(ExternalValue?.Type, _Type)
             End Get
-            Set(ByVal t As Type)
+            Set(t As Type)
                 _Type = t
             End Set
         End Property
@@ -32,14 +32,14 @@ Namespace Plugin.Hosts
         Private ReadOnly ControlNumber As Integer = -1
         Friend ReadOnly Property ControlHeight As Integer
             Get
-                If Not Control Is Nothing Then
+                If Control IsNot Nothing Then
                     Return IIf(TypeOf Control Is CheckBox, 25, 28)
                 Else
                     Return 0
                 End If
             End Get
         End Property
-        Friend Sub CreateControl(Optional ByVal TT As ToolTip = Nothing)
+        Friend Sub CreateControl(Optional TT As ToolTip = Nothing)
             With Options
                 If .IsInformationLabel Then
                     Control = New Label
@@ -48,11 +48,11 @@ Namespace Plugin.Hosts
                         .Text = CStr(AConvert(Of String)(Value, String.Empty))
                         .TextAlign = Options.LabelTextAlign
                     End With
-                    If Not .ControlToolTip.IsEmptyString And Not TT Is Nothing Then TT.SetToolTip(Control, .ControlToolTip)
+                    If Not .ControlToolTip.IsEmptyString And TT IsNot Nothing Then TT.SetToolTip(Control, .ControlToolTip)
                 Else
                     If Type Is GetType(Boolean) Or .ThreeStates Then
                         Control = New CheckBox
-                        If Not .ControlToolTip.IsEmptyString And Not TT Is Nothing Then TT.SetToolTip(Control, .ControlToolTip)
+                        If Not .ControlToolTip.IsEmptyString And TT IsNot Nothing Then TT.SetToolTip(Control, .ControlToolTip)
                         DirectCast(Control, CheckBox).ThreeState = .ThreeStates
                         DirectCast(Control, CheckBox).Text = .ControlText
                         If .ThreeStates Then
@@ -71,7 +71,7 @@ Namespace Plugin.Hosts
                             .Text = CStr(AConvert(Of String)(Value, String.Empty))
                             With .Buttons
                                 .BeginInit()
-                                If Not Source Is Nothing And Not UpdateMethod Is Nothing Then .Add(New ActionButton(ADB.Refresh))
+                                If Source IsNot Nothing And UpdateMethod IsNot Nothing Then .Add(New ActionButton(ADB.Refresh))
                                 .Add(ADB.Clear)
                                 .EndInit(True)
                             End With
@@ -84,11 +84,11 @@ Namespace Plugin.Hosts
             End With
         End Sub
         Friend Sub DisposeControl()
-            If Not Control Is Nothing Then Control.Dispose() : Control = Nothing
+            If Control IsNot Nothing Then Control.Dispose() : Control = Nothing
         End Sub
-        Private Sub TextBoxClick(ByVal Sender As ActionButton, ByVal e As EventArgs)
+        Private Sub TextBoxClick(Sender As ActionButton, e As EventArgs)
             Try
-                If Sender.DefaultButton = ADB.Refresh AndAlso Not Source Is Nothing AndAlso Not UpdateMethod Is Nothing Then
+                If Sender.DefaultButton = ADB.Refresh AndAlso Source IsNot Nothing AndAlso UpdateMethod IsNot Nothing Then
                     If CBool(UpdateMethod.Invoke(Source, Nothing)) Then
                         RaiseEvent OnPropertyUpdateRequested(Me)
                         DirectCast(Control, TextBoxExtended).Text = CStr(AConvert(Of String)(Value, String.Empty))
@@ -99,7 +99,7 @@ Namespace Plugin.Hosts
             End Try
         End Sub
         Friend Sub UpdateValueByControl()
-            If Not Control Is Nothing AndAlso Not TypeOf Control Is Label Then
+            If Control IsNot Nothing AndAlso TypeOf Control IsNot Label Then
                 If TypeOf Control Is CheckBox Then
                     With DirectCast(Control, CheckBox)
                         If Options.ThreeStates Then Value = CInt(.CheckState) Else Value = .Checked
@@ -110,7 +110,7 @@ Namespace Plugin.Hosts
             End If
         End Sub
         Friend Function GetControlValue() As Object
-            If Not Control Is Nothing Then
+            If Control IsNot Nothing Then
                 If TypeOf Control Is CheckBox Then
                     With DirectCast(Control, CheckBox)
                         If Options.ThreeStates Then Return CInt(.CheckState) Else Return .Checked
@@ -137,14 +137,14 @@ Namespace Plugin.Hosts
                     Return If(Options?.LeftOffset, LeftOffsetDefault)
                 End If
             End Get
-            Set(ByVal NewOffset As Integer)
+            Set(NewOffset As Integer)
                 _LeftOffset = NewOffset
             End Set
         End Property
 #Region "Providers"
         Friend Property ProviderFieldsChecker As IFormatProvider
         Friend Property ProviderValue As IFormatProvider
-        Friend Sub SetProvider(ByVal Provider As IFormatProvider, ByVal FC As Boolean)
+        Friend Sub SetProvider(Provider As IFormatProvider, FC As Boolean)
             If FC Then ProviderFieldsChecker = Provider Else ProviderValue = Provider
         End Sub
 #End Region
@@ -157,7 +157,7 @@ Namespace Plugin.Hosts
                 Return _UpdateDependencies
             End Get
         End Property
-        Friend Sub SetUpdateMethod(ByVal m As MethodInfo, ByVal Dependencies As String())
+        Friend Sub SetUpdateMethod(m As MethodInfo, Dependencies As String())
             UpdateMethod = m
             _UpdateDependencies = Dependencies
         End Sub
@@ -165,7 +165,7 @@ Namespace Plugin.Hosts
 #End Region
         Friend ReadOnly Exists As Boolean = False
 #Region "Initializer"
-        Friend Sub New(ByRef PropertySource As Object, ByVal Member As MemberInfo)
+        Friend Sub New(ByRef PropertySource As Object, Member As MemberInfo)
             Source = PropertySource
             Name = Member.Name
 
@@ -176,15 +176,15 @@ Namespace Plugin.Hosts
                 _Value = ExternalValue.Value
                 AddHandler ExternalValue.ValueChanged, AddressOf ExternalValueChanged
                 Options = Member.GetCustomAttribute(Of PropertyOption)()
-                IsTaskCounter = Not Member.GetCustomAttribute(Of TaskCounter)() Is Nothing
+                IsTaskCounter = Member.GetCustomAttribute(Of TaskCounter)() IsNot Nothing
                 _XmlName = If(Member.GetCustomAttribute(Of PXML)()?.ElementName, String.Empty)
                 If Not _XmlName.IsEmptyString Then XValue = XMLValueBase.CreateInstance([Type])
                 Exists = True
             End If
         End Sub
-        Friend Sub SetXmlEnvironment(ByRef Container As Object, Optional ByVal _Nodes() As String = Nothing,
-                                     Optional ByVal FormatProvider As IFormatProvider = Nothing)
-            If Not _XmlName.IsEmptyString And Not XValue Is Nothing Then
+        Friend Sub SetXmlEnvironment(ByRef Container As Object, Optional _Nodes() As String = Nothing,
+                                     Optional FormatProvider As IFormatProvider = Nothing)
+            If Not _XmlName.IsEmptyString And XValue IsNot Nothing Then
                 XValue.SetEnvironment(_XmlName, _Value, Container, _Nodes, If(ProviderValue, FormatProvider))
                 Value(False) = XValue.Value
             End If
@@ -198,20 +198,20 @@ Namespace Plugin.Hosts
             Get
                 Return _Value
             End Get
-            Set(ByVal NewValue As Object)
+            Set(NewValue As Object)
                 Value(True) = NewValue
             End Set
         End Property
-        Private Overloads WriteOnly Property Value(ByVal UpdateXML As Boolean) As Object
-            Set(ByVal NewValue As Object)
+        Private Overloads WriteOnly Property Value(UpdateXML As Boolean) As Object
+            Set(NewValue As Object)
                 _Value = NewValue
-                If Not ExternalValue Is Nothing And Not _ExternalInvoked Then ExternalValue.Value = _Value
-                If UpdateXML And Not XValue Is Nothing Then XValue.Value = NewValue
+                If ExternalValue IsNot Nothing And Not _ExternalInvoked Then ExternalValue.Value = _Value
+                If UpdateXML And XValue IsNot Nothing Then XValue.Value = NewValue
                 RaiseEvent ValueChanged(_Value)
             End Set
         End Property
         Private _ExternalInvoked As Boolean = False
-        Private Sub ExternalValueChanged(ByVal NewValue As Object)
+        Private Sub ExternalValueChanged(NewValue As Object)
             If Not _ExternalInvoked Then
                 _ExternalInvoked = True
                 Value = NewValue
@@ -220,7 +220,7 @@ Namespace Plugin.Hosts
         End Sub
 #End Region
 #Region "IComparable Support"
-        Private Function CompareTo(ByVal Other As PropertyValueHost) As Integer Implements IComparable(Of PropertyValueHost).CompareTo
+        Private Function CompareTo(Other As PropertyValueHost) As Integer Implements IComparable(Of PropertyValueHost).CompareTo
             Return ControlNumber.CompareTo(Other.ControlNumber)
         End Function
 #End Region

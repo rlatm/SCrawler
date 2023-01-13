@@ -42,8 +42,8 @@ Namespace API.RedGifs
             Private Property ErrorMessage As String Implements IFieldsCheckerProvider.ErrorMessage
             Private Property Name As String Implements IFieldsCheckerProvider.Name
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 TypeError = False
                 ErrorMessage = String.Empty
                 If Not ACheck(Of Integer)(Value) Then
@@ -55,7 +55,7 @@ Namespace API.RedGifs
                 End If
                 Return Nothing
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the context of [TokenIntervalProvider]")
             End Function
         End Class
@@ -83,7 +83,7 @@ Namespace API.RedGifs
         End Sub
 #End Region
 #Region "Response updater"
-        Private Sub UpdateResponse(ByVal Value As String)
+        Private Sub UpdateResponse(Value As String)
             Responser.Headers.Add(TokenName, Value)
             Responser.SaveSettings()
         End Sub
@@ -105,7 +105,7 @@ Namespace API.RedGifs
                 Using resp As New Responser : r = resp.GetResponse("https://api.redgifs.com/v2/auth/temporary",, EDP.ThrowException) : End Using
                 If Not r.IsEmptyString Then
                     Dim j As EContainer = JsonDocument.Parse(r)
-                    If Not j Is Nothing Then
+                    If j IsNot Nothing Then
                         NewToken = j.Value("token")
                         j.Dispose()
                     End If
@@ -138,10 +138,10 @@ Namespace API.RedGifs
             MyBase.EndEdit()
         End Sub
 #End Region
-        Friend Overrides Function GetInstance(ByVal What As ISiteSettings.Download) As IPluginContentProvider
+        Friend Overrides Function GetInstance(What As ISiteSettings.Download) As IPluginContentProvider
             Return New UserData
         End Function
-        Friend Overrides Function GetSpecialData(ByVal URL As String, ByVal Path As String, ByVal AskForPath As Boolean) As IEnumerable
+        Friend Overrides Function GetSpecialData(URL As String, Path As String, AskForPath As Boolean) As IEnumerable
             If BaseAuthExists() Then
                 Using resp As Responser = Responser.Copy
                     Dim m As UserMedia = UserData.GetDataFromUrlId(URL, False, resp, Settings(RedGifsSiteKey))
@@ -167,7 +167,7 @@ Namespace API.RedGifs
             End If
             Return Nothing
         End Function
-        Friend Overrides Function GetUserPostUrl(ByVal User As UserDataBase, ByVal Media As UserMedia) As String
+        Friend Overrides Function GetUserPostUrl(User As UserDataBase, Media As UserMedia) As String
             Return $"https://www.redgifs.com/watch/{Media.Post.ID}"
         End Function
         Friend Overrides Function BaseAuthExists() As Boolean

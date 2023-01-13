@@ -24,15 +24,15 @@ Namespace DownloadObjects
             Private Property ErrorMessage As String = "The timer value must be greater than 0" Implements IFieldsCheckerProvider.ErrorMessage
             Private Property Name As String Implements IFieldsCheckerProvider.Name
             Private Property TypeError As Boolean Implements IFieldsCheckerProvider.TypeError
-            Private Function Convert(ByVal Value As Object, ByVal DestinationType As Type, ByVal Provider As IFormatProvider,
-                                     Optional ByVal NothingArg As Object = Nothing, Optional ByVal e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
+            Private Function Convert(Value As Object, DestinationType As Type, Provider As IFormatProvider,
+                                     Optional NothingArg As Object = Nothing, Optional e As ErrorsDescriber = Nothing) As Object Implements ICustomProvider.Convert
                 If CInt(AConvert(Of Integer)(Value, -10)) > 0 Then
                     Return Value
                 Else
                     Return Nothing
                 End If
             End Function
-            Private Function GetFormat(ByVal FormatType As Type) As Object Implements IFormatProvider.GetFormat
+            Private Function GetFormat(FormatType As Type) As Object Implements IFormatProvider.GetFormat
                 Throw New NotImplementedException("[GetFormat] is not available in the context of [AutoDownloaderEditorForm]")
             End Function
         End Class
@@ -74,7 +74,7 @@ Namespace DownloadObjects
         Private Sub AutoDownloaderEditorForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
             MyGroups.Clear()
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             If MyDefs.MyFieldsChecker.AllParamsOK Then
                 With Plan
                     Select Case True
@@ -98,7 +98,7 @@ Namespace DownloadObjects
                 MyDefs.CloseForm()
             End If
         End Sub
-        Private Sub TXT_GROUPS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_GROUPS.ActionOnButtonClick
+        Private Sub TXT_GROUPS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_GROUPS.ActionOnButtonClick
             Select Case Sender.DefaultButton
                 Case ActionButton.DefaultButtons.Edit
                     Using f As New LabelsForm(MyGroups, Settings.Groups.Select(Function(g) g.Name)) With {.Text = "Groups", .Icon = My.Resources.GroupByIcon_16}
@@ -120,7 +120,7 @@ Namespace DownloadObjects
             CH_SHOW_PIC.Enabled = CH_NOTIFY.Checked And Not OPT_DISABLED.Checked And Not CH_NOTIFY_SIMPLE.Checked
             CH_SHOW_PIC_USER.Enabled = CH_NOTIFY.Checked And Not OPT_DISABLED.Checked And Not CH_NOTIFY_SIMPLE.Checked
         End Sub
-        Private Sub NUM_DELAY_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles NUM_DELAY.ActionOnButtonClick
+        Private Sub NUM_DELAY_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles NUM_DELAY.ActionOnButtonClick
             If Sender.DefaultButton = ActionButton.DefaultButtons.Clear Then NUM_DELAY.Value = 0
         End Sub
     End Class

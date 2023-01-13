@@ -18,14 +18,14 @@ Namespace API.Base
             HOST = h
             Progress = Bar
         End Sub
-        Friend Sub Download(ByVal Token As CancellationToken)
+        Friend Sub Download(Token As CancellationToken)
             Try
                 If HOST.Source.ReadyToDownload(PDownload.SavedPosts) Then
                     If HOST.Available(PDownload.SavedPosts, False) Then
                         HOST.DownloadStarted(PDownload.SavedPosts)
                         Dim u As New UserInfo With {.Plugin = HOST.Key, .Site = HOST.Name, .SpecialPath = HOST.SavedPostsPath}
                         Using user As IUserData = HOST.GetInstance(PDownload.SavedPosts, Nothing, False, False)
-                            If Not user Is Nothing AndAlso Not user.Name.IsEmptyString Then
+                            If user IsNot Nothing AndAlso Not user.Name.IsEmptyString Then
                                 u.Name = user.Name
                                 With DirectCast(user, UserDataBase)
                                     With .User : u.IsChannel = .IsChannel : u.UpdateUserFile() : End With

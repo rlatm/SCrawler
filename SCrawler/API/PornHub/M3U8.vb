@@ -10,11 +10,20 @@ Imports SCrawler.API.Base
 Imports SCrawler.API.Base.M3U8Declarations
 Imports PersonalUtilities.Functions.RegularExpressions
 Imports PersonalUtilities.Tools.Web.Clients
+Imports PersonalUtilities.Functions.UniversalFunctions
+
 Namespace API.PornHub
+
     Friend NotInheritable Class M3U8
+
         Private Sub New()
         End Sub
-        Private Shared Function GetUrlsList(ByVal URL As String, ByVal Responser As Responser) As List(Of String)
+
+        Friend Shared Function Download(URL As String, Responser As Responser, Destination As SFile) As SFile
+            Return M3U8Base.Download(GetUrlsList(URL, Responser), Destination, Responser)
+        End Function
+
+        Private Shared Function GetUrlsList(URL As String, Responser As Responser) As List(Of String)
             Dim appender$ = RegexReplace(URL, Regex_M3U8_FileUrl)
             Dim r$ = Responser.GetResponse(URL)
             If Not r.IsEmptyString Then
@@ -35,8 +44,7 @@ Namespace API.PornHub
             End If
             Return Nothing
         End Function
-        Friend Shared Function Download(ByVal URL As String, ByVal Responser As Responser, ByVal Destination As SFile) As SFile
-            Return M3U8Base.Download(GetUrlsList(URL, Responser), Destination, Responser)
-        End Function
+
     End Class
+
 End Namespace

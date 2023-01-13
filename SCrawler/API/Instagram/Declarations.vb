@@ -16,10 +16,10 @@ Namespace API.Instagram
         Friend Const InstagramSiteKey As String = "AndyProgram_Instagram"
         Friend ReadOnly FilesPattern As RParams = RParams.DMS(".+?([^/\?]+?\.[\w\d]{3,4})(?=(\?|\Z))", 1, EDP.ReturnValue)
         Friend ReadOnly Property DateProvider As New CustomProvider(Function(v, d, p, n, e) ADateTime.ParseUnicode(v))
-        Friend Sub UpdateResponser(ByVal Source As IResponse, ByRef Destination As Responser)
+        Friend Sub UpdateResponser(Source As IResponse, ByRef Destination As Responser)
             Const r_wwwClaimName$ = "x-ig-set-www-claim"
             Const r_tokenName$ = "csrftoken"
-            If Not Source Is Nothing Then
+            If Source IsNot Nothing Then
                 Dim isInternal As Boolean = TypeOf Source Is WebDataResponse
                 Dim wwwClaimName$, tokenName$
                 If isInternal Then

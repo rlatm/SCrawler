@@ -67,7 +67,7 @@ Namespace DownloadObjects
                 LIST_DATA.Items.Clear()
                 LIST_DATA.Groups.Clear()
                 If Settings.Users.Count > 0 Then
-                    MUsers.ListAddList(Settings.Users.SelectMany(Function(ByVal user As IUserData) As IEnumerable(Of IUserData)
+                    MUsers.ListAddList(Settings.Users.SelectMany(Function(user As IUserData) As IEnumerable(Of IUserData)
                                                                      DirectCast(user, UserDataBase).LoadContentInformation()
                                                                      If user.IsCollection Then
                                                                          With DirectCast(user, API.UserDataBind)
@@ -157,7 +157,7 @@ Namespace DownloadObjects
                             For Each _d In data
                                 uKey = _d.Group.Tag
                                 If u Is Nothing OrElse Not u.Key = uKey Then u = Settings.GetUser(uKey)
-                                If Not u Is Nothing Then
+                                If u IsNot Nothing Then
                                     i = -1
                                     With DirectCast(u, UserDataBase)
                                         cm = .ContentMissing
@@ -202,7 +202,7 @@ Namespace DownloadObjects
                     Dim m As UserMedia
                     uKey = data.Group.Tag
                     If Not uKey.IsEmptyString Then u = Settings.GetUser(uKey)
-                    If Not u Is Nothing Then
+                    If u IsNot Nothing Then
                         i = -1
                         With DirectCast(u, UserDataBase)
                             cm = .ContentMissing
@@ -250,7 +250,7 @@ Namespace DownloadObjects
                     Dim user As IUserData = LIST_DATA.SelectedItems.ToObjectsList.ListCast(Of ListViewItem)().
                                             Select(Function(d) Settings.GetUser(CStr(d.Group.Tag))).ListWithRemove(Function(d) d Is Nothing).
                                             DefaultIfEmpty(Nothing).First
-                    If Not user Is Nothing Then MainFrameObj.FocusUser(user.Key, True)
+                    If user IsNot Nothing Then MainFrameObj.FocusUser(user.Key, True)
                 Else
                     MsgBoxE("No selected posts")
                 End If
@@ -276,7 +276,7 @@ Namespace DownloadObjects
                         For Each _d In data
                             uKey = _d.Group.Tag
                             If u Is Nothing OrElse Not u.LVIKey = uKey Then u = Settings.GetUser(uKey)
-                            If Not u Is Nothing Then
+                            If u IsNot Nothing Then
                                 i = -1
                                 cm = u.ContentMissing
                                 If cm.Count > 0 Then i = cm.FindIndex(Function(c) c.Post.ID = _d.Text)
@@ -300,7 +300,7 @@ Namespace DownloadObjects
                 End If
             End Try
         End Sub
-        Private Sub UpdateUsers(ByVal UserList As List(Of UserDataBase))
+        Private Sub UpdateUsers(UserList As List(Of UserDataBase))
             Try
                 If UserList.ListExists Then UserList.ForEach(Sub(u) u.UpdateContentInformation())
             Catch ex As Exception

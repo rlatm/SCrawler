@@ -24,13 +24,13 @@ Namespace API.Base
 #Region "Events"
         Private ReadOnly UserUpdatedEventHandlers As List(Of IUserData.UserUpdatedEventHandler)
         Friend Custom Event UserUpdated As IUserData.UserUpdatedEventHandler Implements IUserData.UserUpdated
-            AddHandler(ByVal e As IUserData.UserUpdatedEventHandler)
+            AddHandler(e As IUserData.UserUpdatedEventHandler)
                 If Not UserUpdatedEventHandlers.Contains(e) Then UserUpdatedEventHandlers.Add(e)
             End AddHandler
-            RemoveHandler(ByVal e As IUserData.UserUpdatedEventHandler)
+            RemoveHandler(e As IUserData.UserUpdatedEventHandler)
                 If UserUpdatedEventHandlers.Contains(e) Then UserUpdatedEventHandlers.Remove(e)
             End RemoveHandler
-            RaiseEvent(ByVal User As IUserData)
+            RaiseEvent(User As IUserData)
                 Try
                     If UserUpdatedEventHandlers.Count > 0 Then
                         For i% = 0 To UserUpdatedEventHandlers.Count - 1
@@ -62,9 +62,9 @@ Namespace API.Base
             Dim tnn As Func(Of String, String) = Function(Input) $"{Input}{_tn}"
             Dim i As Image = Nothing
             With HOST.Source
-                If Not .Icon Is Nothing Then
+                If .Icon IsNot Nothing Then
                     i = .Icon.ToBitmap
-                ElseIf Not .Image Is Nothing Then
+                ElseIf .Image IsNot Nothing Then
                     i = .Image
                 End If
             End With
@@ -88,7 +88,7 @@ Namespace API.Base
                 cf = MyColor.EditFore
             End If
             For Each b As ToolStripMenuItem In {BTT_CONTEXT_DOWN, BTT_CONTEXT_EDIT, BTT_CONTEXT_DELETE, BTT_CONTEXT_OPEN_PATH, BTT_CONTEXT_OPEN_SITE}
-                If Not b Is Nothing Then b.BackColor = cb : b.ForeColor = cf
+                If b IsNot Nothing Then b.BackColor = cb : b.ForeColor = cf
             Next
             If _UserInformationLoaded Then _CollectionButtonsColorsSet = True
         End Sub
@@ -155,7 +155,7 @@ Namespace API.Base
             Get
                 Return User.Name
             End Get
-            Set(ByVal NewName As String)
+            Set(NewName As String)
                 User.Name = NewName
                 User.UpdateUserFile()
                 Settings.UpdateUsersList(User)
@@ -186,7 +186,7 @@ Namespace API.Base
         Protected Function UserDescriptionNeedToUpdate() As Boolean
             Return (UserDescription.IsEmptyString Or _DescriptionEveryTime) And Not _DescriptionChecked
         End Function
-        Protected Sub UserDescriptionUpdate(ByVal Descr As String)
+        Protected Sub UserDescriptionUpdate(Descr As String)
             If UserDescriptionNeedToUpdate() Then
                 If UserDescription.IsEmptyString Then
                     UserDescription = Descr
@@ -207,7 +207,7 @@ Namespace API.Base
             Get
                 Return _Favorite
             End Get
-            Set(ByVal Fav As Boolean)
+            Set(Fav As Boolean)
                 _Favorite = Fav
                 If _Favorite Then _Temporary = False
             End Set
@@ -217,7 +217,7 @@ Namespace API.Base
             Get
                 Return _Temporary
             End Get
-            Set(ByVal Temp As Boolean)
+            Set(Temp As Boolean)
                 _Temporary = Temp
                 If _Temporary Then _Favorite = False
             End Set
@@ -242,7 +242,7 @@ Namespace API.Base
         Friend Function GetUserPictureToastAddress() As SFile
             Return GetPicture(Of SFile)(False, True)
         End Function
-        Friend Overridable Sub SetPicture(ByVal f As SFile) Implements IUserData.SetPicture
+        Friend Overridable Sub SetPicture(f As SFile) Implements IUserData.SetPicture
             Try
                 If f.Exists Then
                     Using p As New UserImage(f, User.File) : p.Save() : End Using
@@ -250,10 +250,10 @@ Namespace API.Base
             Catch
             End Try
         End Sub
-        Protected Function GetNullPicture(ByVal MaxHeigh As XML.Base.XMLValue(Of Integer)) As Bitmap
+        Protected Function GetNullPicture(MaxHeigh As XML.Base.XMLValue(Of Integer)) As Bitmap
             Return New Bitmap(CInt(DivideWithZeroChecking(MaxHeigh.Value, 100) * 75), MaxHeigh.Value)
         End Function
-        Friend Function GetPicture(Of T)(Optional ByVal ReturnNullImageOnNothing As Boolean = True, Optional ByVal GetToast As Boolean = False) As T
+        Friend Function GetPicture(Of T)(Optional ReturnNullImageOnNothing As Boolean = True, Optional GetToast As Boolean = False) As T
             Dim rsfile As Boolean = GetType(T) Is GetType(SFile)
             Dim f As SFile = Nothing
             Dim p As UserImage = Nothing
@@ -298,7 +298,7 @@ BlockDeletePictureFolder:
             End If
 BlockReturn:
             On Error GoTo BlockNullPicture
-            If Not p Is Nothing Then
+            If p IsNot Nothing Then
                 Dim i As Image = Nothing
                 Dim a As SFile = Nothing
                 If rsfile Then
@@ -345,7 +345,7 @@ BlockNullPicture:
             Get
                 Return User.CollectionName
             End Get
-            Set(ByVal NewCollection As String)
+            Set(NewCollection As String)
                 ChangeCollectionName(NewCollection, True)
             End Set
         End Property
@@ -354,7 +354,7 @@ BlockNullPicture:
                 Return User.IncludedInCollection
             End Get
         End Property
-        Friend Overridable Sub ChangeCollectionName(ByVal NewName As String, ByVal UpdateSettings As Boolean)
+        Friend Overridable Sub ChangeCollectionName(NewName As String, UpdateSettings As Boolean)
             Dim u As UserInfo = User
             u.CollectionName = NewName
             u.UpdateUserFile()
@@ -391,7 +391,7 @@ BlockNullPicture:
                 Return _ContentList.Exists(MissingFinder)
             End Get
         End Property
-        Friend Sub RemoveMedia(ByVal m As UserMedia, ByVal State As UStates?)
+        Friend Sub RemoveMedia(m As UserMedia, State As UStates?)
             Dim i% = If(State.HasValue, _ContentList.FindIndex(Function(mm) mm.State = State.Value And mm.Equals(m)), _ContentList.IndexOf(m))
             If i >= 0 Then _ContentList.RemoveAt(i)
         End Sub
@@ -410,7 +410,7 @@ BlockNullPicture:
             Get
                 Return User.File
             End Get
-            Set(ByVal f As SFile)
+            Set(f As SFile)
                 User.File = f
                 Settings.UpdateUsersList(User)
             End Set
@@ -422,7 +422,7 @@ BlockNullPicture:
             Get
                 Return User.Merged
             End Get
-            Set(ByVal IsMerged As Boolean)
+            Set(IsMerged As Boolean)
                 If Not User.Merged = IsMerged Then
                     User.Merged = IsMerged
                     User.UpdateUserFile()
@@ -436,11 +436,11 @@ BlockNullPicture:
         Friend Overridable Property HasError As Boolean = False Implements IUserData.HasError
         Private _DownloadedPicturesTotal As Integer = 0
         Private _DownloadedPicturesSession As Integer = 0
-        Friend Property DownloadedPictures(ByVal Total As Boolean) As Integer Implements IUserData.DownloadedPictures
+        Friend Property DownloadedPictures(Total As Boolean) As Integer Implements IUserData.DownloadedPictures
             Get
                 Return IIf(Total, _DownloadedPicturesTotal, _DownloadedPicturesSession)
             End Get
-            Set(ByVal NewValue As Integer)
+            Set(NewValue As Integer)
                 If Total Then
                     _DownloadedPicturesTotal = NewValue
                 Else
@@ -450,11 +450,11 @@ BlockNullPicture:
         End Property
         Private _DownloadedVideosTotal As Integer = 0
         Private _DownloadedVideosSession As Integer = 0
-        Friend Property DownloadedVideos(ByVal Total As Boolean) As Integer Implements IUserData.DownloadedVideos
+        Friend Property DownloadedVideos(Total As Boolean) As Integer Implements IUserData.DownloadedVideos
             Get
                 Return IIf(Total, _DownloadedVideosTotal, _DownloadedVideosSession)
             End Get
-            Set(ByVal NewValue As Integer)
+            Set(NewValue As Integer)
                 If Total Then
                     _DownloadedVideosTotal = NewValue
                 Else
@@ -462,7 +462,7 @@ BlockNullPicture:
                 End If
             End Set
         End Property
-        Friend Overridable ReadOnly Property DownloadedTotal(Optional ByVal Total As Boolean = True) As Integer Implements IUserData.DownloadedTotal
+        Friend Overridable ReadOnly Property DownloadedTotal(Optional Total As Boolean = True) As Integer Implements IUserData.DownloadedTotal
             Get
                 Return DownloadedPictures(Total) + DownloadedVideos(Total)
             End Get
@@ -513,7 +513,7 @@ BlockNullPicture:
             Get
                 Return HOST.Source
             End Get
-            Set(ByVal s As ISiteSettings)
+            Set(s As ISiteSettings)
             End Set
         End Property
         Private Property IPluginContentProvider_Thrower As IThrower Implements IPluginContentProvider.Thrower
@@ -524,7 +524,7 @@ BlockNullPicture:
         Private Property IPluginContentProvider_TempMediaList As List(Of IUserMedia) Implements IPluginContentProvider.TempMediaList
         Private Property IPluginContentProvider_SeparateVideoFolder As Boolean Implements IPluginContentProvider.SeparateVideoFolder
         Private Property IPluginContentProvider_DataPath As String Implements IPluginContentProvider.DataPath
-        Private Sub IPluginContentProvider_XmlFieldsSet(ByVal Fields As List(Of KeyValuePair(Of String, String))) Implements IPluginContentProvider.XmlFieldsSet
+        Private Sub IPluginContentProvider_XmlFieldsSet(Fields As List(Of KeyValuePair(Of String, String))) Implements IPluginContentProvider.XmlFieldsSet
         End Sub
         Private Function IPluginContentProvider_XmlFieldsGet() As List(Of KeyValuePair(Of String, String)) Implements IPluginContentProvider.XmlFieldsGet
             Return Nothing
@@ -536,13 +536,13 @@ BlockNullPicture:
         Friend Overridable Function ExchangeOptionsGet() As Object Implements IPluginContentProvider.ExchangeOptionsGet
             Return Nothing
         End Function
-        Friend Overridable Sub ExchangeOptionsSet(ByVal Obj As Object) Implements IPluginContentProvider.ExchangeOptionsSet
+        Friend Overridable Sub ExchangeOptionsSet(Obj As Object) Implements IPluginContentProvider.ExchangeOptionsSet
         End Sub
         Private _ExternalCompatibilityToken As CancellationToken
 #End Region
 #Region "IIndexable Support"
         Friend Property Index As Integer = 0 Implements IIndexable.Index
-        Private Function SetIndex(ByVal Obj As Object, ByVal _Index As Integer) As Object Implements IIndexable.SetIndex
+        Private Function SetIndex(Obj As Object, _Index As Integer) As Object Implements IIndexable.SetIndex
             DirectCast(Obj, UserDataBase).Index = _Index
             Return Obj
         End Function
@@ -557,7 +557,7 @@ BlockNullPicture:
                 End If
             End Get
         End Property
-        Friend Function GetLVI(ByVal Destination As ListView) As ListViewItem Implements IUserData.GetLVI
+        Friend Function GetLVI(Destination As ListView) As ListViewItem Implements IUserData.GetLVI
             If Settings.ViewModeIsPicture Then
                 Return ListImagesLoader.ApplyLVIColor(Me, New ListViewItem(ToString(), LVIKey, GetLVIGroup(Destination)) With {.Name = LVIKey, .Tag = LVIKey}, True)
             Else
@@ -593,7 +593,7 @@ BlockNullPicture:
                 End With
             End Get
         End Property
-        Friend Function GetLVIGroup(ByVal Destination As ListView) As ListViewGroup Implements IUserData.GetLVIGroup
+        Friend Function GetLVIGroup(Destination As ListView) As ListViewGroup Implements IUserData.GetLVIGroup
             Try
                 If Settings.ShowingMode.Value = ShowingModes.Labels And Not Settings.ShowGroupsInsteadLabels Then
                     If Labels.Count > 0 And Settings.Labels.Current.Count > 0 Then
@@ -612,7 +612,7 @@ BlockNullPicture:
 #End Region
 #Region "Initializer"
         ''' <summary>By using this constructor you must set UserName and MyFile manually</summary>
-        Friend Sub New(Optional ByVal InvokeImageHandler As Boolean = True)
+        Friend Sub New(Optional InvokeImageHandler As Boolean = True)
             _ContentList = New List(Of UserMedia)
             _ContentNew = New List(Of UserMedia)
             LatestData = New List(Of UserMedia)
@@ -622,8 +622,8 @@ BlockNullPicture:
             UserUpdatedEventHandlers = New List(Of IUserData.UserUpdatedEventHandler)
             If InvokeImageHandler Then MainFrameObj.ImageHandler(Me)
         End Sub
-        Friend Sub SetEnvironment(ByRef h As SettingsHost, ByVal u As UserInfo, ByVal _LoadUserInformation As Boolean,
-                                  Optional ByVal AttachUserInfo As Boolean = True) Implements IUserData.SetEnvironment
+        Friend Sub SetEnvironment(ByRef h As SettingsHost, u As UserInfo, _LoadUserInformation As Boolean,
+                                  Optional AttachUserInfo As Boolean = True) Implements IUserData.SetEnvironment
             HOST = h
             If AttachUserInfo Then
                 User = u
@@ -631,17 +631,17 @@ BlockNullPicture:
             End If
         End Sub
         ''' <exception cref="ArgumentOutOfRangeException"></exception>
-        Friend Shared Function GetInstance(ByVal u As UserInfo, Optional ByVal _LoadUserInformation As Boolean = True) As IUserData
+        Friend Shared Function GetInstance(u As UserInfo, Optional _LoadUserInformation As Boolean = True) As IUserData
             If Not u.Plugin.IsEmptyString Then
                 Return Settings(u.Plugin).GetInstance(u.DownloadOption, u, _LoadUserInformation)
             Else
                 Throw New ArgumentOutOfRangeException("Plugin", $"Plugin [{u.Plugin}] information does not recognized by loader")
             End If
         End Function
-        Friend Shared Function GetPostUrl(ByVal u As IUserData, ByVal PostData As UserMedia) As String
+        Friend Shared Function GetPostUrl(u As IUserData, PostData As UserMedia) As String
             Dim uName$ = String.Empty
             Try
-                If Not u Is Nothing AndAlso Not u.IsCollection Then
+                If u IsNot Nothing AndAlso Not u.IsCollection Then
                     With DirectCast(u, UserDataBase)
                         If Not .User.Plugin.IsEmptyString Then
                             uName = .User.Name
@@ -750,10 +750,10 @@ BlockNullPicture:
             End Try
         End Sub
         ''' <param name="Loading"><see langword="True"/>: Loading; <see langword="False"/>: Saving</param>
-        Protected MustOverride Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, ByVal Loading As Boolean)
+        Protected MustOverride Sub LoadUserInformation_OptionalFields(ByRef Container As XmlFile, Loading As Boolean)
 #End Region
 #Region "User data"
-        Friend Overridable Overloads Sub LoadContentInformation(Optional ByVal Force As Boolean = False)
+        Friend Overridable Overloads Sub LoadContentInformation(Optional Force As Boolean = False)
             Try
                 UpdateDataFiles()
                 If Not MyFileData.Exists Or (_DataLoaded And Not Force) Then Exit Sub
@@ -784,7 +784,7 @@ BlockNullPicture:
 #End Region
 #End Region
 #Region "Open site, folder"
-        Friend Overridable Sub OpenSite(Optional ByVal e As ErrorsDescriber = Nothing) Implements IContentProvider.OpenSite
+        Friend Overridable Sub OpenSite(Optional e As ErrorsDescriber = Nothing) Implements IContentProvider.OpenSite
             Try
                 Dim URL$ = HOST.Source.GetUserUrl(Me, IsChannel)
                 If Not URL.IsEmptyString Then Process.Start(URL)
@@ -807,7 +807,7 @@ BlockNullPicture:
             Get
                 Return _DownloadDateFrom
             End Get
-            Set(ByVal d As Date?)
+            Set(d As Date?)
                 _DownloadDateFrom = d
                 If _DownloadDateFrom.HasValue Then _DownloadDateFromF = _DownloadDateFrom.Value.Date Else _DownloadDateFromF = Date.MinValue.Date
             End Set
@@ -818,12 +818,12 @@ BlockNullPicture:
             Get
                 Return _DownloadDateTo
             End Get
-            Set(ByVal d As Date?)
+            Set(d As Date?)
                 _DownloadDateTo = d
                 If _DownloadDateTo.HasValue Then _DownloadDateToF = _DownloadDateTo.Value Else _DownloadDateToF = Date.MaxValue.Date
             End Set
         End Property
-        Protected Function CheckDatesLimit(ByVal DateObj As Object, ByVal DateProvider As IFormatProvider) As DateResult
+        Protected Function CheckDatesLimit(DateObj As Object, DateProvider As IFormatProvider) As DateResult
             Try
                 If (DownloadDateFrom.HasValue Or DownloadDateTo.HasValue) AndAlso ACheck(DateObj) Then
                     Dim td As Date? = AConvert(Of Date)(DateObj, DateProvider, Nothing)
@@ -846,15 +846,15 @@ BlockNullPicture:
 #Region "Download functions and options"
         Protected Responser As Responser
         Protected UseResponserClient As Boolean = False
-        Friend Overridable Sub DownloadData(ByVal Token As CancellationToken) Implements IContentProvider.DownloadData
+        Friend Overridable Sub DownloadData(Token As CancellationToken) Implements IContentProvider.DownloadData
             Dim Canceled As Boolean = False
             _ExternalCompatibilityToken = Token
             Try
                 UpdateDataFiles()
                 UserDescriptionReset()
-                If Not Responser Is Nothing Then Responser.Dispose()
+                If Responser IsNot Nothing Then Responser.Dispose()
                 Responser = New Responser
-                If Not HOST.Responser Is Nothing Then Responser.Copy(HOST.Responser)
+                If HOST.Responser IsNot Nothing Then Responser.Copy(HOST.Responser)
                 'TODO: UserDataBase remove [Responser.DecodersError]
                 Responser.DecodersError = New ErrorsDescriber(EDP.SendInLog + EDP.ReturnValue) With {
                     .DeclaredMessage = New MMessage($"SymbolsConverter error: [{ToStringForLog()}]", ToStringForLog())}
@@ -934,7 +934,7 @@ BlockNullPicture:
                 LogError(ex, "downloading data error")
                 HasError = True
             Finally
-                If Not Responser Is Nothing Then Responser.Dispose() : Responser = Nothing
+                If Responser IsNot Nothing Then Responser.Dispose() : Responser = Nothing
                 If Not Canceled Then _DataParsed = True
                 _ContentNew.Clear()
                 DownloadTopCount = Nothing
@@ -954,17 +954,17 @@ BlockNullPicture:
                 Throw New ArgumentNullException("User.File", "User file not detected")
             End If
         End Sub
-        Protected MustOverride Sub DownloadDataF(ByVal Token As CancellationToken)
-        Protected Overridable Sub ReparseVideo(ByVal Token As CancellationToken)
+        Protected MustOverride Sub DownloadDataF(Token As CancellationToken)
+        Protected Overridable Sub ReparseVideo(Token As CancellationToken)
         End Sub
         ''' <summary>
         ''' Missing posts must be collected from [<see cref="_ContentList"/>].<br/>
         ''' Reparsed post must be added to [<see cref="_TempMediaList"/>].<br/>
         ''' At the end of the function, reparsed posts must be removed from [<see cref="_ContentList"/>].
         ''' </summary>
-        Protected Overridable Sub ReparseMissing(ByVal Token As CancellationToken)
+        Protected Overridable Sub ReparseMissing(Token As CancellationToken)
         End Sub
-        Protected MustOverride Sub DownloadContent(ByVal Token As CancellationToken)
+        Protected MustOverride Sub DownloadContent(Token As CancellationToken)
         Private NotInheritable Class OptionalWebClient : Inherits DownloadObjects.WebClient2
             Friend Sub New(ByRef Source As UserDataBase)
                 UseResponserClient = Source.UseResponserClient
@@ -975,7 +975,7 @@ BlockNullPicture:
                 End If
             End Sub
         End Class
-        Protected Sub DownloadContentDefault(ByVal Token As CancellationToken)
+        Protected Sub DownloadContentDefault(Token As CancellationToken)
             Try
                 Dim i%
                 Dim dCount% = 0, dTotal% = 0
@@ -1078,15 +1078,15 @@ BlockNullPicture:
             End Try
         End Sub
         Protected UseInternalM3U8Function As Boolean = False
-        Protected Overridable Function DownloadM3U8(ByVal URL As String, ByVal Media As UserMedia, ByVal DestinationFile As SFile) As SFile
+        Protected Overridable Function DownloadM3U8(URL As String, Media As UserMedia, DestinationFile As SFile) As SFile
             Return Nothing
         End Function
         Protected Const EXCEPTION_OPERATION_CANCELED As Integer = -1
         ''' <param name="RDE">Request DownloadingException</param>
         ''' <returns>0 - exit</returns>
-        Protected Function ProcessException(ByVal ex As Exception, ByVal Token As CancellationToken, ByVal Message As String,
-                                            Optional ByVal RDE As Boolean = True, Optional ByVal EObj As Object = Nothing,
-                                            Optional ByVal ThrowEx As Boolean = True) As Integer
+        Protected Function ProcessException(ex As Exception, Token As CancellationToken, Message As String,
+                                            Optional RDE As Boolean = True, Optional EObj As Object = Nothing,
+                                            Optional ThrowEx As Boolean = True) As Integer
             If Not ((TypeOf ex Is OperationCanceledException And Token.IsCancellationRequested) Or
                     (TypeOf ex Is ObjectDisposedException And Disposed)) Then
                 If RDE Then
@@ -1101,8 +1101,8 @@ BlockNullPicture:
             Return 0
         End Function
         ''' <summary>0 - Execute LogError and set HasError</summary>
-        Protected MustOverride Function DownloadingException(ByVal ex As Exception, ByVal Message As String, Optional ByVal FromPE As Boolean = False, Optional ByVal EObj As Object = Nothing) As Integer
-        Protected Function ChangeFileNameByProvider(ByVal f As SFile, ByVal m As UserMedia) As SFile
+        Protected MustOverride Function DownloadingException(ex As Exception, Message As String, Optional FromPE As Boolean = False, Optional EObj As Object = Nothing) As Integer
+        Protected Function ChangeFileNameByProvider(f As SFile, m As UserMedia) As SFile
             Dim ff As SFile = Nothing
             Try
                 If f.Exists Then
@@ -1143,7 +1143,7 @@ BlockNullPicture:
         End Sub
 #End Region
 #Region "Delete, Move, Merge, Copy"
-        Friend Overridable Function Delete(Optional ByVal Multiple As Boolean = False, Optional ByVal CollectionValue As Integer = -1) As Integer Implements IUserData.Delete
+        Friend Overridable Function Delete(Optional Multiple As Boolean = False, Optional CollectionValue As Integer = -1) As Integer Implements IUserData.Delete
             Dim f As SFile = SFile.GetPath(MyFile.CutPath.Path)
             If f.Exists(SFO.Path, False) AndAlso (User.Merged OrElse f.Delete(SFO.Path, Settings.DeleteMode)) Then
                 If Not IncludedInCollection Then MainFrameObj.ImageHandler(Me, False)
@@ -1157,7 +1157,7 @@ BlockNullPicture:
                 Return 0
             End If
         End Function
-        Friend Overridable Function MoveFiles(ByVal __CollectionName As String, ByVal __SpecialCollectionPath As SFile) As Boolean Implements IUserData.MoveFiles
+        Friend Overridable Function MoveFiles(__CollectionName As String, __SpecialCollectionPath As SFile) As Boolean Implements IUserData.MoveFiles
             Dim UserBefore As UserInfo = User
             Dim Removed As Boolean = True
             Dim _TurnBack As Boolean = False
@@ -1265,7 +1265,7 @@ BlockNullPicture:
                 LogError(ex, "[UserDataBase.MergeData]")
             End Try
         End Sub
-        Private Function CheckFile(ByVal f As SFile, ByRef List As IEnumerable(Of SFile)) As SFile
+        Private Function CheckFile(f As SFile, ByRef List As IEnumerable(Of SFile)) As SFile
             If List.ListExists Then
                 Dim p As RParams = RParams.DMS(".+?\s{0,1}\((\d+)\)|.+", 0, EDP.ReturnValue)
                 Dim i% = List.Where(Function(ff) CStr(RegexReplace(ff.Name, p)).Trim.ToLower = f.Name.Trim.ToLower).Count
@@ -1274,13 +1274,13 @@ BlockNullPicture:
             Return f
         End Function
         Private Class FilesCopyingException : Inherits ErrorsDescriberException
-            Friend Sub New(ByVal User As IUserData, ByVal Msg As String, ByVal Path As SFile)
+            Friend Sub New(User As IUserData, Msg As String, Path As SFile)
                 SendInLogOnlyMessage = True
                 If User.IncludedInCollection Then _MainMessage = $"[{User.CollectionName}] - "
                 _MainMessage &= $"[{User.Site}] - [{User.Name}]. {Msg}: {Path.Path}."
             End Sub
         End Class
-        Friend Overridable Function CopyFiles(ByVal DestinationPath As SFile, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean Implements IUserData.CopyFiles
+        Friend Overridable Function CopyFiles(DestinationPath As SFile, Optional e As ErrorsDescriber = Nothing) As Boolean Implements IUserData.CopyFiles
             Dim fSource As SFile = Nothing
             Dim fDest As SFile = Nothing
             Try
@@ -1317,10 +1317,10 @@ BlockNullPicture:
         End Function
 #End Region
 #Region "Errors functions"
-        Protected Sub LogError(ByVal ex As Exception, ByVal Message As String)
+        Protected Sub LogError(ex As Exception, Message As String)
             ErrorsDescriber.Execute(EDP.SendInLog, ex, $"{ToStringForLog()}: {Message}")
         End Sub
-        Protected Sub ErrorDownloading(ByVal f As SFile, ByVal URL As String)
+        Protected Sub ErrorDownloading(f As SFile, URL As String)
             If Not f.Exists Then MyMainLOG = $"Error downloading from [{URL}] to [{f}]"
         End Sub
         ''' <exception cref="ObjectDisposedException"></exception>
@@ -1333,7 +1333,7 @@ BlockNullPicture:
         End Sub
         ''' <exception cref="OperationCanceledException"></exception>
         ''' <exception cref="ObjectDisposedException"></exception>
-        Friend Overridable Overloads Sub ThrowAny(ByVal Token As CancellationToken)
+        Friend Overridable Overloads Sub ThrowAny(Token As CancellationToken)
             Token.ThrowIfCancellationRequested()
             ThrowIfDisposed()
         End Sub
@@ -1378,11 +1378,11 @@ BlockNullPicture:
         End Sub
 #End Region
 #Region "IComparable Support"
-        Friend Overridable Function CompareTo(ByVal Other As UserDataBase) As Integer Implements IComparable(Of UserDataBase).CompareTo
+        Friend Overridable Function CompareTo(Other As UserDataBase) As Integer Implements IComparable(Of UserDataBase).CompareTo
             Return Name.CompareTo(Other.Name)
         End Function
-        Friend Overridable Function CompareTo(ByVal Obj As Object) As Integer Implements IComparable.CompareTo
-            If Not Obj Is Nothing AndAlso TypeOf Obj Is UserDataBase Then
+        Friend Overridable Function CompareTo(Obj As Object) As Integer Implements IComparable.CompareTo
+            If Obj IsNot Nothing AndAlso TypeOf Obj Is UserDataBase Then
                 Return CompareTo(DirectCast(Obj, UserDataBase))
             Else
                 Return False
@@ -1390,11 +1390,11 @@ BlockNullPicture:
         End Function
 #End Region
 #Region "IEquatable Support"
-        Friend Overridable Overloads Function Equals(ByVal Other As UserDataBase) As Boolean Implements IEquatable(Of UserDataBase).Equals
+        Friend Overridable Overloads Function Equals(Other As UserDataBase) As Boolean Implements IEquatable(Of UserDataBase).Equals
             Return LVIKey = Other.LVIKey And IsSavedPosts = Other.IsSavedPosts
         End Function
-        Public Overrides Function Equals(ByVal Obj As Object) As Boolean
-            If Not Obj Is Nothing AndAlso TypeOf Obj Is UserDataBase Then
+        Public Overrides Function Equals(Obj As Object) As Boolean
+            If Obj IsNot Nothing AndAlso TypeOf Obj Is UserDataBase Then
                 Return Equals(DirectCast(Obj, UserDataBase))
             Else
                 Return False
@@ -1408,7 +1408,7 @@ BlockNullPicture:
                 Return disposedValue
             End Get
         End Property
-        Protected Overridable Overloads Sub Dispose(ByVal disposing As Boolean)
+        Protected Overridable Overloads Sub Dispose(disposing As Boolean)
             If Not disposedValue Then
                 If disposing Then
                     _ContentList.Clear()
@@ -1416,12 +1416,12 @@ BlockNullPicture:
                     LatestData.Clear()
                     _TempMediaList.Clear()
                     _TempPostsList.Clear()
-                    If Not Responser Is Nothing Then Responser.Dispose()
-                    If Not BTT_CONTEXT_DOWN Is Nothing Then BTT_CONTEXT_DOWN.Dispose()
-                    If Not BTT_CONTEXT_EDIT Is Nothing Then BTT_CONTEXT_EDIT.Dispose()
-                    If Not BTT_CONTEXT_DELETE Is Nothing Then BTT_CONTEXT_DELETE.Dispose()
-                    If Not BTT_CONTEXT_OPEN_PATH Is Nothing Then BTT_CONTEXT_OPEN_PATH.Dispose()
-                    If Not BTT_CONTEXT_OPEN_SITE Is Nothing Then BTT_CONTEXT_OPEN_SITE.Dispose()
+                    If Responser IsNot Nothing Then Responser.Dispose()
+                    If BTT_CONTEXT_DOWN IsNot Nothing Then BTT_CONTEXT_DOWN.Dispose()
+                    If BTT_CONTEXT_EDIT IsNot Nothing Then BTT_CONTEXT_EDIT.Dispose()
+                    If BTT_CONTEXT_DELETE IsNot Nothing Then BTT_CONTEXT_DELETE.Dispose()
+                    If BTT_CONTEXT_OPEN_PATH IsNot Nothing Then BTT_CONTEXT_OPEN_PATH.Dispose()
+                    If BTT_CONTEXT_OPEN_SITE IsNot Nothing Then BTT_CONTEXT_OPEN_SITE.Dispose()
                     UserUpdatedEventHandlers.Clear()
                 End If
                 disposedValue = True
@@ -1446,15 +1446,15 @@ BlockNullPicture:
         Property Description As String
         Property Favorite As Boolean
         Property Temporary As Boolean
-        Sub OpenSite(Optional ByVal e As ErrorsDescriber = Nothing)
-        Sub DownloadData(ByVal Token As CancellationToken)
+        Sub OpenSite(Optional e As ErrorsDescriber = Nothing)
+        Sub DownloadData(Token As CancellationToken)
     End Interface
     Friend Interface IUserData : Inherits IContentProvider, IComparable(Of UserDataBase), IComparable, IEquatable(Of UserDataBase), IIndexable, IDisposable
-        Event UserUpdated(ByVal User As IUserData)
+        Event UserUpdated(User As IUserData)
         Property ParseUserMediaOnly As Boolean
 #Region "Images"
         Function GetPicture() As Image
-        Sub SetPicture(ByVal f As SFile)
+        Sub SetPicture(f As SFile)
 #End Region
 #Region "Collection support"
         ReadOnly Property IsCollection As Boolean
@@ -1472,9 +1472,9 @@ BlockNullPicture:
         Property HOST As SettingsHost
         Property [File] As SFile
         Property FileExists As Boolean
-        Property DownloadedPictures(ByVal Total As Boolean) As Integer
-        Property DownloadedVideos(ByVal Total As Boolean) As Integer
-        ReadOnly Property DownloadedTotal(Optional ByVal Total As Boolean = True) As Integer
+        Property DownloadedPictures(Total As Boolean) As Integer
+        Property DownloadedVideos(Total As Boolean) As Integer
+        ReadOnly Property DownloadedTotal(Optional Total As Boolean = True) As Integer
         ReadOnly Property DownloadedInformation As String
         Property HasError As Boolean
         ReadOnly Property FitToAddParams As Boolean
@@ -1484,8 +1484,8 @@ BlockNullPicture:
         Property DownloadMissingOnly As Boolean
         Property ScriptUse As Boolean
         Property ScriptData As String
-        Function GetLVI(ByVal Destination As ListView) As ListViewItem
-        Function GetLVIGroup(ByVal Destination As ListView) As ListViewGroup
+        Function GetLVI(Destination As ListView) As ListViewItem
+        Function GetLVIGroup(Destination As ListView) As ListViewGroup
         Sub LoadUserInformation()
         Sub UpdateUserInformation()
         ''' <summary>
@@ -1494,16 +1494,16 @@ BlockNullPicture:
         ''' 2 - Collection removed<br/>
         ''' 3 - Collection split
         ''' </summary>
-        Function Delete(Optional ByVal Multiple As Boolean = False, Optional ByVal CollectionValue As Integer = -1) As Integer
-        Function MoveFiles(ByVal CollectionName As String, ByVal SpecialCollectionPath As SFile) As Boolean
-        Function CopyFiles(ByVal DestinationPath As SFile, Optional ByVal e As ErrorsDescriber = Nothing) As Boolean
+        Function Delete(Optional Multiple As Boolean = False, Optional CollectionValue As Integer = -1) As Integer
+        Function MoveFiles(CollectionName As String, SpecialCollectionPath As SFile) As Boolean
+        Function CopyFiles(DestinationPath As SFile, Optional e As ErrorsDescriber = Nothing) As Boolean
         Sub OpenFolder()
         ReadOnly Property Self As IUserData
         Property DownloadTopCount As Integer?
         Property DownloadDateFrom As Date?
         Property DownloadDateTo As Date?
-        Sub SetEnvironment(ByRef h As SettingsHost, ByVal u As UserInfo, ByVal _LoadUserInformation As Boolean,
-                           Optional ByVal AttachUserInfo As Boolean = True)
+        Sub SetEnvironment(ByRef h As SettingsHost, u As UserInfo, _LoadUserInformation As Boolean,
+                           Optional AttachUserInfo As Boolean = True)
         ReadOnly Property Disposed As Boolean
     End Interface
     Friend Interface IChannelLimits
@@ -1511,8 +1511,8 @@ BlockNullPicture:
         Property DownloadLimitCount As Integer?
         Property DownloadLimitPost As String
         Property DownloadLimitDate As Date?
-        Overloads Sub SetLimit(Optional ByVal Post As String = "", Optional ByVal Count As Integer? = Nothing, Optional ByVal [Date] As Date? = Nothing)
-        Overloads Sub SetLimit(ByVal Source As IChannelLimits)
+        Overloads Sub SetLimit(Optional Post As String = "", Optional Count As Integer? = Nothing, Optional [Date] As Date? = Nothing)
+        Overloads Sub SetLimit(Source As IChannelLimits)
     End Interface
     Friend Interface IChannelData : Inherits IContentProvider, IChannelLimits
         Property SkipExistsUsers As Boolean

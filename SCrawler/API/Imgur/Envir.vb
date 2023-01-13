@@ -21,7 +21,7 @@ Namespace API.Imgur
     Friend NotInheritable Class Envir
         Private Sub New()
         End Sub
-        Friend Shared Function GetGallery(ByVal URL As String, Optional ByVal e As ErrorsDescriber = Nothing) As List(Of String)
+        Friend Shared Function GetGallery(URL As String, Optional e As ErrorsDescriber = Nothing) As List(Of String)
             Try
                 If Not Settings.ImgurClientID.IsEmptyString And Not URL.IsEmptyString Then
                     Dim __url$ = RegexReplace(URL, PostRegex)
@@ -50,7 +50,7 @@ Namespace API.Imgur
                 Return DownloadingException(ex, $"[API.Imgur.Envir.GetGallery({URL})]", Nothing, e)
             End Try
         End Function
-        Friend Shared Function GetImage(ByVal URL As String, Optional ByVal e As ErrorsDescriber = Nothing) As String
+        Friend Shared Function GetImage(URL As String, Optional e As ErrorsDescriber = Nothing) As String
             Try
                 If Not Settings.ImgurClientID.IsEmptyString And Not URL.IsEmptyString Then
                     Dim __url$ = RegexReplace(URL, PostRegex)
@@ -67,7 +67,7 @@ Namespace API.Imgur
                 Return DownloadingException(ex, $"[API.Imgur.Envir.GetImage({URL})]", String.Empty, e)
             End Try
         End Function
-        Friend Shared Function GetVideoInfo(ByVal URL As String, Optional ByVal e As ErrorsDescriber = Nothing) As IEnumerable(Of UserMedia)
+        Friend Shared Function GetVideoInfo(URL As String, Optional e As ErrorsDescriber = Nothing) As IEnumerable(Of UserMedia)
             Try
                 If Not URL.IsEmptyString AndAlso URL.ToLower.Contains("imgur") AndAlso Not Settings.ImgurClientID.IsEmptyString Then
                     Dim img$ = GetImage(URL, EDP.ReturnValue)
@@ -83,11 +83,11 @@ Namespace API.Imgur
                 Return ErrorsDescriber.Execute(e, ex, "Imgur standalone downloader: fetch media error")
             End Try
         End Function
-        Private Shared Function DownloadingException(ByVal ex As Exception, ByVal Message As String,
-                                                     ByVal NullArg As Object, ByVal e As ErrorsDescriber) As Object
+        Private Shared Function DownloadingException(ex As Exception, Message As String,
+NullArg As Object, e As ErrorsDescriber) As Object
             If TypeOf ex Is WebException Then
                 Dim obj As HttpWebResponse = TryCast(DirectCast(ex, WebException).Response, HttpWebResponse)
-                If Not obj Is Nothing Then
+                If obj IsNot Nothing Then
                     If obj.StatusCode = HttpStatusCode.NotFound Then
                         Return NullArg
                     ElseIf obj.StatusCode = HttpStatusCode.Unauthorized Then

@@ -107,7 +107,7 @@ Namespace Editors
                 MyDefs.InvokeLoaderError(ex)
             End Try
         End Sub
-        Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+        Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
             If MyDefs.MyFieldsChecker.AllParamsOK Then
                 With Settings
                     Dim a As Func(Of String, Object, Integer) =
@@ -219,16 +219,16 @@ Namespace Editors
                 MyDefs.CloseForm()
             End If
         End Sub
-        Private Sub TXT_GLOBAL_PATH_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_GLOBAL_PATH.ActionOnButtonClick
+        Private Sub TXT_GLOBAL_PATH_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_GLOBAL_PATH.ActionOnButtonClick
             If Sender.DefaultButton = ADB.Open Then
                 Dim f As SFile = SFile.SelectPath(Settings.GlobalPath.Value).IfNullOrEmpty(Settings.GlobalPath.Value)
                 If Not f.IsEmptyString Then TXT_GLOBAL_PATH.Text = f
             End If
         End Sub
-        Private Sub TXT_MAX_JOBS_USERS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_MAX_JOBS_USERS.ActionOnButtonClick
+        Private Sub TXT_MAX_JOBS_USERS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_MAX_JOBS_USERS.ActionOnButtonClick
             If Sender.DefaultButton = ADB.Refresh Then TXT_MAX_JOBS_USERS.Value = SettingsCLS.DefaultMaxDownloadingTasks
         End Sub
-        Private Sub TXT_MAX_JOBS_CHANNELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_MAX_JOBS_CHANNELS.ActionOnButtonClick
+        Private Sub TXT_MAX_JOBS_CHANNELS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_MAX_JOBS_CHANNELS.ActionOnButtonClick
             If Sender.DefaultButton = ADB.Refresh Then TXT_MAX_JOBS_CHANNELS.Value = SettingsCLS.DefaultMaxDownloadingTasks
         End Sub
         Private Sub ChangePositionControlsEnabling() Handles OPT_FILE_NAME_REPLACE.CheckedChanged, OPT_FILE_NAME_ADD_DATE.CheckedChanged
@@ -245,7 +245,7 @@ Namespace Editors
             CH_FILE_TIME.Enabled = b
             ChangePositionControlsEnabling()
         End Sub
-        Private Sub TXT_SCRIPT_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles TXT_SCRIPT.ActionOnButtonClick
+        Private Sub TXT_SCRIPT_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles TXT_SCRIPT.ActionOnButtonClick
             SettingsCLS.ScriptTextBoxButtonClick(TXT_SCRIPT, Sender)
         End Sub
         Private Sub CH_COPY_CHANNEL_USER_IMAGE_CheckedChanged(sender As Object, e As EventArgs) Handles CH_COPY_CHANNEL_USER_IMAGE.CheckedChanged

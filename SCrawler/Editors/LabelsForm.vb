@@ -15,7 +15,7 @@ Friend Class LabelsForm
     Private ReadOnly _Source As IEnumerable(Of String) = Nothing
     Private ReadOnly Property Source As IEnumerable(Of String)
         Get
-            If Not _Source Is Nothing Then
+            If _Source IsNot Nothing Then
                 Return _Source
             ElseIf AddNoParsed Then
                 Return ListAddList(Nothing, Settings.Labels).ListAddValue(LabelsKeeper.NoParsedUser, LAP.NotContainsOnly)
@@ -27,14 +27,14 @@ Friend Class LabelsForm
     Private _AnyLabelAdd As Boolean = False
     Friend Property WithDeleteButton As Boolean = False
     Private ReadOnly AddNoParsed As Boolean = False
-    Friend Sub New(ByVal LabelsArr As IEnumerable(Of String), Optional ByVal AddNoParsed As Boolean = False)
+    Friend Sub New(LabelsArr As IEnumerable(Of String), Optional AddNoParsed As Boolean = False)
         InitializeComponent()
         Me.AddNoParsed = AddNoParsed
         LabelsList = New List(Of String)
         LabelsList.ListAddList(LabelsArr)
         MyDefs = New DefaultFormOptions(Me, Settings.Design)
     End Sub
-    Friend Sub New(ByVal Current As IEnumerable(Of String), ByVal Source As IEnumerable(Of String))
+    Friend Sub New(Current As IEnumerable(Of String), Source As IEnumerable(Of String))
         Me.New(Current)
         _Source = Source
     End Sub
@@ -53,7 +53,7 @@ Friend Class LabelsForm
                         If LabelsList.Contains(s(i)) Then items.Add(i)
                         CMB_LABELS.Items.Add(s(i))
                     Next
-                    If Not _Source Is Nothing Then CMB_LABELS.Buttons.Clear()
+                    If _Source IsNot Nothing Then CMB_LABELS.Buttons.Clear()
                     CMB_LABELS.EndUpdate()
                     CMB_LABELS.ListCheckedIndexes = items
                 End If
@@ -69,7 +69,7 @@ Friend Class LabelsForm
     Private Sub LabelsForm_Disposed(sender As Object, e As EventArgs) Handles Me.Disposed
         LabelsList.Clear()
     End Sub
-    Private Sub MyDefs_ButtonOkClick(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
+    Private Sub MyDefs_ButtonOkClick(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonOkClick
         Try
             LabelsList.ListAddList(CMB_LABELS.Items.CheckedItems.Select(Function(l) CStr(l.Value(0))), LAP.ClearBeforeAdd, LAP.NotContainsOnly)
             If _Source Is Nothing Then Settings.Labels.Update()
@@ -78,11 +78,11 @@ Friend Class LabelsForm
             ErrorsDescriber.Execute(EDP.LogMessageValue, ex, "Label selection")
         End Try
     End Sub
-    Private Sub MyDefs_ButtonDeleteClickOC(ByVal Sender As Object, ByVal e As KeyHandleEventArgs) Handles MyDefs.ButtonDeleteClickOC
+    Private Sub MyDefs_ButtonDeleteClickOC(Sender As Object, e As KeyHandleEventArgs) Handles MyDefs.ButtonDeleteClickOC
         LabelsList.Clear()
         MyDefs.CloseForm()
     End Sub
-    Private Sub CMB_LABELS_ActionOnButtonClick(ByVal Sender As ActionButton, ByVal e As EventArgs) Handles CMB_LABELS.ActionOnButtonClick
+    Private Sub CMB_LABELS_ActionOnButtonClick(Sender As ActionButton, e As EventArgs) Handles CMB_LABELS.ActionOnButtonClick
         Select Case Sender.DefaultButton
             Case ActionButton.DefaultButtons.Add : AddNewLabel()
             Case ActionButton.DefaultButtons.Clear : CMB_LABELS.Clear(ComboBoxExtended.ClearMode.CheckedIndexes)
