@@ -85,15 +85,18 @@
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PersonalUtilities" />
-    <Reference Include="PersonalUtilities.Notifications" />
+    <Reference Include="PersonalUtilities">
+      <HintPath>.\PersonalUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="PersonalUtilities.Notifications">
+      <HintPath>.\PersonalUtilities.Notifications.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="PersonalUtilities.Functions" />
@@ -466,7 +469,7 @@
     <None Include="Content\Pictures\StarPic_24.png" />
     <None Include="Content\Pictures\StartPic_Green_16.png" />
     <None Include="Content\Pictures\StopPic_32.png" />
-    <None Include="cURL\curl-ca-bundle.crt">
+    <None Include="cURL\curl-ca-bundle.crt*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="My Project\app.manifest" />
@@ -517,16 +520,16 @@
     <None Include="Content\Pictures\SitePictures\PornHubPic_16.png" />
     <None Include="Content\Icons\SiteIcons\PornHubIcon_16.ico" />
     <None Include="Content\Pictures\TagPic_24.png" />
-    <Content Include="cURL\curl.exe">
+    <Content Include="cURL\curl.exe*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="cURL\libcurl-x64.def">
+    <Content Include="cURL\libcurl-x64.def*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="cURL\libcurl-x64.dll">
+    <Content Include="cURL\libcurl-x64.dll*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ffmpeg.exe">
+    <Content Include="ffmpeg.exe*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -534,6 +537,9 @@
     <PackageReference Include="LibVLCSharp.WinForms">
       <Version>
         3.6.7</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>7.1.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
