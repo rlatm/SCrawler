@@ -60,9 +60,11 @@ Namespace API.Base
                         End Using
 
                         Dim inputArgument = New StringBuilder(eFiles(0).File)
-                        For inputFileCounter = 1 To eFiles.Count - 1
-                            inputArgument.Append($"|{eFiles(inputFileCounter).File}")
-                        Next
+                        If eFiles.Count >= 1 then                        
+                            For inputFileCounter = 1 To eFiles.Count - 1
+                                inputArgument.Append($"|{eFiles(inputFileCounter).File}")
+                            Next
+                        end if
 
                         Process.Start(
                             New ProcessStartInfo(
